@@ -1,0 +1,238 @@
+/* reset per https://www.joshwcomeau.com/css/custom-css-reset/ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+input, button, textarea, select {
+  font: inherit;
+}
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+#root, #__next {
+  isolation: isolate;
+}
+/* end reset */
+
+@mainFgColor: #6c1f17;
+@mainBgColor: #e8dbce;
+
+body {
+	font-family: Galliard;
+  font-size: 15px;
+}
+
+.character-edit {
+  max-width: 52.75em;
+  margin: 0 auto;
+  padding: 1.5em 3.3em;
+  background-color: @mainBgColor;
+  color: @mainFgColor;
+}
+
+.character-edit-grid {
+  display: grid;
+  grid-template-columns: [left] 4fr [three] 3fr [two] 1fr [three] 4fr [right];
+  gap: .25em;
+}
+
+.character-edit input[type="text"] {
+  width: 100%;
+}
+
+.character-edit input[type="number"] {
+  width: 6em;
+}
+
+.character-edit .name-cell {
+  grid-column: left / three 1;
+  grid-row-end: span 2;
+  padding-top: 1.6em;
+  padding-right: 1.5em;
+}
+
+.character-edit .logo-cell {
+  grid-column: three 1 / three 2;
+}
+
+.logo-cell img {
+  margin: 0 auto;
+  width: 200px;
+  height: 110px;
+}
+
+.character-edit .portrait-cell {
+  grid-column: three 2 / right;
+  grid-row-end: span 2;
+  padding-top: 1.6em;
+  padding-left: 1.5em;
+}
+
+.character-edit th, .character-edit td {
+  vertical-align: top;
+}
+
+.character-edit .drives-cell {
+  grid-column: three 1 / three 2;
+}
+
+.character-edit table {
+  width: 100%;
+  height: 100%;
+  border: 2px solid @mainFgColor;
+  border-collapse: collapse;
+  background-color: white;
+}
+.character-edit th, td {
+  border: 1px solid @mainFgColor;
+}
+
+.character-edit .wealth-cell table {
+  border-top-width: .95em;
+}
+.character-edit .stamina-cell table {
+  border-top-width: .5em;
+}
+
+.corner-br-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background: @mainFgColor;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 95% 100%, 0% 100%);
+}
+
+.corner-br {
+  position: absolute;
+  /*bottom: 2px;
+  right: 2px;*/
+  clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 95% 100%, 0% 100%);
+}
+
+.character-edit .investigative-title {
+  grid-column: left / right;
+  padding-top: .25em;
+}
+
+.character-edit .social-cell {
+  grid-column: left / three 1;
+  grid-row-end: span 2;
+}
+
+.character-edit .sentinel-cell {
+  grid-column: three 1 / three 2;
+}
+
+.character-edit .sorcerer-cell {
+  grid-column: three 2 / right;
+}
+
+.character-edit .thief-cell {
+  grid-column: three 1 / three 2;
+}
+
+.character-edit .warrior-cell {
+  grid-column: three 2 / right;
+}
+
+.character-edit .general-title {
+  grid-column: left / two;
+  padding-top: .25em;
+}
+
+.character-edit .allegiances-title {
+  grid-column: two / right;
+  padding-top: .25em;
+}
+
+.character-edit .general-cell {
+  grid-column: left / two;
+  grid-row-end: span 2;
+}
+
+.character-edit .allegiances-cell {
+  grid-column: two / right;
+}
+
+.character-edit .wealth-cell {
+  grid-column: two / right;
+}
+
+.character-edit .stamina-cell {
+  grid-column: left / right;
+}
+
+.character-edit .gear-title {
+  grid-column: left / two;
+  padding-top: .25em;
+}
+
+.character-edit .spheres-title {
+  grid-column: two / right;
+  padding-top: .25em;
+}
+
+.character-edit .gear-cell {
+  grid-column: left / two;
+}
+
+.character-edit .spheres-cell {
+  grid-column: two / right;
+}
+
+.head {
+  text-align: center;
+}
+
+.character-edit h4 {
+  padding: .2em 0;
+  text-align: center;
+  font-size: .84em;
+  font-weight: normal;
+  text-transform: uppercase;
+  background-color: @mainFgColor;
+  color: @mainBgColor;
+}
+
+.character-edit h5 {
+  font-size: 1.2em;
+  font-weight: normal;
+  font-family: Joyeuse;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.note {
+  font-size: .6em;
+  color: black;
+}
+
+@font-face {
+  font-family: Galliard;
+  src: url(/assets/Galliard_Roman.otf);
+}
+
+@font-face {
+  font-family: Galliard;
+  font-weight: bold;
+  font-style: italic;
+  src: url(/assets/Galliard_BoldItalic.ttf);
+}
+
+@font-face {
+  font-family: Joyeuse;
+  src: url(/assets/JO______.TTF);
+}
