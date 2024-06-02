@@ -1,5 +1,5 @@
-<p>character-editor works</p>
 <div class="character-edit">
+<form [formGroup]="formGroup" (ngSubmit)="submit()">
 <div class="character-edit-grid">
 <div class="name-cell">
   <table class="cut"><tbody>
@@ -110,7 +110,14 @@
   </td></tr></tbody></table>
 </div>
 <div class="stamina-cell">
-  <edit-stamina />
+  <table><tbody><tr><td>
+    <div><label>
+      <span class="label">Health</span> <span class="input"><input type="number" [formControl]="health"></span>
+    </label></div>
+    <div><label>
+      <span class="label">Morale</span> <span class="input"><input type="number" [formControl]="morale"></span>
+    </label></div>
+  </td></tr></tbody></table>
 </div>
 <div class="gear-title">
   <h4>Gear</h4>
@@ -129,4 +136,5 @@
   </tbody></table>
 </div>
 </div>
+</form>
 </div>
