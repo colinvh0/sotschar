@@ -3,40 +3,85 @@
 <div class="character-edit-grid">
 <div class="name-cell">
   <table class="cut"><tbody>
-    <tr><td><edit-name /></td></tr>
-    <tr><td><edit-tnk /></td></tr>
-    <tr><td><edit-profession /></td></tr>
+    <tr><td>
+      <label>
+        <div class="label">Name</div>
+        <div class="input"><input type="text" [formControl]="name"></div>
+      </label>
+    </td></tr>
+    <tr><td>
+      <label>
+        <div class="label">True Name? <span class="input"><input type="checkbox" [formControl]="tnk"></span></div>
+        <div class="note">Check if True Name is known</div>
+      </label>
+    </td></tr>
+    <tr><td>
+      <label>
+        <div class="label">Profession</div>
+        <div class="input"><input type="text" [formControl]="profession"></div>
+      </label>
+    </td></tr>
     <tr><td><edit-adjectives /></td></tr>
   </tbody></table>
 </div>
 <div class="logo-cell"><img src="/assets/logo.png" alt="Swords of the Serpentine"></div>
 <div class="portrait-cell">
   <table><tbody><tr><td>
-    <edit-portrait />
+    <div class="head label">Character Portrait</div>
   </td></tr></tbody></table>
 </div>
 <div class="drives-cell">
   <table><tbody><tr><td>
-    <edit-drives />
+    <div class="head label">What is Best in Life?</div>
+    <div class="input"><input type="text" [formControl]="drive1"></div>
+    <div class="input"><input type="text" [formControl]="drive2"></div>
+    <div class="input"><input type="text" [formControl]="drive3"></div>
   </td></tr></tbody></table>
 </div>
 <div class="investigative-title">
   <h4>Investigative Abilities</h4>
 </div>
 <div class="social-cell">
-  <edit-social />
+  <div class="corner-br-wrap">
+    <table class="corner-br"><thead>
+      <tr><th colspan='6'>
+        <h5 class="head">Social</h5>
+      </th></tr>
+    </thead><tbody>
+    </tbody></table>
+  </div>
 </div>
 <div class="sentinel-cell">
-  <edit-sentinel />
+  <table><thead>
+    <tr><th colspan='6'>
+      <h5 class="head">Sentinel</h5>
+    </th></tr>
+  </thead><tbody>
+  </tbody></table>
 </div>
 <div class="sorcerer-cell">
-  <edit-sorcerer />
+  <table><thead>
+    <tr><th colspan='6'>
+      <h5 class="head">Sorcerer</h5>
+    </th></tr>
+  </thead><tbody>
+  </tbody></table>
 </div>
 <div class="thief-cell">
-  <edit-thief />
+  <table><thead>
+    <tr><th colspan='6'>
+      <h5 class="head">Thief</h5>
+    </th></tr>
+  </thead><tbody>
+  </tbody></table>
 </div>
 <div class="warrior-cell">
-  <edit-warrior />
+  <table><thead>
+    <tr><th colspan='6'>
+      <h5 class="head">Warrior</h5>
+    </th></tr>
+  </thead><tbody>
+  </tbody></table>
 </div>
 <div class="general-title">
   <h4>General Abilities</h4>
@@ -45,13 +90,24 @@
   <h4>Allegiances</h4>
 </div>
 <div class="general-cell">
-  <edit-general />
+  <table><tbody>
+  </tbody></table>
 </div>
 <div class="allegiances-cell">
-  <edit-allegiances />
+  <table><tbody>
+  </tbody><tfoot>
+    <tr><td><button>Add</button></td></tr>
+  </tfoot></table>
 </div>
 <div class="wealth-cell">
-  <edit-wealth />
+  <table><tbody><tr><td>
+    <div><label>
+      <span class="label">Wealth</span> <span class="input"><input type="number" [formControl]="wealth"></span>
+    </label></div>
+    <div><label>
+      <span class="label">Lifestyle</span> <span class="input"><input type="number" [formControl]="lifestyle"></span>
+    </label></div>
+  </td></tr></tbody></table>
 </div>
 <div class="stamina-cell">
   <edit-stamina />
@@ -63,10 +119,14 @@
   <h4>Sorcerous Spheres</h4>
 </div>
 <div class="gear-cell">
-  <edit-gear />
+  <table><tbody>
+  </tbody><tfoot>
+    <tr><td><button>Add</button></td></tr>
+  </tfoot></table>
 </div>
 <div class="spheres-cell">
-  <edit-spheres />
+  <table><tbody>
+  </tbody></table>
 </div>
 </div>
 </div>

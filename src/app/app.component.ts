@@ -11,5 +11,4 @@ import { CharacterEditorComponent } from './character-editor/character-editor.co
   imports: [RouterOutlet, CharacterEditorComponent],
 })
 export class AppComponent {
-  title = 'SotS Character Editor';
 }
