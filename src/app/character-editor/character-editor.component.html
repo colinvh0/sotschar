@@ -28,7 +28,7 @@
         <div><button (click)="addAdjective()">Add</button></div>
       }
       @for (adj of adjectives; track adj; let i = $index) {
-        <input class="adjectives" id="adj{{i}}" [(ngModel)] = "adjectives[i].value">
+        <input class="adjectives" id="adj{{i}}" [(ngModel)] = "adjectives[i].value" [ngModelOptions]="{standalone: true}">
       }
     </td></tr>
   </tbody></table>
