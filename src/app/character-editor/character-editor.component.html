@@ -22,7 +22,7 @@
     </td></tr>
     <tr><td>
       <div class="label">Adjectives</div>
-      @if (adjectives.length == 5) {
+      @if (adjectives.length >= 5) {
         <div>Max 5</div>
       } @else {
         <div><button (click)="addAdjective()">Add</button></div>
@@ -104,8 +104,19 @@
 </div>
 <div class="allegiances-cell">
   <table><tbody>
+  @for (adj of adjectives; track adj; let i = $index) {
+    <tr><td>
+      <input class="adjectives" id="adj{{i}}" [(ngModel)]="adjectives[i].value" [ngModelOptions]="{standalone: true}"><button (click)="delAdjective(i)">del</button>
+    </td></tr>
+  }
   </tbody><tfoot>
-    <tr><td><button>Add</button></td></tr>
+    <tr><td>
+      @if (adjectives.length >= 12) {
+        <div>Max 12</div>
+      } @else {
+        <div><button (click)="addAdjective()">Add</button></div>
+      }
+    </td></tr>
   </tfoot></table>
 </div>
 <div class="wealth-cell">
