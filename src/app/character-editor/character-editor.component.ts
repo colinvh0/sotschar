@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { Tables } from '../character';
 import { CommonModule } from '@angular/common';
@@ -34,31 +34,27 @@ class EditAdjectivesComponent {
 }
 
 @Component({
-  selector: 'edit-stamina',
-  standalone: true,
-  imports: [ReactiveFormsModule],
-  templateUrl: './edit-stamina.html'
-})
-class EditStaminaComponent {
-	health = new FormControl('');
-	morale = new FormControl('');
-}
-
-@Component({
   selector: 'app-character-editor',
   standalone: true,
-  imports: [ReactiveFormsModule, EditAdjectivesComponent, EditStaminaComponent],
+  imports: [ReactiveFormsModule, EditAdjectivesComponent],
   templateUrl: './character-editor.component.html',
   styleUrl: './character-editor.component.less'
 })
 export class CharacterEditorComponent {
-	name = new FormControl('');
-	tnk = new FormControl('');
-	profession = new FormControl('');
-	drive1 = new FormControl('');
-	drive2 = new FormControl('');
-	drive3 = new FormControl('');
-	wealth = new FormControl('');
-	lifestyle = new FormControl('');
+
+  formGroup = new FormGroup({
+    name: new FormControl(''),
+    tnk: new FormControl(''),
+    profession: new FormControl(''),
+    drive1: new FormControl(''),
+    drive2: new FormControl(''),
+    drive3: new FormControl(''),
+    wealth: new FormControl(''),
+    lifestyle: new FormControl(''),
+    health: new FormControl(''),
+    morale: new FormControl('')
+  });
+
+  submit() {}
 }
 

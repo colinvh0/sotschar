@@ -1,24 +1,24 @@
-<p>character-editor works</p>
 <div class="character-edit">
+<form [formGroup]="formGroup" (ngSubmit)="submit()">
 <div class="character-edit-grid">
 <div class="name-cell">
   <table class="cut"><tbody>
     <tr><td>
       <label>
         <div class="label">Name</div>
-        <div class="input"><input type="text" [formControl]="name"></div>
+        <div class="input"><input type="text" formControlName="name"></div>
       </label>
     </td></tr>
     <tr><td>
       <label>
-        <div class="label">True Name? <span class="input"><input type="checkbox" [formControl]="tnk"></span></div>
+        <div class="label">True Name? <span class="input"><input type="checkbox" formControlName="tnk"></span></div>
         <div class="note">Check if True Name is known</div>
       </label>
     </td></tr>
     <tr><td>
       <label>
         <div class="label">Profession</div>
-        <div class="input"><input type="text" [formControl]="profession"></div>
+        <div class="input"><input type="text" formControlName="profession"></div>
       </label>
     </td></tr>
     <tr><td><edit-adjectives /></td></tr>
@@ -33,9 +33,9 @@
 <div class="drives-cell">
   <table><tbody><tr><td>
     <div class="head label">What is Best in Life?</div>
-    <div class="input"><input type="text" [formControl]="drive1"></div>
-    <div class="input"><input type="text" [formControl]="drive2"></div>
-    <div class="input"><input type="text" [formControl]="drive3"></div>
+    <div class="input"><input type="text" formControlName="drive1"></div>
+    <div class="input"><input type="text" formControlName="drive2"></div>
+    <div class="input"><input type="text" formControlName="drive3"></div>
   </td></tr></tbody></table>
 </div>
 <div class="investigative-title">
@@ -102,15 +102,22 @@
 <div class="wealth-cell">
   <table><tbody><tr><td>
     <div><label>
-      <span class="label">Wealth</span> <span class="input"><input type="number" [formControl]="wealth"></span>
+      <span class="label">Wealth</span> <span class="input"><input type="number" formControlName="wealth"></span>
     </label></div>
     <div><label>
-      <span class="label">Lifestyle</span> <span class="input"><input type="number" [formControl]="lifestyle"></span>
+      <span class="label">Lifestyle</span> <span class="input"><input type="number" formControlName="lifestyle"></span>
     </label></div>
   </td></tr></tbody></table>
 </div>
 <div class="stamina-cell">
-  <edit-stamina />
+  <table><tbody><tr><td>
+    <div><label>
+      <span class="label">Health</span> <span class="input"><input type="number" formControlName="health"></span>
+    </label></div>
+    <div><label>
+      <span class="label">Morale</span> <span class="input"><input type="number" formControlName="morale"></span>
+    </label></div>
+  </td></tr></tbody></table>
 </div>
 <div class="gear-title">
   <h4>Gear</h4>
@@ -129,4 +136,5 @@
   </tbody></table>
 </div>
 </div>
+</form>
 </div>
