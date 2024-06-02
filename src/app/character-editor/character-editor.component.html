@@ -20,16 +20,12 @@
         <div class="input"><input type="text" formControlName="profession"></div>
       </label>
     </td></tr>
-    <tr><td>
+    <tr><td class="adjectives-block">
       <div class="label">Adjectives</div>
       @for (adj of adjectives; track adj; let i = $index) {
-        <input class="adjectives" id="adj{{i}}" [(ngModel)]="adj.value" [ngModelOptions]="{standalone: true}"><button (click)="delAdjective(i)">🗑️</button>
+        <input type="text" id="adj{{i}}" [(ngModel)]="adj.value" [ngModelOptions]="{standalone: true}"><button class="del" (click)="delAdjective(i)"><i class="gg-trash"></i></button>
       }
-      @if (adjectives.length >= 5) {
-        <div>Max 5</div>
-      } @else {
-        <div><button (click)="addAdjective()">Add</button></div>
-      }
+      <div [ngClass]="'add' + ((adjectives.length >= 5) ? ' add-full' : '')"><button (click)="addAdjective()"><i class="gg-play-list-add"></i></button></div>
     </td></tr>
   </tbody></table>
 </div>
@@ -103,23 +99,14 @@
   </tbody></table>
 </div>
 <div class="allegiances-cell">
-  <table>
-    <tbody>
+  <table><tbody>
+    <tr><td>
       @for (adj of allegiances; track adj; let i = $index) {
-        <tr><td>
-          <input class="allegiances" id="adj{{i}}" [(ngModel)]="allegiances[i].value" [ngModelOptions]="{standalone: true}" /><button (click)="delAllegiance(i)">del</button>
-        </td></tr>
+        <input type="text" class="allegiances" id="alleg{{i}}" [(ngModel)]="allegiances[i].value" [ngModelOptions]="{standalone: true}" /><button class="del" (click)="delAllegiance(i)"><i class="gg-trash"></i></button>
       }
-    </tbody><tfoot>
-      <tr><td>
-        @if (allegiances.length >= 12) {
-          <div>Max 12</div>
-        } @else {
-          <div><button (click)="addAllegiance()">Add</button></div>
-        }
-      </td></tr>
-    </tfoot>
-  </table>
+      <div [ngClass]="'add' + ((allegiances.length >= 12) ? ' add-full' : '')"><button (click)="addAllegiance()"><i class="gg-play-list-add"></i></button></div>
+    </td></tr>
+  </tbody></table>
 </div>
 <div class="wealth-cell">
   <table><tbody><tr><td>
@@ -149,9 +136,15 @@
 </div>
 <div class="gear-cell">
   <table><tbody>
-  </tbody><tfoot>
-    <tr><td><button>Add</button></td></tr>
-  </tfoot></table>
+    <tr><td>
+      @for (adj of gear; track adj; let i = $index) {
+        <input type="checkbox" class="gear" id="gear-iconic{{i}}" [(ngModel)]="gear[i].iconic" [ngModelOptions]="{standalone: true}">
+        <input type="text" class="gear" id="gear{{i}}" [(ngModel)]="gear[i].value" [ngModelOptions]="{standalone: true}">
+        <button class="del" (click)="delGear(i)"><i class="gg-trash"></i></button>
+      }
+      <div class="add"><button (click)="addGear()"><i class="gg-play-list-add"></i></button></div>
+    </td></tr>
+  </tbody></table>
 </div>
 <div class="spheres-cell">
   <table><tbody>

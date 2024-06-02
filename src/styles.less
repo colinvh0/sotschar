@@ -23,6 +23,8 @@ p, h1, h2, h3, h4, h5, h6 {
   isolation: isolate;
 }
 /* end reset */
+@import url('https://unpkg.com/css.gg@2.0.0/icons/css/play-list-add.css');
+@import url('https://unpkg.com/css.gg@2.0.0/icons/css/trash.css');
 
 @mainFgColor: #6c1f17;
 @mainBgColor: #e8dbce;
@@ -45,19 +47,66 @@ body {
 .character-edit-grid {
   display: grid;
   grid-template-columns: [left] 4fr [three] 3fr [two] 1fr [three] 4fr [right];
+  grid-template-rows: 110px;
   gap: .25em;
 }
 
-.character-edit .drives-cell input {
+.character-edit table {
   width: 100%;
+  height: 100%;
+  border: @outsideBorder;
+  border-collapse: collapse;
+  background-color: white;
+}
+.character-edit th, .character-edit td {
+  padding: 0 .5em .25em;
+  vertical-align: top;
 }
 
-.character-edit input.adjectives {
-  width: 11em;
+.character-edit button {
+  height: 1.8em;
+  width: 27px;
+  border: 1px solid black;
+  border-radius: 4px;
+  background-color: black;
+  color: white;
+}
+.character-edit button.del {
+  position: relative;
+  top: .172em;
+  padding: 0 7px 0 7px;
+  /*width: 1.4em;*/
+  border-color: firebrick;
+  background-color: firebrick;
+}
+.character-edit div.add button {
+  display: block;
+  margin: 2px 0 0 auto;
+  border-color: green;
+  background-color: green;
+}
+.character-edit div.add.add-full button {
+  display: none;
 }
 
 .character-edit input[type="number"] {
   width: 6em;
+}
+
+.character-edit h4 {
+  padding: .2em 0;
+  text-align: center;
+  font-size: .84em;
+  font-weight: normal;
+  text-transform: uppercase;
+  background-color: @mainFgColor;
+  color: @mainBgColor;
+}
+
+.character-edit h5 {
+  font-size: 1.2em;
+  font-weight: normal;
+  font-family: Joyeuse;
 }
 
 .character-edit .name-cell {
@@ -65,6 +114,18 @@ body {
   grid-row-end: span 2;
   padding-top: 1.6em;
   padding-right: 1.5em;
+}
+
+.character-edit .name-cell td {
+  border: @insideBorder;
+}
+
+.character-edit .name-cell input[type='text'] {
+  width: 12.37em;
+}
+
+.character-edit .name-cell .adjectives-block input[type='text'] {
+  width: 10.55em;
 }
 
 .character-edit .logo-cell {
@@ -84,30 +145,11 @@ body {
   padding-left: 1.5em;
 }
 
-.character-edit th, .character-edit td {
-  vertical-align: top;
-}
-
 .character-edit .drives-cell {
   grid-column: three 1 / three 2;
 }
-
-.character-edit table {
+.character-edit .drives-cell input {
   width: 100%;
-  height: 100%;
-  border: @outsideBorder;
-  border-collapse: collapse;
-  background-color: white;
-}
-.character-edit th, td {
-  border: @insideBorder;
-}
-
-.character-edit .wealth-cell table {
-  border-top-width: .95em;
-}
-.character-edit .stamina-cell table {
-  border-top-width: .5em;
 }
 
 .corner-br-wrap {
@@ -170,13 +212,22 @@ body {
 .character-edit .allegiances-cell {
   grid-column: two / right;
 }
+.character-edit .allegiances-cell input[type="text"] {
+  width: 16.09em;
+}
 
 .character-edit .wealth-cell {
   grid-column: two / right;
 }
+.character-edit .wealth-cell table {
+  border-top-width: .95em;
+}
 
 .character-edit .stamina-cell {
   grid-column: left / right;
+}
+.character-edit .stamina-cell table {
+  border-top-width: .5em;
 }
 
 .character-edit .gear-title {
@@ -193,28 +244,16 @@ body {
   grid-column: left / two;
 }
 
+.character-edit .gear-cell input[type='text'] {
+  width: 22.7em;
+}
+
 .character-edit .spheres-cell {
   grid-column: two / right;
 }
 
 .head {
   text-align: center;
-}
-
-.character-edit h4 {
-  padding: .2em 0;
-  text-align: center;
-  font-size: .84em;
-  font-weight: normal;
-  text-transform: uppercase;
-  background-color: @mainFgColor;
-  color: @mainBgColor;
-}
-
-.character-edit h5 {
-  font-size: 1.2em;
-  font-weight: normal;
-  font-family: Joyeuse;
 }
 
 .label {
