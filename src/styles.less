@@ -26,6 +26,8 @@ p, h1, h2, h3, h4, h5, h6 {
 
 @mainFgColor: #6c1f17;
 @mainBgColor: #e8dbce;
+@outsideBorder: 2px solid @mainFgColor;
+@insideBorder: 1px solid @mainFgColor;
 
 body {
 	font-family: Galliard;
@@ -46,8 +48,12 @@ body {
   gap: .25em;
 }
 
-.character-edit input[type="text"] {
+.character-edit .drives-cell input {
   width: 100%;
+}
+
+.character-edit input.adjectives {
+  width: 11em;
 }
 
 .character-edit input[type="number"] {
@@ -89,12 +95,12 @@ body {
 .character-edit table {
   width: 100%;
   height: 100%;
-  border: 2px solid @mainFgColor;
+  border: @outsideBorder;
   border-collapse: collapse;
   background-color: white;
 }
 .character-edit th, td {
-  border: 1px solid @mainFgColor;
+  border: @insideBorder;
 }
 
 .character-edit .wealth-cell table {

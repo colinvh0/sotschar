@@ -12,9 +12,9 @@ import { Tables } from '../character';
   styleUrl: './character-editor.component.less'
 })
 export class CharacterEditorComponent {
-  adjectives: {'key': string, 'value': string}[] = [];
-  allegiances: {'key': string, 'value': string}[] = [];
-  gear: {'key': string, 'value': string}[] = [];
+  adjectives = [initList(1)];
+  allegiances = [initList(2)];
+  gear = [initList(5)];
   formGroup = new FormGroup({
     name: new FormControl(''),
     tnk: new FormControl(''),
@@ -37,6 +37,7 @@ export class CharacterEditorComponent {
   }
 
   delAdjective(i: number) {
+    this.adjectives.splice(i, 1);
   }
 
   addAllegiance() {
@@ -45,8 +46,20 @@ export class CharacterEditorComponent {
     }
   }
 
+  delAllegiance(i: number) {
+    this.adjectives.splice(i, 1);
+  }
+
   addGear() {
     this.gear.push({key: this.gear.length + '', value: ''});
   }
 }
 
+function initList(len = 0): {'key': string, 'value': string}[] {
+  var result: {'key': string, 'value': string}[]; 
+  result = [];
+  for (let i = 0; i < len; i++) {
+    result.push({key: i + '', value: ''});
+  }
+  return result;
+}
