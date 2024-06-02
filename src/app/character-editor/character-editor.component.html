@@ -1,5 +1,4 @@
-<div class="character-edit">
-<form [formGroup]="formGroup" (ngSubmit)="submit()">
+<div class="character-edit" [formGroup]="formGroup" (ngSubmit)="submit()">
 <div class="character-edit-grid">
 <div class="name-cell">
   <table class="cut"><tbody>
@@ -21,7 +20,17 @@
         <div class="input"><input type="text" formControlName="profession"></div>
       </label>
     </td></tr>
-    <tr><td><edit-adjectives /></td></tr>
+    <tr><td>
+      <div class="label">Adjectives</div>
+      @if (adjectives.length == 5) {
+        <div>Max 5</div>
+      } @else {
+        <div><button (click)="addAdjective()">Add</button></div>
+      }
+      @for (adj of adjectives; track adj; let i = $index) {
+        <input class="adjectives" id="adj{{i}}" [(ngModel)] = "adjectives[i].value">
+      }
+    </td></tr>
   </tbody></table>
 </div>
 <div class="logo-cell"><img src="/assets/logo.png" alt="Swords of the Serpentine"></div>
@@ -136,5 +145,4 @@
   </tbody></table>
 </div>
 </div>
-</form>
 </div>
