@@ -36,7 +36,7 @@
   <div class="adjectives-field">
     <div class="label">Adjectives</div>
     @for (adj of adjectives; track adj; let i = $index) {
-      <div>
+      <div class="input">
         <input type="text" id="adj{{i}}" [(ngModel)]="adj.value" [ngModelOptions]="{standalone: true}">
         <button class="del" (click)="delAdjective(i)">−</button>
       </div>
@@ -62,6 +62,14 @@
 <div class="panel social-panel">
   <div>
     <h5 class="head">Social</h5>
+    <div class="ability"><div class="ability-name">Charm</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+    <div class="ability"><div class="ability-name">Command</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+    <div class="ability"><div class="ability-name">Intimidation</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+    <div class="ability"><div class="ability-name">Liar’s Tell</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+    <div class="ability"><div class="ability-name">Nobility</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+    <div class="ability"><div class="ability-name">Servility</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+    <div class="ability"><div class="ability-name">Taunt</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+    <div class="ability"><div class="ability-name">Trustworthy</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
   </div>
 </div>
 <div class="panel sentinel-panel">
@@ -93,7 +101,7 @@
 <div class="panel allegiances-panel">
   <div>
     @for (adj of allegiances; track adj; let i = $index) {
-      <div>
+      <div class="input">
         <input type="text" class="allegiances" id="alleg{{i}}" [(ngModel)]="allegiances[i].value" [ngModelOptions]="{standalone: true}" list="faction-list" />
         <button class="del" (click)="delAllegiance(i)">−</button>
       </div>
@@ -126,7 +134,7 @@
 <div class="panel gear-panel">
   <div>
     @for (adj of gear; track adj; let i = $index) {
-      <div>
+      <div class="input">
         <input type="checkbox" class="gear" id="gear-iconic{{i}}" [(ngModel)]="gear[i].iconic" [ngModelOptions]="{standalone: true}">
         <input type="text" class="gear" id="gear{{i}}" [(ngModel)]="gear[i].value" [ngModelOptions]="{standalone: true}">
         <button class="del" (click)="delGear(i)">−</button>
