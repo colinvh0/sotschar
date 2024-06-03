@@ -241,6 +241,7 @@ body {
 .character-edit .general-panel {
   grid-column: left / two;
   grid-row-end: span 2;
+  padding-top: .32em;
 }
 
 .character-edit .allegiances-panel {
@@ -265,33 +266,38 @@ body {
 }
 .character-edit .stamina-section .table {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 3.5em 3.5em;
+  grid-template-rows: .8em 1.8em 1.8em .8em;
   text-align: center;
 }
 .character-edit .stamina-section .table .label {
   font-weight: inherit;
-  font: .6em / 1.2em sans-serif;
+  vertical-align: middle;
+  font: .5em / 1.7em sans-serif;
   color: black;
 }
 .character-edit .stamina-section .table .value {
-  width: 4em;
-  border: 2px solid @mainFgColor;
+  border: solid @mainFgColor;
 }
 .character-edit .stamina-section .table input {
-  height: 1.5em;
-  width: 3em;
+  height: 100%;
+  width: 80%;
 }
-.character-edit .stamina-section .table>div:nth-of-type(1) .value {
+.character-edit .stamina-section .table>:nth-child(3) {
   border-top-left-radius: 10px;
+  border-width: 2px 1px 1px 2px;
 }
-.character-edit .stamina-section .table>div:nth-of-type(2) .value {
+.character-edit .stamina-section .table>:nth-child(4) {
   border-top-right-radius: 10px;
+  border-width: 2px 2px 1px 1px;
 }
-.character-edit .stamina-section .table>div:nth-of-type(3) .value {
+.character-edit .stamina-section .table>:nth-child(5) {
   border-bottom-left-radius: 10px;
+  border-width: 1px 1px 2px 2px;
 }
-.character-edit .stamina-section .table>div:nth-of-type(4) .value {
+.character-edit .stamina-section .table>:nth-child(6) {
   border-bottom-right-radius: 10px;
+  border-width: 1px 2px 2px 1px;
 }
 
 .character-edit .gear-panel {
