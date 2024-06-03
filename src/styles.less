@@ -39,11 +39,26 @@ body {
   justify-content: space-between;
   font-size: 13px;
 }
+.general-ability {
+  margin-left: .5em;
+}
 .ability-value {
   display: flex;
   column-gap: 3px;
   position: relative;
   top: 3px;
+}
+.ability.combat .ability-name {
+  width: 100%;
+  background: url(/assets/swords.svg) right no-repeat;
+}
+.talent-name {
+  position: relative;
+  top: 2px;
+  margin: 0 auto;
+  text-align: center;
+  font: .5em / 1.8 sans-serif;
+  color: black;
 }
 
 .input {
@@ -65,6 +80,9 @@ body {
 }
 .circle.red {
   background-image: url('data:image/svg+xml;utf8,<svg width="14" height="14" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="6.5" stroke-width="1" fill="none" stroke="firebrick" /></svg>');
+}
+.circle.talent {
+  background-image: url('data:image/svg+xml;utf8,<svg width="14" height="14" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="6.5" stroke-width="1.5" fill="none" stroke="firebrick" /></svg>');
 }
 .circle.green {
   background-image: url('data:image/svg+xml;utf8,<svg width="14" height="14" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="6.5" stroke-width="1" fill="none" stroke="olivedrab" /></svg>');
@@ -227,24 +245,58 @@ body {
 
 .character-edit .allegiances-panel {
   grid-column: two / right;
+  padding-top: .5em;
 }
 
 .character-edit .wealth-panel {
   grid-column: two / right;
-}
-.character-edit .wealth-panel table {
   border-top-width: .95em;
 }
 
-.character-edit .stamina-panel {
+.character-edit .stamina-section {
   grid-column: left / right;
+  display: flex;
+  gap: .25em;
 }
-.character-edit .stamina-panel table {
+.character-edit .stamina-section .panel {
+  width: 100%;
+  flex-shrink: 1;
   border-top-width: .5em;
+}
+.character-edit .stamina-section .table {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+}
+.character-edit .stamina-section .table .label {
+  font-weight: inherit;
+  font: .6em / 1.2em sans-serif;
+  color: black;
+}
+.character-edit .stamina-section .table .value {
+  width: 4em;
+  border: 2px solid @mainFgColor;
+}
+.character-edit .stamina-section .table input {
+  height: 1.5em;
+  width: 3em;
+}
+.character-edit .stamina-section .table>div:nth-of-type(1) .value {
+  border-top-left-radius: 10px;
+}
+.character-edit .stamina-section .table>div:nth-of-type(2) .value {
+  border-top-right-radius: 10px;
+}
+.character-edit .stamina-section .table>div:nth-of-type(3) .value {
+  border-bottom-left-radius: 10px;
+}
+.character-edit .stamina-section .table>div:nth-of-type(4) .value {
+  border-bottom-right-radius: 10px;
 }
 
 .character-edit .gear-panel {
   grid-column: left / two;
+  padding-top: .5em;
 }
 
 .character-edit .spheres-panel {
@@ -263,6 +315,32 @@ body {
   font-size: .6em;
   color: black;
 }
+
+.label-tiny {
+  font: .6em / 1.2em sans-serif;
+  color: black;
+}
+
+.label-tiny input[type='radio'] {
+  appearance: none;
+  background-color: #fff;
+  margin: 0;
+  font: inherit;
+  color: currentColor;
+  width: 1em;
+  height: 1em;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.label-tiny input[type='radio']:checked {
+  background-color: currentColor;
+}
+
+/*.ability .label-tiny {
+  position: relative;
+  top: 1px;
+}*/
 
 .tiny {
   font-size: .45em;

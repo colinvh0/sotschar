@@ -90,12 +90,45 @@
 <div class="panel warrior-panel">
   <div>
     <h5 class="head">Warrior</h5>
+    <div class="ability"><div class="ability-name">Know Monstrosities</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+    <div class="ability">
+      <div class="ability-name">Spot Frailty</div>
+      <div class="label-tiny">
+        <div><label><input type="radio" formControlName="spotFrailty" value="health"> Health</label></div>
+        <div><label><input type="radio" formControlName="spotFrailty" value="morale"> Morale</label></div>
+      </div>
+      <div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div>
+    </div>
+    <div class="ability"><div class="ability-name">Tactics of Death</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+    <div class="ability"><div class="ability-name">Wilderness Mastery</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
   </div>
 </div>
 <h4 class="title2">General Abilities</h4>
 <h4 class="title3">Allegiances</h4>
 <div class="panel general-panel">
   <div>
+    <div class="ability">
+      <div class="ability-name">Stealth</div>
+      <div class="general-ability">
+        <div class="ability-value">
+          <div class="circle" *ngFor="let _ of [].constructor(7)"></div>
+          <div class="circle talent"></div>
+          <div class="circle" *ngFor="let _ of [].constructor(7)"></div>
+        </div>
+        <div class="talent-name">Where&rsquo;d She Go?</div>
+      </div>
+    </div>
+    <div class="ability combat">
+      <div class="ability-name">Sorcery</div>
+      <div class="general-ability">
+        <div class="ability-value">
+          <div class="circle" *ngFor="let _ of [].constructor(7)"></div>
+          <div class="circle talent"></div>
+          <div class="circle" *ngFor="let _ of [].constructor(7)"></div>
+        </div>
+        <div class="talent-name">Blast</div>
+      </div>
+    </div>
   </div>
 </div>
 <div class="panel allegiances-panel">
@@ -112,21 +145,41 @@
 <div class="panel wealth-panel">
   <div>
     <div><label>
-      <span class="label">Wealth</span> <span class="input"><input type="number" formControlName="wealth"></span>
+      <span class="label">Wealth</span> <input type="number" formControlName="wealth">
     </label></div>
     <div><label>
-      <span class="label">Lifestyle</span> <span class="input"><input type="number" formControlName="lifestyle"></span>
+      <span class="label">Lifestyle</span> <input type="number" formControlName="lifestyle">
     </label></div>
   </div>
 </div>
-<div class="panel stamina-panel">
-  <div>
+<div class="stamina-section">
+  <div class="panel">
     <div><label>
-      <span class="label">Health</span> <span class="input"><input type="number" formControlName="health"></span>
+      <span class="label">Health</span> <input type="number" formControlName="health">
     </label></div>
     <div><label>
-      <span class="label">Morale</span> <span class="input"><input type="number" formControlName="morale"></span>
+      <span class="label">Morale</span> <input type="number" formControlName="morale">
     </label></div>
+  </div>
+  <div class="table">
+    <div>
+      <div class="label">Threshold</div>
+      <div class="value">3</div>
+    </div>
+    <div>
+      <label>
+        <div class="label">Armor</div>
+        <div class="value"><input type="number" formControlName="armor"></div>
+      </label>
+    </div>
+    <div>
+      <div class="value">3</div>
+      <div class="label">Threshold</div>
+    </div>
+    <div>
+      <div class="value">0</div>
+      <div class="label">Grit</div>
+    </div>
   </div>
 </div>
 <h4 class="title2">Gear</h4>
@@ -140,7 +193,7 @@
         <button class="del" (click)="delGear(i)">−</button>
       </div>
     }
-    <div class="add"><button (click)="addGear()">+</button></div>
+    <div [ngClass]="'add' + ((gear.length >= 100) ? ' add-full' : '')"><button (click)="addGear()">+</button></div>
   </div>
 </div>
 <div class="panel spheres-panel">

@@ -22,9 +22,11 @@ export class CharacterEditorComponent {
     drive1: new FormControl(''),
     drive2: new FormControl(''),
     drive3: new FormControl(''),
+    spotFrailty: new FormControl(''),
     wealth: new FormControl(''),
     lifestyle: new FormControl(''),
     health: new FormControl(''),
+    armor: new FormControl(''),
     morale: new FormControl('')
   });
 
