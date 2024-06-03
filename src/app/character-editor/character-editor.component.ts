@@ -16,6 +16,16 @@ export class CharacterEditorComponent {
   allegiances = [{key: '0', value: ''}, {key: '1', value: ''}];
   gear = initGear(5);
   formGroup = new FormGroup({
+    configS2S: new FormControl(''),
+    configCharacterCount: new FormControl('4'),
+    configAutoInvB: new FormControl('on'),
+    configInvestigativeBuild: new FormControl('11'),
+    configGeneralBuild: new FormControl('30'),
+    configStaminaBuild: new FormControl('18'),
+    configMinStamina: new FormControl('3'),
+    configFreeAllies: new FormControl('2'),
+    configFreeEnemies: new FormControl('1'),
+    advancement: new FormControl('0'),
     name: new FormControl(''),
     tnk: new FormControl(''),
     profession: new FormControl(''),
@@ -23,10 +33,10 @@ export class CharacterEditorComponent {
     drive2: new FormControl(''),
     drive3: new FormControl(''),
     spotFrailty: new FormControl(''),
-    wealth: new FormControl(''),
-    lifestyle: new FormControl(''),
+    wealth: new FormControl('0'),
+    lifestyle: new FormControl('0'),
     health: new FormControl(''),
-    armor: new FormControl(''),
+    armor: new FormControl('0'),
     morale: new FormControl('')
   });
 

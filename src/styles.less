@@ -34,6 +34,15 @@ body {
   font-size: 15px;
 }
 
+.flex {
+  display: flex;
+  align-items: center;
+}
+/*.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}*/
+
 .ability {
   display: flex;
   justify-content: space-between;
@@ -91,24 +100,30 @@ body {
 .character-edit {
   max-width: 52.75em;
   margin: 0 auto;
-  padding: 1.5em 3.3em;
-  background-color: @mainBgColor;
-  color: @mainFgColor;
 }
 
 .character-edit-grid {
   display: grid;
   grid-template-columns: [left] 4fr [three] 3fr [two] 1fr [three] 4fr [right];
-  grid-template-rows: 110px;
   gap: .25em;
 }
 
-.character-edit .panel {
+.subgrid {
+  display: contents;
+}
+
+.character-sheet {
+  padding: 1.5em 3.3em;
+  background-color: @mainBgColor;
+  color: @mainFgColor;
+}
+
+.character-sheet .panel {
   border: @outsideBorder;
   background-color: white;
   vertical-align: top;
 }
-.character-edit .panel>* {
+.character-sheet .panel>* {
   padding: 0 .5em .25em;
 }
 
@@ -181,6 +196,23 @@ body {
   padding-top: .25em;
 }
 
+.character-edit section.config {
+  padding: 1.5em 3.3em;
+  grid-column: left / right;
+  background-color: white;
+  color: black;
+  font-family: sans-serif;
+}
+.character-edit section.config>div {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-auto-rows: 1fr;
+  align-items: center;
+}
+.character-edit section.config input[type="number"] {
+  width: 4em;
+}
+
 .character-edit .name-panel {
   grid-column: left / three 1;
   grid-row-end: span 2;
@@ -197,6 +229,7 @@ body {
 
 .character-edit .logo {
   grid-column: three 1 / three 2;
+  height: 110px;
 }
 
 .logo img {
@@ -278,6 +311,7 @@ body {
 }
 .character-edit .stamina-section .table .value {
   border: solid @mainFgColor;
+  background-color: white;
 }
 .character-edit .stamina-section .table input {
   height: 100%;
