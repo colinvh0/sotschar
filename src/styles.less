@@ -23,8 +23,6 @@ p, h1, h2, h3, h4, h5, h6 {
   isolation: isolate;
 }
 /* end reset */
-@import url('https://unpkg.com/css.gg@2.0.0/icons/css/play-list-add.css');
-@import url('https://unpkg.com/css.gg@2.0.0/icons/css/trash.css');
 
 @mainFgColor: #6c1f17;
 @mainBgColor: #e8dbce;
@@ -34,6 +32,12 @@ p, h1, h2, h3, h4, h5, h6 {
 body {
 	font-family: Galliard;
   font-size: 15px;
+}
+
+.circle {
+  height: 14px;
+  width: 14px;
+  background-image: url('data:image/svg+xml;utf8,<svg width="14" height="14" xmlns="http://www.w3.org/2000/svg"><circle cx="6" cy="6" r="5.5" stroke-width="1" fill="none" stroke="red" /></svg>');
 }
 
 .character-edit {
@@ -51,42 +55,51 @@ body {
   gap: .25em;
 }
 
-.character-edit table {
-  width: 100%;
-  height: 100%;
+.character-edit .panel {
   border: @outsideBorder;
-  border-collapse: collapse;
   background-color: white;
-}
-.character-edit th, .character-edit td {
-  padding: 0 .5em .25em;
   vertical-align: top;
+}
+.character-edit .panel>* {
+  padding: 0 .5em .25em;
 }
 
 .character-edit button {
-  height: 1.8em;
-  width: 27px;
+  position: relative;
+  top: 1px;
+  height: 24px;
+  width: 24px;
   border: 1px solid black;
   border-radius: 4px;
+  font: bold  18px / 18px sans-serif;
   background-color: black;
   color: white;
 }
 .character-edit button.del {
-  position: relative;
+  /*position: relative;
   top: .172em;
-  padding: 0 7px 0 7px;
+  padding: 0 7px 0 7px;*/
   /*width: 1.4em;*/
   border-color: firebrick;
   background-color: firebrick;
 }
 .character-edit div.add button {
   display: block;
-  margin: 2px 0 0 auto;
+  width: 36px;
+  margin: .75px auto;
   border-color: green;
   background-color: green;
 }
 .character-edit div.add.add-full button {
   display: none;
+}
+
+.character-edit input[type="text"] {
+  font-size: 12px;
+}
+
+.character-edit input[type="text"].large {
+  font-size: 15px;
 }
 
 .character-edit input[type="number"] {
@@ -109,46 +122,64 @@ body {
   font-family: Joyeuse;
 }
 
-.character-edit .name-cell {
+.character-edit .title1 {
+  grid-column: left / right;
+  padding-top: .25em;
+}
+
+.character-edit .title2 {
+  grid-column: left / two;
+  padding-top: .25em;
+}
+
+.character-edit .title3 {
+  grid-column: two / right;
+  padding-top: .25em;
+}
+
+.character-edit .name-panel {
   grid-column: left / three 1;
   grid-row-end: span 2;
-  padding-top: 1.6em;
-  padding-right: 1.5em;
+  margin-top: 1.6em;
+  margin-right: 1.5em;
 }
 
-.character-edit .name-cell td {
-  border: @insideBorder;
+.character-edit .name-panel>div {
+  border-bottom: @insideBorder;
+}
+.character-edit .name-panel>div:last-child {
+  border-bottom: none;
 }
 
-.character-edit .name-cell input[type='text'] {
+.character-edit .name-panel input[type='text'] {
   width: 12.37em;
 }
 
-.character-edit .name-cell .adjectives-block input[type='text'] {
-  width: 10.55em;
+.character-edit .name-panel .adjectives-field input[type='text'] {
+  width: 13.4em;
 }
 
-.character-edit .logo-cell {
+.character-edit .logo {
   grid-column: three 1 / three 2;
 }
 
-.logo-cell img {
+.logo img {
   margin: 0 auto;
   width: 200px;
   height: 110px;
 }
 
-.character-edit .portrait-cell {
+.character-edit .portrait-panel {
   grid-column: three 2 / right;
   grid-row-end: span 2;
-  padding-top: 1.6em;
-  padding-left: 1.5em;
+  margin-top: 1.6em;
+  margin-left: 1.5em;
 }
 
-.character-edit .drives-cell {
+.character-edit .drives-panel {
   grid-column: three 1 / three 2;
 }
-.character-edit .drives-cell input {
+.character-edit .drives-panel input {
   width: 100%;
 }
 
@@ -168,87 +199,62 @@ body {
   clip-path: polygon(0% 0%, 100% 0%, 100% 95%, 95% 100%, 0% 100%);
 }*/
 
-.character-edit .investigative-title {
-  grid-column: left / right;
-  padding-top: .25em;
-}
-
-.character-edit .social-cell {
+.character-edit .social-panel {
   grid-column: left / three 1;
   grid-row-end: span 2;
 }
 
-.character-edit .sentinel-cell {
+.character-edit .sentinel-panel {
   grid-column: three 1 / three 2;
 }
 
-.character-edit .sorcerer-cell {
+.character-edit .sorcerer-panel {
   grid-column: three 2 / right;
 }
 
-.character-edit .thief-cell {
+.character-edit .thief-panel {
   grid-column: three 1 / three 2;
 }
 
-.character-edit .warrior-cell {
+.character-edit .warrior-panel {
   grid-column: three 2 / right;
 }
 
-.character-edit .general-title {
-  grid-column: left / two;
-  padding-top: .25em;
-}
-
-.character-edit .allegiances-title {
-  grid-column: two / right;
-  padding-top: .25em;
-}
-
-.character-edit .general-cell {
+.character-edit .general-panel {
   grid-column: left / two;
   grid-row-end: span 2;
 }
 
-.character-edit .allegiances-cell {
+.character-edit .allegiances-panel {
   grid-column: two / right;
 }
-.character-edit .allegiances-cell input[type="text"] {
-  width: 16.09em;
+.character-edit .allegiances-panel input[type="text"] {
+  width: 20.3em;
 }
 
-.character-edit .wealth-cell {
+.character-edit .wealth-panel {
   grid-column: two / right;
 }
-.character-edit .wealth-cell table {
+.character-edit .wealth-panel table {
   border-top-width: .95em;
 }
 
-.character-edit .stamina-cell {
+.character-edit .stamina-panel {
   grid-column: left / right;
 }
-.character-edit .stamina-cell table {
+.character-edit .stamina-panel table {
   border-top-width: .5em;
 }
 
-.character-edit .gear-title {
-  grid-column: left / two;
-  padding-top: .25em;
-}
-
-.character-edit .spheres-title {
-  grid-column: two / right;
-  padding-top: .25em;
-}
-
-.character-edit .gear-cell {
+.character-edit .gear-panel {
   grid-column: left / two;
 }
 
-.character-edit .gear-cell input[type='text'] {
-  width: 22.7em;
+.character-edit .gear-panel input[type='text'] {
+  width: 28.4em;
 }
 
-.character-edit .spheres-cell {
+.character-edit .spheres-panel {
   grid-column: two / right;
 }
 
@@ -276,12 +282,12 @@ body {
   src: url(/assets/Galliard_Roman.otf);
 }
 
-@font-face {
+/*@font-face {
   font-family: Galliard;
   font-weight: bold;
   font-style: italic;
   src: url(/assets/Galliard_BoldItalic.ttf);
-}
+}*/
 
 @font-face {
   font-family: Joyeuse;

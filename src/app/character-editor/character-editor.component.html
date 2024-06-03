@@ -1,154 +1,143 @@
+<datalist id="faction-list">
+  <option value="Ancient Nobility"></option>
+  <option value="Architects and Canal-Watchers"></option>
+  <option value="Church of Denari"></option>
+  <option value="City Watch"></option>
+  <option value="Commoners"></option>
+  <option value="Mercanti"></option>
+  <option value="Mercenaries"></option>
+  <option value="Monstrosities"></option>
+  <option value="Outlanders"></option>
+  <option value="Sorcerous Cabals"></option>
+  <option value="The Triskadane"></option>
+  <option value="Thieves' Guilds"></option>
+</datalist>
 <div class="character-edit" [formGroup]="formGroup" (ngSubmit)="submit()">
 <div class="character-edit-grid">
-<div class="name-cell">
-  <table class="cut"><tbody>
-    <tr><td>
-      <label>
-        <div class="label">Name</div>
-        <div class="input"><input type="text" formControlName="name"></div>
-      </label>
-    </td></tr>
-    <tr><td>
-      <label>
-        <div class="label">True Name? <span class="input"><input type="checkbox" formControlName="tnk"></span></div>
-        <div class="note">Check if True Name is known</div>
-      </label>
-    </td></tr>
-    <tr><td>
-      <label>
-        <div class="label">Profession</div>
-        <div class="input"><input type="text" formControlName="profession"></div>
-      </label>
-    </td></tr>
-    <tr><td class="adjectives-block">
-      <div class="label">Adjectives</div>
-      @for (adj of adjectives; track adj; let i = $index) {
-        <input type="text" id="adj{{i}}" [(ngModel)]="adj.value" [ngModelOptions]="{standalone: true}"><button class="del" (click)="delAdjective(i)"><i class="gg-trash"></i></button>
-      }
-      <div [ngClass]="'add' + ((adjectives.length >= 5) ? ' add-full' : '')"><button (click)="addAdjective()"><i class="gg-play-list-add"></i></button></div>
-    </td></tr>
-  </tbody></table>
+<div class="panel name-panel">
+  <div class="name-field">
+    <label>
+      <div class="label">Name</div>
+      <div class="input"><input type="text" formControlName="name" class="large"></div>
+    </label>
+  </div>
+  <div class="true-name-known-field">
+    <label>
+      <div class="label">True Name? <span class="input"><input type="checkbox" formControlName="tnk"></span></div>
+      <div class="note">Check if True Name is known</div>
+    </label>
+  </div>
+  <div class="profession-field">
+    <label>
+      <div class="label">Profession</div>
+      <div class="input"><input type="text" formControlName="profession" class="large"></div>
+    </label>
+  </div>
+  <div class="adjectives-field">
+    <div class="label">Adjectives</div>
+    @for (adj of adjectives; track adj; let i = $index) {
+      <div>
+        <input type="text" id="adj{{i}}" [(ngModel)]="adj.value" [ngModelOptions]="{standalone: true}">
+        <button class="del" (click)="delAdjective(i)">−</button>
+      </div>
+    }
+    <div [ngClass]="'add' + ((adjectives.length >= 5) ? ' add-full' : '')"><button (click)="addAdjective()">+</button></div>
+  </div>
 </div>
-<div class="logo-cell"><img src="/assets/logo.png" alt="Swords of the Serpentine"></div>
-<div class="portrait-cell">
-  <table><tbody><tr><td>
+<div class="logo"><img src="/assets/logo.png" alt="Swords of the Serpentine"></div>
+<div class="panel portrait-panel">
+  <div>
     <div class="head label">Character Portrait</div>
-  </td></tr></tbody></table>
+  </div>
 </div>
-<div class="drives-cell">
-  <table><tbody><tr><td>
+<div class="panel drives-panel">
+  <div>
     <div class="head label">What is Best in Life?</div>
     <div class="input"><input type="text" formControlName="drive1"></div>
     <div class="input"><input type="text" formControlName="drive2"></div>
     <div class="input"><input type="text" formControlName="drive3"></div>
-  </td></tr></tbody></table>
-</div>
-<div class="investigative-title">
-  <h4>Investigative Abilities</h4>
-</div>
-<div class="social-cell">
-  <div class="corner-br-wrap">
-    <table class="corner-br"><thead>
-      <tr><th colspan='6'>
-        <h5 class="head">Social</h5>
-      </th></tr>
-    </thead><tbody>
-    </tbody></table>
   </div>
 </div>
-<div class="sentinel-cell">
-  <table><thead>
-    <tr><th colspan='6'>
-      <h5 class="head">Sentinel</h5>
-    </th></tr>
-  </thead><tbody>
-  </tbody></table>
+<h4 class="title1">Investigative Abilities</h4>
+<div class="panel social-panel">
+  <div>
+    <h5 class="head">Social</h5>
+  </div>
 </div>
-<div class="sorcerer-cell">
-  <table><thead>
-    <tr><th colspan='6'>
-      <h5 class="head">Sorcerer</h5>
-    </th></tr>
-  </thead><tbody>
-  </tbody></table>
+<div class="panel sentinel-panel">
+  <div>
+    <h5 class="head">Sentinel</h5>
+  </div>
 </div>
-<div class="thief-cell">
-  <table><thead>
-    <tr><th colspan='6'>
-      <h5 class="head">Thief</h5>
-    </th></tr>
-  </thead><tbody>
-  </tbody></table>
+<div class="panel sorcerer-panel">
+  <div>
+    <h5 class="head">Sorcerer</h5>
+  </div>
 </div>
-<div class="warrior-cell">
-  <table><thead>
-    <tr><th colspan='6'>
-      <h5 class="head">Warrior</h5>
-    </th></tr>
-  </thead><tbody>
-  </tbody></table>
+<div class="panel thief-panel">
+  <div>
+    <h5 class="head">Thief</h5>
+  </div>
 </div>
-<div class="general-title">
-  <h4>General Abilities</h4>
+<div class="panel warrior-panel">
+  <div>
+    <h5 class="head">Warrior</h5>
+  </div>
 </div>
-<div class="allegiances-title">
-  <h4>Allegiances</h4>
+<h4 class="title2">General Abilities</h4>
+<h4 class="title3">Allegiances</h4>
+<div class="panel general-panel">
+  <div>
+  </div>
 </div>
-<div class="general-cell">
-  <table><tbody>
-  </tbody></table>
+<div class="panel allegiances-panel">
+  <div>
+    @for (adj of allegiances; track adj; let i = $index) {
+      <div>
+        <input type="text" class="allegiances" id="alleg{{i}}" [(ngModel)]="allegiances[i].value" [ngModelOptions]="{standalone: true}" list="faction-list" />
+        <button class="del" (click)="delAllegiance(i)">−</button>
+      </div>
+    }
+    <div [ngClass]="'add' + ((allegiances.length >= 12) ? ' add-full' : '')"><button (click)="addAllegiance()">+</button></div>
+  </div>
 </div>
-<div class="allegiances-cell">
-  <table><tbody>
-    <tr><td>
-      @for (adj of allegiances; track adj; let i = $index) {
-        <input type="text" class="allegiances" id="alleg{{i}}" [(ngModel)]="allegiances[i].value" [ngModelOptions]="{standalone: true}" /><button class="del" (click)="delAllegiance(i)"><i class="gg-trash"></i></button>
-      }
-      <div [ngClass]="'add' + ((allegiances.length >= 12) ? ' add-full' : '')"><button (click)="addAllegiance()"><i class="gg-play-list-add"></i></button></div>
-    </td></tr>
-  </tbody></table>
-</div>
-<div class="wealth-cell">
-  <table><tbody><tr><td>
+<div class="panel wealth-panel">
+  <div>
     <div><label>
       <span class="label">Wealth</span> <span class="input"><input type="number" formControlName="wealth"></span>
     </label></div>
     <div><label>
       <span class="label">Lifestyle</span> <span class="input"><input type="number" formControlName="lifestyle"></span>
     </label></div>
-  </td></tr></tbody></table>
+  </div>
 </div>
-<div class="stamina-cell">
-  <table><tbody><tr><td>
+<div class="panel stamina-panel">
+  <div>
     <div><label>
       <span class="label">Health</span> <span class="input"><input type="number" formControlName="health"></span>
     </label></div>
     <div><label>
       <span class="label">Morale</span> <span class="input"><input type="number" formControlName="morale"></span>
     </label></div>
-  </td></tr></tbody></table>
+  </div>
 </div>
-<div class="gear-title">
-  <h4>Gear</h4>
-</div>
-<div class="spheres-title">
-  <h4>Sorcerous Spheres</h4>
-</div>
-<div class="gear-cell">
-  <table><tbody>
-    <tr><td>
-      @for (adj of gear; track adj; let i = $index) {
+<h4 class="title2">Gear</h4>
+<h4 class="title3">Sorcerous Spheres</h4>
+<div class="panel gear-panel">
+  <div>
+    @for (adj of gear; track adj; let i = $index) {
+      <div>
         <input type="checkbox" class="gear" id="gear-iconic{{i}}" [(ngModel)]="gear[i].iconic" [ngModelOptions]="{standalone: true}">
         <input type="text" class="gear" id="gear{{i}}" [(ngModel)]="gear[i].value" [ngModelOptions]="{standalone: true}">
-        <button class="del" (click)="delGear(i)"><i class="gg-trash"></i></button>
-      }
-      <div class="add"><button (click)="addGear()"><i class="gg-play-list-add"></i></button></div>
-    </td></tr>
-  </tbody></table>
+        <button class="del" (click)="delGear(i)">−</button>
+      </div>
+    }
+    <div class="add"><button (click)="addGear()">+</button></div>
+  </div>
 </div>
-<div class="spheres-cell">
-  <table><tbody>
-  </tbody></table>
+<div class="panel spheres-panel">
+  <div>
+  </div>
 </div>
 </div>
 </div>
