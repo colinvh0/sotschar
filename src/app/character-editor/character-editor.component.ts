@@ -12,13 +12,10 @@ import { Tables } from '../character';
   styleUrl: './character-editor.component.less'
 })
 export class CharacterEditorComponent {
-  ab = {
-    inv: {
-      social: { charm: 0 }
-    },
-    gen: {}
-  };
   adjectives = [{key: '0', value: ''}];
+  invAbilities: Map<string, Map<string, number>>= {
+      social: { charm: 0 }
+    };
   allegiances = [{key: '0', value: ''}, {key: '1', value: ''}];
   gear = initGear(5);
   formGroup = new FormGroup({
@@ -45,8 +42,10 @@ export class CharacterEditorComponent {
     armor: new FormControl('0'),
     morale: new FormControl('')
   });
-
-  submit() {}
+  
+  /*constructor() {
+    invAbilities ;
+  }*/
 
   addAdjective() {
     if(this.adjectives.length < 5) {
@@ -76,20 +75,18 @@ export class CharacterEditorComponent {
     this.gear.splice(i, 1);
   }
   
-  setAbility(event: any, i: number): void {
-    const f = event.target.parentElement.children[0];
-    let v = parseInt(f.value, 10);
-    console.log(v, i);
-    if (!v) {
-      v = 0;
+  setInvAbility(cat: string, name: string, i: number): void {
+    const a = this.invAbilities[cat];
+    if (!a[name]) {
+      a[name] = 0;
     }
-    console.log(v);
-    if (f.value == i) {
-      f.value--;
+    console.log(a[name], i);
+    if (a[name] == i) {
+      a[name]--;
     } else {
-      f.value = i;
+      a[name] = i;
     }
-    console.log(f.value);
+    console.log(a[name]);
   }
 }
 

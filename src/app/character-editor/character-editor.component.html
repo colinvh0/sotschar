@@ -13,7 +13,7 @@
   <option value="The Triskadane"></option>
   <option value="Thieves' Guilds"></option>
 </datalist>
-<div class="character-edit" [formGroup]="formGroup" (ngSubmit)="submit()">
+<div class="character-edit" [formGroup]="formGroup">
 <section class="config">
   <h1 class="head">Edit Character</h1>
   <div>
@@ -86,7 +86,11 @@
     <div class="panel social-panel">
       <div>
         <h5 class="head">Social</h5>
-        <div class="ability"><div class="ability-name">Charm</div><div class="ability-value"><input type="number" [(ngModel)]="ab.inv.social.charm" [ngModelOptions]="{standalone: true}"><div class="circle" *ngFor="let i of [].constructor(5)" (click)="setAbility($event, i)"></div></div></div>
+        <div class="ability"><div class="ability-name">Charm</div><div class="ability-value">
+          <div *ngFor="let i of [1, 2, 3, 4, 5]">
+            <div class="circle" (click)="setInvAbility('social', 'charm', i)"></div>
+          </div>
+        </div></div>
         <div class="ability"><div class="ability-name">Command</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
         <div class="ability"><div class="ability-name">Intimidation</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
         <div class="ability"><div class="ability-name">Liar’s Tell</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
