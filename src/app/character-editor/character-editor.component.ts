@@ -13,6 +13,7 @@ export class CharacterEditorComponent {
   adjectives = [{key: '0', value: ''}];
   invAbilities: any = {};
   invCats: any = {};
+  invCatNames: Array<string> = [];
   genAbilities: any = {
     lifestyle: 0,
     health: 0,
@@ -53,6 +54,7 @@ export class CharacterEditorComponent {
       if (!(a.category in this.invCats)) {
         this.invCats[a.category] = [];
         this.invAbilities[a.category] = {};
+        this.invCatNames.push(a.category);
       }
       this.invCats[a.category].push(a);
       this.invAbilities[a.category][a.name] = 0;

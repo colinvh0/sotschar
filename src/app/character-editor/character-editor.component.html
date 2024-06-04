@@ -93,66 +93,33 @@
   </div>
   <section class="investigative-abilities subgrid">
     <h4 class="title1">Investigative Abilities</h4>
-    <<div class="panel social-panel">
-      <div>
-        <!-- TODO: replace with parameterized -->
-        <h5 class="head">Social</h5>
-        @for (ability of invCats['social']; track ability;) {
-          <div class="ability">
-            <div class="ability-name">{{ ability.name }}</div>
-            <div class="ability-value">
-              <div *ngFor="let i of aiToFrom(5)">
-                <div
-                  class="circle"
-                  [ngClass]="'circle' + ((invAbilities['social'][ability.name] >= i) ? ' filled' : '')"
-                  (click)="setInvAbility('social', ability.name, i)"
-                ></div>
+    @for (category of invCatNames; track category) {
+      <div [ngClass]="'panel ' + category + '-panel'">
+        <div>
+          <h5 class="head">{{ category.charAt(0).toUpperCase() + category.slice(1) }}</h5>
+          @for (ability of invCats[category]; track ability;) {
+            <div class="ability">
+              <div class="ability-name">{{ ability.name }}</div>
+              <div *ngIf="ability.healthMorale">
+                <div class="label-tiny" *ngIf="invAbilities[category][ability.name] >= 1">
+                  <div><label><input type="radio" formControlName="spotFrailty" value="health"> Health</label></div>
+                  <div><label><input type="radio" formControlName="spotFrailty" value="morale"> Morale</label></div>
+                </div>
+              </div>
+              <div class="ability-value">
+                <div *ngFor="let i of aiToFrom(5)">
+                  <div
+                    class="circle"
+                    [ngClass]="'circle' + ((invAbilities[category][ability.name] >= i) ? ' filled' : '')"
+                    (click)="setInvAbility(category, ability.name, i)"
+                  ></div>
+                </div>
               </div>
             </div>
-          </div>
-        }
+          }
+        </div>
       </div>
-    </div>
-    <div class="panel sentinel-panel">
-      <div>
-        <h5 class="head">Sentinel</h5>
-      </div>
-    </div>
-    <div class="panel sorcerer-panel">
-      <div>
-        <h5 class="head">Sorcerer</h5>
-      </div>
-    </div>
-    <div class="panel thief-panel">
-      <div>
-        <h5 class="head">Thief</h5>
-      </div>
-    </div>
-    <div class="panel warrior-panel">
-      <div>
-        <h5 class="head">Warrior</h5>
-        @for (ability of invCats['warrior']; track ability;) {
-          <div class="ability">
-            <div class="ability-name">{{ ability.name }}</div>
-            <div *ngIf="ability.healthMorale">
-              <div class="label-tiny" *ngIf="invAbilities['warrior'][ability.name] >= 1">
-                <div><label><input type="radio" formControlName="spotFrailty" value="health"> Health</label></div>
-                <div><label><input type="radio" formControlName="spotFrailty" value="morale"> Morale</label></div>
-              </div>
-            </div>
-            <div class="ability-value">
-              <div *ngFor="let i of aiToFrom(5)">
-                <div
-                  class="circle"
-                  [ngClass]="'circle' + ((invAbilities['warrior'][ability.name] >= i) ? ' filled' : '')"
-                  (click)="setInvAbility('warrior', ability.name, i)"
-                ></div>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
+    }
   </section>
   <h4 class="title2">General Abilities</h4>
   <h4 class="title3">Allegiances</h4>
