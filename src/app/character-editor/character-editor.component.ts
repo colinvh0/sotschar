@@ -14,8 +14,8 @@ import { Tables } from '../character';
 export class CharacterEditorComponent {
   adjectives = [{key: '0', value: ''}];
   invAbilities: Map<string, Map<string, number>>= {
-      social: { charm: 0 }
-    };
+    social: { charm: 0 }
+  };
   allegiances = [{key: '0', value: ''}, {key: '1', value: ''}];
   gear = initGear(5);
   formGroup = new FormGroup({
