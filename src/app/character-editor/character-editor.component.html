@@ -1,25 +1,25 @@
 <script type="text/javascript" src="/assets/sotschar.js"></script>
 <datalist id="faction-list">
   @for (faction of tup.factions; track faction;) {
-    <option [ngValue]="faction"></option>
+    <option [attr.value]="faction"></option>
   }
 </datalist>
 <datalist id="sphere-list">
   @for (sphere of tup.spheres; track sphere;) {
-    <option [ngValue]="sphere[0]"></option>
+    <option [attr.value]="sphere[0]"></option>
   }
 </datalist>
 <datalist id="health-sphere-list">
   @for (sphere of tup.spheres; track sphere;) {
     @if (sphere[1]) {
-      <option [ngValue]="sphere[0]"></option>
+      <option [attr.value]="sphere[0]"></option>
     }
   }
 </datalist>
 <datalist id="morale-sphere-list">
   @for (sphere of tup.spheres; track sphere;) {
     @if (sphere[2]) {
-      <option [ngValue]="sphere[0]"></option>
+      <option [attr.value]="sphere[0]"></option>
     }
   }
 </datalist>
@@ -236,11 +236,11 @@
   </div>
   <div class="panel spheres-panel">
     <div>
-      @if (invAbilities.sorcerer.corruption > 0) {
+      @if (invAbilities.sorcerer.Corruption > 0) {
         Affects: <label><input type="radio" formControlName="sorceryAffects" value="health" /> Health</label> <label><input type="radio" formControlName="sorceryAffects" value="morale" /> Morale</label>
       }
-      @for (i of aiToFrom(invAbilities.sorcerer.corruption); track i;) {
-        <input type="text" class="sphere" id="sphere{{i}}" [(ngModel)]="spheres[i]" [ngModelOptions]="{standalone: true}" list="sphere-list" />
+      @for (i of aiToFrom(invAbilities.sorcerer.Corruption); track i;) {
+        <input type="text" class="sphere" id="sphere{{i}}" [(ngModel)]="spheres[i]" [ngModelOptions]="{standalone: true}" [attr.list]="formGroup.controls.sorceryAffects.value + '-sphere-list'" />
       }
     </div>
   </div>
