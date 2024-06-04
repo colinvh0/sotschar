@@ -1,17 +1,27 @@
 <script type="text/javascript" src="/assets/sotschar.js"></script>
 <datalist id="faction-list">
-  <option value="Ancient Nobility"></option>
-  <option value="Architects and Canal-Watchers"></option>
-  <option value="Church of Denari"></option>
-  <option value="City Watch"></option>
-  <option value="Commoners"></option>
-  <option value="Mercanti"></option>
-  <option value="Mercenaries"></option>
-  <option value="Monstrosities"></option>
-  <option value="Outlanders"></option>
-  <option value="Sorcerous Cabals"></option>
-  <option value="The Triskadane"></option>
-  <option value="Thieves' Guilds"></option>
+  @for (faction of gameData.factions; track faction;) {
+    <option [ngValue]="faction"></option>
+  }
+</datalist>
+<datalist id="sphere-list">
+  @for (sphere of gameData.spheres; track sphere;) {
+    <option [ngValue]="sphere[0]"></option>
+  }
+</datalist>
+<datalist id="health-sphere-list">
+  @for (sphere of gameData.spheres; track sphere;) {
+    @if (sphere[1]) {
+      <option [ngValue]="sphere[0]"></option>
+    }
+  }
+</datalist>
+<datalist id="morale-sphere-list">
+  @for (sphere of gameData.spheres; track sphere;) {
+    @if (sphere[2]) {
+      <option [ngValue]="sphere[0]"></option>
+    }
+  }
 </datalist>
 <div class="character-edit" [formGroup]="formGroup">
 <section class="config">
@@ -83,21 +93,24 @@
   </div>
   <section class="investigative-abilities subgrid">
     <h4 class="title1">Investigative Abilities</h4>
-    <div class="panel social-panel">
+    <<div class="panel social-panel">
       <div>
+        <!-- TODO: replace with parameterized -->
         <h5 class="head">Social</h5>
-        <div class="ability"><div class="ability-name">Charm</div><div class="ability-value">
-          <div *ngFor="let i of aiToFrom(5)">
-            <div class="circle" [ngClass]="'circle' + ((invAbilities['social']['charm'] >= i) ? ' filled' : '')" (click)="setInvAbility('social', 'charm', i)"></div>
+        @for (name of gameData.abilities.investigative.social; track name;) {
+          <div class="ability">
+            <div class="ability-name">{{ name }}</div>
+            <div class="ability-value">
+              <div *ngFor="let i of aiToFrom(5)">
+                <div
+                  class="circle"
+                  [ngClass]="'circle' + ((invAbilities['social'][name.toLowerCase()] >= i) ? ' filled' : '')"
+                  (click)="setInvAbility('social', name.toLowerCase(), i)"
+                ></div>
+              </div>
+            </div>
           </div>
-        </div></div>
-        <div class="ability"><div class="ability-name">Command</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Intimidation</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Liar’s Tell</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Nobility</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Servility</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Taunt</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Trustworthy</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
+        }
       </div>
     </div>
     <div class="panel sentinel-panel">
@@ -115,20 +128,56 @@
         <h5 class="head">Thief</h5>
       </div>
     </div>
+    <!--@for (cat of invCats; track cat;) {
+      <div [ngClass]="'panel ' + cat + '-panel'">
+        <div>
+          <h5 class="head">Warrior</h5>
+          @for (name of gameData.abilities.investigative.warrior; track name;) {
+            <div class="ability">
+              <div class="ability-name">{{ name }}</div>
+              <div *ngIf="'warrior' == 'warrior' && name == 'Spot Frailty'">
+                <div class="label-tiny" *ngIf="invAbilities['warrior'][name.toLowerCase()] >= 1">
+                  <div><label><input type="radio" formControlName="spotFrailty" value="health"> Health</label></div>
+                  <div><label><input type="radio" formControlName="spotFrailty" value="morale"> Morale</label></div>
+                </div>
+              </div>
+              <div class="ability-value">
+                <div *ngFor="let i of aiToFrom(5)">
+                  <div
+                    class="circle"
+                    [ngClass]="'circle' + ((invAbilities['warrior'][name.toLowerCase()] >= i) ? ' filled' : '')"
+                    (click)="setInvAbility('warrior', name.toLowerCase(), i)"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }-->
     <div class="panel warrior-panel">
       <div>
         <h5 class="head">Warrior</h5>
-        <div class="ability"><div class="ability-name">Know Monstrosities</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
-        <div class="ability">
-          <div class="ability-name">Spot Frailty</div>
-          <div class="label-tiny">
-            <div><label><input type="radio" formControlName="spotFrailty" value="health"> Health</label></div>
-            <div><label><input type="radio" formControlName="spotFrailty" value="morale"> Morale</label></div>
+        @for (name of gameData.abilities.investigative.warrior; track name;) {
+          <div class="ability">
+            <div class="ability-name">{{ name }}</div>
+            <div *ngIf="'warrior' == 'warrior' && name == 'Spot Frailty'">
+              <div class="label-tiny" *ngIf="invAbilities['warrior'][name.toLowerCase()] >= 1">
+                <div><label><input type="radio" formControlName="spotFrailty" value="health"> Health</label></div>
+                <div><label><input type="radio" formControlName="spotFrailty" value="morale"> Morale</label></div>
+              </div>
+            </div>
+            <div class="ability-value">
+              <div *ngFor="let i of aiToFrom(5)">
+                <div
+                  class="circle"
+                  [ngClass]="'circle' + ((invAbilities['warrior'][name.toLowerCase()] >= i) ? ' filled' : '')"
+                  (click)="setInvAbility('warrior', name.toLowerCase(), i)"
+                ></div>
+              </div>
+            </div>
           </div>
-          <div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div>
-        </div>
-        <div class="ability"><div class="ability-name">Tactics of Death</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Wilderness Mastery</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+        }
       </div>
     </div>
   </section>
@@ -136,7 +185,24 @@
   <h4 class="title3">Allegiances</h4>
   <div class="panel general-panel">
     <div>
-      <div class="ability">
+      @for (ability of gameData.abilities.general; track ability;) {
+        <div [ngClass]="'ability' + (ability.combat ? ' combat' : '')">
+          <div class="ability-name">{{ ability.name }}</div>
+          <div class="general-ability">
+            <div class="ability-value">
+              <div *ngFor="let i of aiToFrom(15)">
+                <div
+                  class="circle"
+                  [ngClass]="'circle' + ((genAbilities[ability.name] >= i) ? ' filled' : '') + (i == 8 ? ' talent' : '')"
+                  (click)="setGenAbility(ability.name, i)"
+                ></div>
+              </div>
+            </div>
+            <div [ngClass]="'talent-name' + ((genAbilities[ability.name] < 8) ? ' locked' : '')">{{ ability.talent }}</div>
+          </div>
+        </div>
+      }
+      <!--<div class="ability">
         <div class="ability-name">Stealth</div>
         <div class="general-ability">
           <div class="ability-value">
@@ -157,7 +223,7 @@
           </div>
           <div class="talent-name">Blast</div>
         </div>
-      </div>
+      </div>-->
     </div>
   </div>
   <div class="panel allegiances-panel">
@@ -172,31 +238,44 @@
     </div>
   </div>
   <div class="panel wealth-panel">
-    <div>
-      <div><label>
-        <span class="label">Wealth</span> <input type="number" formControlName="wealth">
-      </label></div>
-      <div><label>
-        <span class="label">Lifestyle</span> <input type="number" formControlName="lifestyle">
-      </label></div>
+    <label class="flex">
+      <div class="label">Wealth</div>
+      <input type="number" formControlName="wealth">
+    </label>
+    <div class="lifestyle">
+      <div class="label">Lifestyle</div>
+      <div>{{ gameData.lifestyle[genAbilities.lifestyle + 2] }}</div>
+      <div class="ability-value">
+        <div [ngClass]="'circle' + ((genAbilities.lifestyle <= -2) ? ' filled' : '')" (click)="genAbilities.lifestyle = -2">−2</div>
+        <div [ngClass]="'circle' + ((genAbilities.lifestyle <= -1) ? ' filled' : '')" (click)="genAbilities.lifestyle = -1">−1</div>
+        <div class="circle filled" (click)="genAbilities.lifestyle = 0"></div>
+        <div [ngClass]="'circle' + ((genAbilities.lifestyle >= 1) ? ' filled' : '')" (click)="genAbilities.lifestyle = 1">+1</div>
+        <div [ngClass]="'circle' + ((genAbilities.lifestyle >= 2) ? ' filled' : '')" (click)="genAbilities.lifestyle = 2">+2</div>
+      </div>
     </div>
   </div>
   <div class="stamina-section">
-    <div class="panel">
-      <div><label>
-        <span class="label">Health</span> <input type="number" formControlName="health">
-      </label></div>
-      <div><label>
-        <span class="label">Morale</span> <input type="number" formControlName="morale">
-      </label></div>
+    <div class="panel grid">
+      <div class="label">Health</div>
+      <div class="ability-value">
+        <div *ngFor="let i of aiToFrom(15)">
+          <div class="circle" [ngClass]="'circle' + ((genAbilities.health >= i) ? ' filled' : '')" (click)="setGenAbility('health', i)">{{ i }}</div>
+        </div>
+      </div>
+      <div class="label">Morale</div>
+      <div class="ability-value">
+        <div *ngFor="let i of aiToFrom(15)">
+          <div class="circle" [ngClass]="'circle' + ((genAbilities.morale >= i) ? ' filled' : '')" (click)="setGenAbility('morale', i)">{{ i }}</div>
+        </div>
+      </div>
     </div>
     <div class="table">
       <div class="label">Threshold</div>
-      <label class="label" for="armor-input">Armor</label>
-      <div class="value">3</div>
-      <label class="value"><input type="number" id="armor-input" formControlName="armor"></label>
-      <div class="value">3</div>
-      <div class="value">0</div>
+      <div class="label">Armor</div>
+      <div class="value">{{ genAbilities.healthThreshold }}</div>
+      <div class="value">{{ calcArmor() }}</div>
+      <div class="value">{{ genAbilities.moraleThreshold }}</div>
+      <div class="value">{{ calcGrit() }}</div>
       <div class="label">Threshold</div>
       <div class="label">Grit</div>
     </div>
@@ -205,7 +284,7 @@
   <h4 class="title3">Sorcerous Spheres</h4>
   <div class="panel gear-panel">
     <div>
-      @for (adj of gear; track adj; let i = $index) {
+      @for (_ of gear; track _; let i = $index) {
         <div class="input">
           <input type="checkbox" class="gear" id="gear-iconic{{i}}" [(ngModel)]="gear[i].iconic" [ngModelOptions]="{standalone: true}">
           <input type="text" class="gear" id="gear{{i}}" [(ngModel)]="gear[i].value" [ngModelOptions]="{standalone: true}">
@@ -217,6 +296,12 @@
   </div>
   <div class="panel spheres-panel">
     <div>
+      @if (invAbilities.sorcerer.corruption > 0) {
+        Affects: <label><input type="radio" formControlName="sorceryAffects" value="health" /> Health</label> <label><input type="radio" formControlName="sorceryAffects" value="morale" /> Morale</label>
+      }
+      @for (i of aiToFrom(invAbilities.sorcerer.corruption); track i;) {
+        <input type="text" class="sphere" id="sphere{{i}}" [(ngModel)]="spheres[i]" [ngModelOptions]="{standalone: true}" list="sphere-list" />
+      }
     </div>
   </div>
 </div>

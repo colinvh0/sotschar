@@ -1,4 +1,4 @@
-// TODO: move Tables
+/*// TODO: move Tables
 // TODO: dynamic field count
 // TODO:   tie to Corruption
 // TODO: suggested values
@@ -530,5 +530,5 @@ class Gear {
 	name = '';
 	characterDefining = false;
 }
-
+*/
 
