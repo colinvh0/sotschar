@@ -12,6 +12,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 export class CharacterEditorComponent {
   adjectives = [{key: '0', value: ''}];
   invAbilities: any = {};
+  invCats: any = {};
   genAbilities: any = {
     lifestyle: 0,
     health: 0,
@@ -47,17 +48,16 @@ export class CharacterEditorComponent {
   });
   
   constructor() {
-    const inv = this.gameData.abilities.investigative;
-    type invK = keyof typeof inv;
-    let k: invK;
-    for (k in inv) {
-      let category = inv[k];
-      this.invAbilities[k] = {};
-      for (let i = 0; i < category.length; i++) {
-        this.invAbilities[k][category[i]] = 0;
+    for (const i in this.invAbilityDefs) {
+      let a = this.invAbilityDefs[i];
+      if (!(a.category in this.invCats)) {
+        this.invCats[a.category] = [];
+        this.invAbilities[a.category] = {};
       }
+      this.invCats[a.category].push(a);
+      this.invAbilities[a.category][a.name] = 0;
     }
-    const gen = this.gameData.abilities.general;
+    const gen = this.genAbilityDefs;
     for (let i = 0; i < gen.length; i++) {
       this.genAbilities[gen[i].name] = 0;
     }
@@ -169,8 +169,46 @@ export class CharacterEditorComponent {
       this.genAbilities[name + 'Threshold'] = (i > 9) ? 4 : 3;
     }
   }
+  
+  genAbilityDefs = [
+    new GeneralAbility("Athletics", "Dodge"),
+    new GeneralAbility("Bind Wounds", "Plenty of Leeches"),
+    new GeneralAbility("Burglary", "Fast Hands"),
+    new GeneralAbility("Preparedness", "Flashback"),
+    new GeneralAbility("Stealth", "Where’d She Go?"),
+    new GeneralAbility("Sorcery", "Blast", true),
+    new GeneralAbility("Sway", "Play to the Crowd", true),
+    new GeneralAbility("Warfare", "Cleave", true),
+  ];
 
-  gameData = {
+  invAbilityDefs = [
+    new InvestigativeAbility("Charm", "social"),
+    new InvestigativeAbility("Command", "social"),
+    new InvestigativeAbility("Intimidation", "social"),
+    new InvestigativeAbility("Liar’s Tell", "social"),
+    new InvestigativeAbility("Nobility", "social"),
+    new InvestigativeAbility("Servility", "social"),
+    new InvestigativeAbility("Taunt", "social"),
+    new InvestigativeAbility("Trustworthy", "social"),
+    new InvestigativeAbility("Felonious Intent", "sentinel"),
+    new InvestigativeAbility("Laws & Traditions", "sentinel"),
+    new InvestigativeAbility("Spirit Sight", "sentinel"),
+    new InvestigativeAbility("Vigilance", "sentinel"),
+    new InvestigativeAbility("Corruption", "sorcerer"),
+    new InvestigativeAbility("Forgotten Lore", "sorcerer"),
+    new InvestigativeAbility("Leechcraft", "sorcerer"),
+    new InvestigativeAbility("Prophecy", "sorcerer"),
+    new InvestigativeAbility("City’s Secrets", "thief"),
+    new InvestigativeAbility("Ridiculous Luck", "thief"),
+    new InvestigativeAbility("Scurrilous Rumors", "thief"),
+    new InvestigativeAbility("Skulduggery", "thief"),
+    new InvestigativeAbility("Know Monstrosities", "warrior"),
+    new InvestigativeAbility("Spot Frailty", "warrior", true),
+    new InvestigativeAbility("Tactics of Death", "warrior"),
+    new InvestigativeAbility("Wilderness Mastery", "warrior"),
+  ];
+
+  tup = {
     animals: [
       "Aquatic Mammals",
       "Bats",
@@ -212,54 +250,6 @@ export class CharacterEditorComponent {
       "The Triskadane",
       "Thieves' Guilds",
     ],
-    abilities: {
-      general: [
-        new GeneralAbility("Athletics", "Dodge"),
-        new GeneralAbility("Bind Wounds", "Plenty of Leeches"),
-        new GeneralAbility("Burglary", "Fast Hands"),
-        new GeneralAbility("Preparedness", "Flashback"),
-        new GeneralAbility("Stealth", "Where’d She Go?"),
-        new GeneralAbility("Sorcery", "Blast", true),
-        new GeneralAbility("Sway", "Play to the Crowd", true),
-        new GeneralAbility("Warfare", "Cleave", true),
-      ],
-      investigative: {
-        social: [
-          "Charm",
-          "Command",
-          "Intimidation",
-          "Liar’s Tell",
-          "Nobility",
-          "Servility",
-          "Taunt",
-          "Trustworthy",
-        ],
-        sentinel: [
-          "Felonious Intent",
-          "Laws & Traditions",
-          "Spirit Sight",
-          "Vigilance",
-        ],
-        sorcerer: [
-          "Corruption",
-          "Forgotten Lore",
-          "Leechcraft",
-          "Prophecy",
-        ],
-        thief: [
-          "City’s Secrets",
-          "Ridiculous Luck",
-          "Scurrilous Rumors",
-          "Skulduggery",
-        ],
-        warrior: [
-          "Know Monstrosities",
-          "Spot Frailty",
-          "Tactics of Death",
-          "Wilderness Mastery",
-        ],
-      }
-    },
     spheres: [
       ["Aging", true, true],
       ["Air", true, false],
@@ -323,6 +313,17 @@ class GeneralAbility {
     this.name = name;
     this.talent = talent;
     this.combat = combat;
+  }
+}
+
+class InvestigativeAbility {
+  name: string;
+  category: string;
+  healthMorale: boolean;
+  constructor(name: string, category: string, healthMorale = false) {
+    this.name = name;
+    this.category = category;
+    this.healthMorale = healthMorale;
   }
 }
 
