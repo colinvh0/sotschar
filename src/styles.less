@@ -38,6 +38,11 @@ body {
   display: flex;
   align-items: center;
 }
+.flex-column {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
 /*.flex-wrap {
   display: flex;
   flex-wrap: wrap;
@@ -312,6 +317,9 @@ body {
 .character-edit .wealth-panel {
   grid-column: two / right;
   border-top-width: .95em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 .character-edit .wealth-panel .lifestyle {
   display: flex;
@@ -332,6 +340,7 @@ body {
   display: grid;
   grid-template-columns: auto auto;
   grid-auto-rows: 1fr;
+  align-items: center;
   justify-content: space-between;
 }
 .character-edit .stamina-section .table {
@@ -378,6 +387,12 @@ body {
 
 .character-edit .spheres-panel {
   grid-column: two / right;
+}
+.character-edit .spheres-panel div.label-tiny {
+  margin: 0 auto;
+}
+.character-edit .spheres-panel input[type="text"] {
+  width: 100%;
 }
 
 .head {

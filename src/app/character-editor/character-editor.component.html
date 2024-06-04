@@ -235,9 +235,9 @@
     </div>
   </div>
   <div class="panel spheres-panel">
-    <div>
+    <div class="flex-column">
       @if (invAbilities.sorcerer.Corruption > 0) {
-        Affects: <label><input type="radio" formControlName="sorceryAffects" value="health" /> Health</label> <label><input type="radio" formControlName="sorceryAffects" value="morale" /> Morale</label>
+        <div class="label-tiny">Affects: <label><input type="radio" formControlName="sorceryAffects" value="health" /> Health</label>&nbsp;<label><input type="radio" formControlName="sorceryAffects" value="morale" /> Morale</label></div>
       }
       @for (i of aiToFrom(invAbilities.sorcerer.Corruption); track i;) {
         <input type="text" class="sphere" id="sphere{{i}}" [(ngModel)]="spheres[i]" [ngModelOptions]="{standalone: true}" [attr.list]="formGroup.controls.sorceryAffects.value + '-sphere-list'" />
