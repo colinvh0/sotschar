@@ -12,6 +12,12 @@ import { Tables } from '../character';
   styleUrl: './character-editor.component.less'
 })
 export class CharacterEditorComponent {
+  ab = {
+    inv: {
+      social: { charm: 0 }
+    },
+    gen: {}
+  };
   adjectives = [{key: '0', value: ''}];
   allegiances = [{key: '0', value: ''}, {key: '1', value: ''}];
   gear = initGear(5);
@@ -68,6 +74,22 @@ export class CharacterEditorComponent {
 
   delGear(i: number) {
     this.gear.splice(i, 1);
+  }
+  
+  setAbility(event: any, i: number): void {
+    const f = event.target.parentElement.children[0];
+    let v = parseInt(f.value, 10);
+    console.log(v, i);
+    if (!v) {
+      v = 0;
+    }
+    console.log(v);
+    if (f.value == i) {
+      f.value--;
+    } else {
+      f.value = i;
+    }
+    console.log(f.value);
   }
 }
 

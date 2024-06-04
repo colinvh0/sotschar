@@ -1,3 +1,4 @@
+<script type="text/javascript" src="/assets/sotschar.js"></script>
 <datalist id="faction-list">
   <option value="Ancient Nobility"></option>
   <option value="Architects and Canal-Watchers"></option>
@@ -85,14 +86,14 @@
     <div class="panel social-panel">
       <div>
         <h5 class="head">Social</h5>
-        <div class="ability"><div class="ability-name">Charm</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Command</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Intimidation</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Liar’s Tell</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Nobility</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Servility</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Taunt</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
-        <div class="ability"><div class="ability-name">Trustworthy</div><div class="ability-value"><div class="circle" *ngFor="let _ of [].constructor(5)"></div></div></div>
+        <div class="ability"><div class="ability-name">Charm</div><div class="ability-value"><input type="number" [(ngModel)]="ab.inv.social.charm" [ngModelOptions]="{standalone: true}"><div class="circle" *ngFor="let i of [].constructor(5)" (click)="setAbility($event, i)"></div></div></div>
+        <div class="ability"><div class="ability-name">Command</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
+        <div class="ability"><div class="ability-name">Intimidation</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
+        <div class="ability"><div class="ability-name">Liar’s Tell</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
+        <div class="ability"><div class="ability-name">Nobility</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
+        <div class="ability"><div class="ability-name">Servility</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
+        <div class="ability"><div class="ability-name">Taunt</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
+        <div class="ability"><div class="ability-name">Trustworthy</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
       </div>
     </div>
     <div class="panel sentinel-panel">
