@@ -2,6 +2,11 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+// TODO: image url/upload/crop
+// TODO: alternate views (play, print)
+// TODO: load/save
+// TODO: load from template
+
 @Component({
   selector: 'app-character-editor',
   standalone: true,

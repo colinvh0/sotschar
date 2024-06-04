@@ -1,13 +1,4 @@
-/*// TODO: move Tables
-// TODO: dynamic field count
-// TODO:   tie to Corruption
-// TODO: suggested values
-// TODO: iterated fields
-// TODO: image url/upload/crop
-// TODO: dot input
-// TODO: page layout
-// TODO: load/save
-
+/*
 export class Character {
 	name: Name;
 	profession: string;
