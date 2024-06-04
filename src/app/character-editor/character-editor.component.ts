@@ -13,7 +13,7 @@ import { Tables } from '../character';
 })
 export class CharacterEditorComponent {
   adjectives = [{key: '0', value: ''}];
-  invAbilities: Map<string, Map<string, number>>= {
+  invAbilities: any = {
     social: { charm: 0 }
   };
   allegiances = [{key: '0', value: ''}, {key: '1', value: ''}];
@@ -43,9 +43,25 @@ export class CharacterEditorComponent {
     morale: new FormControl('')
   });
   
-  /*constructor() {
-    invAbilities ;
-  }*/
+  aiToFrom(t: number, f = 1): Array<number> {
+    const diff = t - f;
+    let inc = 1;
+    let len: number;
+    if (diff < 0) {
+      inc = -1;
+      len = 1 - diff;
+      [t, f] = [f, t];
+    } else {
+      len = 1 + diff;
+    }
+    const result = Array(len);
+    let j = f;
+    for (let i = 0 ; i < len; i++) {
+      result[i] = j;
+      j += inc;
+    }
+    return result;
+  }
 
   addAdjective() {
     if(this.adjectives.length < 5) {
@@ -77,16 +93,11 @@ export class CharacterEditorComponent {
   
   setInvAbility(cat: string, name: string, i: number): void {
     const a = this.invAbilities[cat];
-    if (!a[name]) {
-      a[name] = 0;
-    }
-    console.log(a[name], i);
     if (a[name] == i) {
       a[name]--;
     } else {
       a[name] = i;
     }
-    console.log(a[name]);
   }
 }
 

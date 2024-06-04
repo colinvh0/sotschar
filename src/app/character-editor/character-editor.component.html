@@ -87,8 +87,8 @@
       <div>
         <h5 class="head">Social</h5>
         <div class="ability"><div class="ability-name">Charm</div><div class="ability-value">
-          <div *ngFor="let i of [1, 2, 3, 4, 5]">
-            <div class="circle" (click)="setInvAbility('social', 'charm', i)"></div>
+          <div *ngFor="let i of aiToFrom(5)">
+            <div class="circle" [ngClass]="'circle' + ((invAbilities['social']['charm'] >= i) ? ' filled' : '')" (click)="setInvAbility('social', 'charm', i)"></div>
           </div>
         </div></div>
         <div class="ability"><div class="ability-name">Command</div><div class="ability-value"><div class="circle" *ngFor="let i of [].constructor(5)"></div></div></div>
