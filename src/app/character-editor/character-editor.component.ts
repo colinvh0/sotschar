@@ -28,7 +28,7 @@ export class CharacterEditorComponent {
     armor: 0,
     grit: 0,
   };
-  allegiances = [{key: '0', value: ''}, {key: '1', value: ''}];
+  allegiances = [new Allegiance(), new Allegiance()];
   gear = initGear(5);
   spheres: Array<string> = [];
   formGroup = new FormGroup({
@@ -141,7 +141,7 @@ export class CharacterEditorComponent {
 
   addAllegiance() {
     if(this.allegiances.length < 12) {
-      this.allegiances.push({key: this.allegiances.length + '', value: ''});
+      this.allegiances.push(new Allegiance());
     }
   }
 
@@ -334,35 +334,72 @@ class InvestigativeAbility {
   }
 }
 
-/*@Component({
-  selector: 'inv-attr-edit-section',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  template: `
-    <h5 class="head">{{ category }}</h5>
-    @for (name of gameData.abilities.investigative[category.toLowerCase()]; track name;) {
-      <div class="ability">
-        <div class="ability-name">{{ name }}</div>
-        <div *ngIf="category.toLowerCase() == 'warrior' && name == 'Spot Frailty'">
-          <div class="label-tiny" *ngIf="invAbilities.warrior['spot frailty'] >= 1">
-            <div><label><input type="radio" formControlName="spotFrailty" value="health"> Health</label></div>
-            <div><label><input type="radio" formControlName="spotFrailty" value="morale"> Morale</label></div>
-          </div>
-        </div>
-        <div class="ability-value">
-          <div *ngFor="let i of aiToFrom(5)">
-            <div
-              class="circle"
-              [ngClass]="'circle' + ((invAbilities[category.toLowerCase()][name.toLowerCase()] >= i) ? ' filled' : '')"
-              (click)="setInvAbility(category.toLowerCase(), name.toLowerCase(), i)"
-            ></div>
-          </div>
-        </div>
-      </div>
-    }
-  `
-})
-class InvAttrEditSectionComponent {
-  @Input()
-  category: string = '';
-}*/
+class Allegiance {
+	name: string;
+	#allyRanks = 0;
+	#allyPool = 0;
+	favor = 0;
+	#enemyRanks = 0;
+	#enemyPool = 0;
+	grudge = 0;
+
+	constructor(name = '') {
+    this.name = name;
+  }
+
+	set allyRanks(v: number) {
+		this.setAllyRanks(v);
+	}
+	
+	get allyRanks() {
+		return this.#allyRanks;
+	}
+	
+	setAllyRanks(v: number, adjustPool: boolean = true):number {
+		const old = this.#allyRanks;
+		if (v == old) {
+			v--;
+		}
+		const diff = v - old;
+		this.#allyRanks = v;
+		if (adjustPool) {
+			this.#allyPool += diff;
+		}
+		return v;
+	}
+
+	set allyPool(v: number) {
+		if (v == this.#allyPool) {
+			v--;
+		}
+		this.#allyPool = v;
+	}
+
+	set enemyRanks(v: number) {
+		this.setEnemyRanks(v);
+	}
+	
+	get enemyRanks() {
+		return this.#enemyRanks;
+	}
+	
+	setEnemyRanks(v: number, adjustPool: boolean = true):number {
+		const old = this.#enemyRanks;
+		if (v == old) {
+			v--;
+		}
+		const diff = v - old;
+		this.#enemyRanks = v;
+		if (adjustPool) {
+			this.#enemyPool += diff;
+		}
+		return v;
+	}
+
+	set enemyPool(v: number) {
+		if (v == this.#enemyPool) {
+			v--;
+		}
+		this.#enemyPool = v;
+	}
+}
