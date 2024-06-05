@@ -18,7 +18,7 @@
   }
 </datalist>
 <div class="character-edit" [formGroup]="formGroup">
-<section class="config">
+<section class="config" *ngIf="mode == 'edit'">
   <h1 class="head">Edit Character</h1>
   <div>
     <div><label><input type="checkbox" formControlName="configS2S"> Session 2 started</label></div>
@@ -40,6 +40,13 @@
     <div><label><input type="number" formControlName="advancement"> Advancement Points</label></div>
   </div>
 </section>
+<section class="config" *ngIf="mode == 'play'">
+  <h1 class="head">Play Character</h1>
+</section>
+<section class="config" *ngIf="mode == 'print'">
+  <h1 class="head">Print Character</h1>
+</section>
+<section class="mode"><button (click)="mode = 'edit'">Edit</button><button (click)="mode = 'play'">Play</button><button (click)="mode = 'print'">Print</button></section>
 <div class="character-edit-grid character-sheet">
   <div class="panel name-panel">
     <div class="name-field">
@@ -82,34 +89,59 @@
   <div class="panel drives-panel">
     <div>
       <div class="head label">What is Best in Life?</div>
-      <div class="input"><input type="text" formControlName="drive1"></div>
-      <div class="input"><input type="text" formControlName="drive2"></div>
-      <div class="input"><input type="text" formControlName="drive3"></div>
+      @for (drive of drives; track drive;) {
+        <div class="input">
+          @if (mode == 'edit') {
+            <input type="text" [(ngModel)]="drive.value" [ngModelOptions]="{standalone: true}">
+          } @else if (mode == 'play') {
+            <div [ngClass]="'circle' + ((drive.pool >= 1) ? ' filled' : '')" (click)="drive.pool = (drive.pool == 1) ? 0 : 1"></div> {{ drive.value }}
+          } @else if (mode == 'print') {
+            <div class="circle" ></div> {{ drive.value }}
+          }
+        </div>
+      }
     </div>
   </div>
   <section class="investigative-abilities subgrid">
     <h4 class="title1"><span>Investigative Abilities</span></h4>
     @for (category of invCatNames; track category) {
-      <div [ngClass]="'panel ' + category + '-panel'">
+      <div [ngClass]="'panel ' + category.toLowerCase() + '-panel'">
         <div>
-          <h5 class="head">{{ category.charAt(0).toUpperCase() + category.slice(1) }}</h5>
+          <h5 class="head">{{ category }}</h5>
           @for (ability of invCats[category]; track ability;) {
             <div class="ability">
               <div class="ability-name">{{ ability.name }}</div>
-              <div *ngIf="ability.healthMorale">
-                <div class="label-tiny" *ngIf="invAbilities[category][ability.name] >= 1">
-                  <div><label><input type="radio" formControlName="spotFrailty" value="health"> Health</label></div>
-                  <div><label><input type="radio" formControlName="spotFrailty" value="morale"> Morale</label></div>
+              @if (ability.healthMorale) {
+                <div class="label-tiny" *ngIf="invAbilities[category][ability.name].ranks >= 1">
+                  @if (mode == 'edit') {
+                    <div><label><input type="radio" formControlName="spotFrailty" value="Health"> Health</label></div>
+                    <div><label><input type="radio" formControlName="spotFrailty" value="Morale"> Morale</label></div>
+                  } @else {
+                    {{ formGroup.controls.spotFrailty.value }}
+                  }
                 </div>
-              </div>
+              }
               <div class="ability-value">
-                <div *ngFor="let i of aiToFrom(5)">
-                  <div
-                    class="circle"
-                    [ngClass]="'circle' + ((invAbilities[category][ability.name] >= i) ? ' filled' : '')"
-                    (click)="setInvAbility(category, ability.name, i)"
-                  ></div>
-                </div>
+                @if (mode == 'edit') {
+                  <div *ngFor="let i of aiToFrom(5)">
+                    <div
+                      [ngClass]="'circle' + ((invAbilities[category][ability.name].ranks >= i) ? ' filled' : '')"
+                      (click)="setInvAbility(category, ability.name, i)"
+                    ></div>
+                  </div>
+                } @else {
+                  <div *ngFor="let i of aiToFrom(invAbilities[category][ability.name].ranks)">
+                    @if (mode == 'play') {
+                      @if (invAbilities[category][ability.name].pool >= i) {
+                        <div class="circle filled" (click)="adjustInvPool(category, ability.name, false)"></div>
+                      } @else {
+                        <div class="circle" (click)="adjustInvPool(category, ability.name)"></div>
+                      }
+                    } @else if (mode == 'print') {
+                      <div class="circle"></div>
+                    }
+                  </div>
+                }
               </div>
             </div>
           }
@@ -128,7 +160,6 @@
             <div class="ability-value">
               <div *ngFor="let i of aiToFrom(15)">
                 <div
-                  class="circle"
                   [ngClass]="'circle' + ((genAbilities[ability.name] >= i) ? ' filled' : '') + (i == 8 ? ' talent' : '')"
                   (click)="setGenAbility(ability.name, i)"
                 ></div>
@@ -149,18 +180,16 @@
             <div class="ability-value">
               <div *ngFor="let j of aiToFrom(5)">
                 <div
-                  class="circle"
-                  [ngClass]="'circle' + ((allegiances[i].allyRanks >= j) ? ' filled' : '')"
-                  (click)="allegiances[i].allyRanks = j"
+                  [ngClass]="'circle' + ((allegiances[i].ally.ranks >= j) ? ' filled' : '')"
+                  (click)="allegiances[i].ally.ranks = j"
                 >A</div>
               </div>
             </div>
             <div class="ability-value">
               <div *ngFor="let j of aiToFrom(5)">
                 <div
-                  class="circle red"
-                  [ngClass]="'circle' + ((allegiances[i].enemyRanks >= j) ? ' filled' : '')"
-                  (click)="allegiances[i].enemyRanks = j"
+                  [ngClass]="'circle red' + ((allegiances[i].enemy.ranks >= j) ? ' filled' : '')"
+                  (click)="allegiances[i].enemy.ranks = j"
                 >E</div>
               </div>
             </div>
@@ -178,13 +207,13 @@
     </label>
     <div class="lifestyle">
       <div class="label">Lifestyle</div>
-      <div>{{ tup.lifestyle[genAbilities.Lifestyle + 2] }}</div>
+      <div>{{ tup.lifestyle[extAbilities.Lifestyle + 2] }}</div>
       <div class="ability-value">
-        <div [ngClass]="'circle' + ((genAbilities.Lifestyle <= -2) ? ' filled' : '')" (click)="genAbilities.Lifestyle = -2">−2</div>
-        <div [ngClass]="'circle' + ((genAbilities.Lifestyle <= -1) ? ' filled' : '')" (click)="genAbilities.Lifestyle = -1">−1</div>
-        <div class="circle filled" (click)="genAbilities.Lifestyle = 0">0</div>
-        <div [ngClass]="'circle' + ((genAbilities.Lifestyle >= 1) ? ' filled' : '')" (click)="genAbilities.Lifestyle = 1">+1</div>
-        <div [ngClass]="'circle' + ((genAbilities.Lifestyle >= 2) ? ' filled' : '')" (click)="genAbilities.Lifestyle = 2">+2</div>
+        <div [ngClass]="'circle' + ((extAbilities.Lifestyle <= -2) ? ' filled' : '')" (click)="extAbilities.Lifestyle = -2">−2</div>
+        <div [ngClass]="'circle' + ((extAbilities.Lifestyle <= -1) ? ' filled' : '')" (click)="extAbilities.Lifestyle = -1">−1</div>
+        <div class="circle filled" (click)="extAbilities.Lifestyle = 0">0</div>
+        <div [ngClass]="'circle' + ((extAbilities.Lifestyle >= 1) ? ' filled' : '')" (click)="extAbilities.Lifestyle = 1">+1</div>
+        <div [ngClass]="'circle' + ((extAbilities.Lifestyle >= 2) ? ' filled' : '')" (click)="extAbilities.Lifestyle = 2">+2</div>
       </div>
     </div>
   </div>
@@ -193,22 +222,22 @@
       <div class="label">Health</div>
       <div class="ability-value">
         <div *ngFor="let i of aiToFrom(15)">
-          <div class="circle" [ngClass]="'circle' + ((genAbilities.Health >= i) ? ' filled' : '')" (click)="setGenAbility('Health', i)">{{ i }}</div>
+          <div class="circle" [ngClass]="'circle' + ((genAbilities.Health.ranks >= i) ? ' filled' : '')" (click)="setGenAbility('Health', i)">{{ i }}</div>
         </div>
       </div>
       <div class="label">Morale</div>
       <div class="ability-value">
         <div *ngFor="let i of aiToFrom(15)">
-          <div class="circle" [ngClass]="'circle' + ((genAbilities.Morale >= i) ? ' filled' : '')" (click)="setGenAbility('Morale', i)">{{ i }}</div>
+          <div class="circle" [ngClass]="'circle' + ((genAbilities.Morale.ranks >= i) ? ' filled' : '')" (click)="setGenAbility('Morale', i)">{{ i }}</div>
         </div>
       </div>
     </div>
     <div class="table">
       <div class="label">Threshold</div>
       <div class="label">Armor</div>
-      <div class="value">{{ genAbilities.HealthThreshold }}</div>
+      <div class="value">{{ extAbilities.HealthThreshold }}</div>
       <div class="value">{{ calcArmor() }}</div>
-      <div class="value">{{ genAbilities.MoraleThreshold }}</div>
+      <div class="value">{{ extAbilities.MoraleThreshold }}</div>
       <div class="value">{{ calcGrit() }}</div>
       <div class="label">Threshold</div>
       <div class="label">Grit</div>
@@ -230,10 +259,10 @@
   </div>
   <div class="panel spheres-panel">
     <div class="flex-column">
-      @if (invAbilities.sorcerer.Corruption > 0) {
+      @if (invAbilities.Sorcerer.Corruption.ranks > 0) {
         <div class="label-tiny">Affects: <label><input type="radio" formControlName="sorceryAffects" value="health" /> Health</label>&nbsp;<label><input type="radio" formControlName="sorceryAffects" value="morale" /> Morale</label></div>
       }
-      @for (i of aiToFrom(invAbilities.sorcerer.Corruption); track i;) {
+      @for (i of aiToFrom(invAbilities.Sorcerer.Corruption.ranks); track i;) {
         <input type="text" class="sphere" id="sphere{{i}}" [(ngModel)]="spheres[i]" [ngModelOptions]="{standalone: true}" [attr.list]="formGroup.controls.sorceryAffects.value + '-sphere-list'" />
       }
     </div>

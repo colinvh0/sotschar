@@ -7,6 +7,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 // TODO: alternate views (play, print)
 // TODO: load/save
 // TODO: load from template
+// TODO: factions list editor
 
 @Component({
   selector: 'app-character-editor',
@@ -16,14 +17,18 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
   styleUrl: './character-editor.component.less'
 })
 export class CharacterEditorComponent {
+  mode = 'edit';
   adjectives = [{key: '0', value: ''}];
+  drives = [new Drive(0), new Drive(1), new Drive(2)];
   invAbilities: any = {};
   invCats: any = {};
   invCatNames: Array<string> = [];
   genAbilities: any = {
+    Health: new Ability(),
+    Morale: new Ability(),
+  };
+  extAbilities: any = {
     Lifestyle: 0,
-    Health: 0,
-    Morale: 0,
     HealthThreshold: 3,
     MoraleThreshold: 3,
     Armor: 0,
@@ -46,11 +51,8 @@ export class CharacterEditorComponent {
     name: new FormControl(''),
     tnk: new FormControl(''),
     profession: new FormControl(''),
-    drive1: new FormControl(''),
-    drive2: new FormControl(''),
-    drive3: new FormControl(''),
     portraitUrl: new FormControl(''),
-    spotFrailty: new FormControl(''),
+    spotFrailty: new FormControl('health'),
     sorceryAffects: new FormControl('health'),
     wealth: new FormControl('0'),
   });
@@ -64,11 +66,11 @@ export class CharacterEditorComponent {
         this.invCatNames.push(a.category);
       }
       this.invCats[a.category].push(a);
-      this.invAbilities[a.category][a.name] = 0;
+      this.invAbilities[a.category][a.name] = new Ability();
     }
     const gen = this.genAbilityDefs;
     for (let i = 0; i < gen.length; i++) {
-      this.genAbilities[gen[i].name] = 0;
+      this.genAbilities[gen[i].name] = new Ability();
     }
   }
   
@@ -161,18 +163,27 @@ export class CharacterEditorComponent {
   
   setInvAbility(cat: string, name: string, i: number): void {
     const a = this.invAbilities[cat];
-    if (a[name] == i) {
-      a[name]--;
+    if (a[name].ranks == i) {
+      a[name].ranks--;
     } else {
-      a[name] = i;
+      a[name].ranks = i;
+    }
+  }
+
+  adjustInvPool(cat: string, name: string, increment = true): void {
+    const a = this.invAbilities[cat][name];
+    if (increment) {
+      a.pool++;
+    } else {
+      a.pool--;
     }
   }
 
   setGenAbility(name: string, i: number): void {
     if (this.genAbilities[name] == i) {
-      this.genAbilities[name]--;
+      this.genAbilities[name].ranks--;
     } else {
-      this.genAbilities[name] = i;
+      this.genAbilities[name].ranks = i;
     }
     if (name == 'health' || name == 'morale') {
       this.genAbilities[name + 'Threshold'] = (i > 9) ? 4 : 3;
@@ -191,30 +202,30 @@ export class CharacterEditorComponent {
   ];
 
   invAbilityDefs = [
-    new InvestigativeAbility("Charm", "social"),
-    new InvestigativeAbility("Command", "social"),
-    new InvestigativeAbility("Intimidation", "social"),
-    new InvestigativeAbility("Liar’s Tell", "social"),
-    new InvestigativeAbility("Nobility", "social"),
-    new InvestigativeAbility("Servility", "social"),
-    new InvestigativeAbility("Taunt", "social"),
-    new InvestigativeAbility("Trustworthy", "social"),
-    new InvestigativeAbility("Felonious Intent", "sentinel"),
-    new InvestigativeAbility("Laws & Traditions", "sentinel"),
-    new InvestigativeAbility("Spirit Sight", "sentinel"),
-    new InvestigativeAbility("Vigilance", "sentinel"),
-    new InvestigativeAbility("Corruption", "sorcerer"),
-    new InvestigativeAbility("Forgotten Lore", "sorcerer"),
-    new InvestigativeAbility("Leechcraft", "sorcerer"),
-    new InvestigativeAbility("Prophecy", "sorcerer"),
-    new InvestigativeAbility("City’s Secrets", "thief"),
-    new InvestigativeAbility("Ridiculous Luck", "thief"),
-    new InvestigativeAbility("Scurrilous Rumors", "thief"),
-    new InvestigativeAbility("Skulduggery", "thief"),
-    new InvestigativeAbility("Know Monstrosities", "warrior"),
-    new InvestigativeAbility("Spot Frailty", "warrior", true),
-    new InvestigativeAbility("Tactics of Death", "warrior"),
-    new InvestigativeAbility("Wilderness Mastery", "warrior"),
+    new InvestigativeAbility("Charm", "Social"),
+    new InvestigativeAbility("Command", "Social"),
+    new InvestigativeAbility("Intimidation", "Social"),
+    new InvestigativeAbility("Liar’s Tell", "Social"),
+    new InvestigativeAbility("Nobility", "Social"),
+    new InvestigativeAbility("Servility", "Social"),
+    new InvestigativeAbility("Taunt", "Social"),
+    new InvestigativeAbility("Trustworthy", "Social"),
+    new InvestigativeAbility("Felonious Intent", "Sentinel"),
+    new InvestigativeAbility("Laws & Traditions", "Sentinel"),
+    new InvestigativeAbility("Spirit Sight", "Sentinel"),
+    new InvestigativeAbility("Vigilance", "Sentinel"),
+    new InvestigativeAbility("Corruption", "Sorcerer"),
+    new InvestigativeAbility("Forgotten Lore", "Sorcerer"),
+    new InvestigativeAbility("Leechcraft", "Sorcerer"),
+    new InvestigativeAbility("Prophecy", "Sorcerer"),
+    new InvestigativeAbility("City’s Secrets", "Thief"),
+    new InvestigativeAbility("Ridiculous Luck", "Thief"),
+    new InvestigativeAbility("Scurrilous Rumors", "Thief"),
+    new InvestigativeAbility("Skulduggery", "Thief"),
+    new InvestigativeAbility("Know Monstrosities", "Warrior"),
+    new InvestigativeAbility("Spot Frailty", "Warrior", true),
+    new InvestigativeAbility("Tactics of Death", "Warrior"),
+    new InvestigativeAbility("Wilderness Mastery", "Warrior"),
   ];
 
   tup = {
@@ -336,72 +347,54 @@ class InvestigativeAbility {
   }
 }
 
+class Drive {
+  value = '';
+  pool = 1;
+  i: number;
+  constructor(i: number) {
+    this.i = i;
+  }
+}
+
+class Ability {
+  #ranks: number;
+  pool: number;
+  
+  constructor(init = 0) {
+    this.#ranks = this.pool = init;
+  }
+
+	set ranks(v: number) {
+		this.setRanks(v);
+	}
+	
+	get ranks() {
+		return this.#ranks;
+	}
+	
+	setRanks(v: number, adjustPool: boolean = true):number {
+		const old = this.#ranks;
+		const diff = v - old;
+		this.#ranks = v;
+		if (adjustPool) {
+			this.pool += diff;
+      if (this.pool < 0) {
+        this.pool = 0;
+      }
+		}
+		return v;
+	}
+
+}
+
 class Allegiance {
 	name: string;
-	#allyRanks = 0;
-	#allyPool = 0;
+	ally = new Ability();
 	favor = 0;
-	#enemyRanks = 0;
-	#enemyPool = 0;
+	enemy = new Ability();
 	grudge = 0;
 
 	constructor(name = '') {
     this.name = name;
   }
-
-	set allyRanks(v: number) {
-		this.setAllyRanks(v);
-	}
-	
-	get allyRanks() {
-		return this.#allyRanks;
-	}
-	
-	setAllyRanks(v: number, adjustPool: boolean = true):number {
-		const old = this.#allyRanks;
-		if (v == old) {
-			v--;
-		}
-		const diff = v - old;
-		this.#allyRanks = v;
-		if (adjustPool) {
-			this.#allyPool += diff;
-		}
-		return v;
-	}
-
-	set allyPool(v: number) {
-		if (v == this.#allyPool) {
-			v--;
-		}
-		this.#allyPool = v;
-	}
-
-	set enemyRanks(v: number) {
-		this.setEnemyRanks(v);
-	}
-	
-	get enemyRanks() {
-		return this.#enemyRanks;
-	}
-	
-	setEnemyRanks(v: number, adjustPool: boolean = true):number {
-		const old = this.#enemyRanks;
-		if (v == old) {
-			v--;
-		}
-		const diff = v - old;
-		this.#enemyRanks = v;
-		if (adjustPool) {
-			this.#enemyPool += diff;
-		}
-		return v;
-	}
-
-	set enemyPool(v: number) {
-		if (v == this.#enemyPool) {
-			v--;
-		}
-		this.#enemyPool = v;
-	}
 }
