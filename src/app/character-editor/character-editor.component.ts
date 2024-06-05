@@ -20,13 +20,13 @@ export class CharacterEditorComponent {
   invCats: any = {};
   invCatNames: Array<string> = [];
   genAbilities: any = {
-    lifestyle: 0,
-    health: 0,
-    morale: 0,
-    healthThreshold: 3,
-    moraleThreshold: 3,
-    armor: 0,
-    grit: 0,
+    Lifestyle: 0,
+    Health: 0,
+    Morale: 0,
+    HealthThreshold: 3,
+    MoraleThreshold: 3,
+    Armor: 0,
+    Grit: 0,
   };
   allegiances = [new Allegiance(), new Allegiance()];
   gear = initGear(5);
@@ -49,8 +49,8 @@ export class CharacterEditorComponent {
     drive2: new FormControl(''),
     drive3: new FormControl(''),
     spotFrailty: new FormControl(''),
-    wealth: new FormControl('0'),
     sorceryAffects: new FormControl('health'),
+    wealth: new FormControl('0'),
   });
   
   constructor() {
@@ -112,11 +112,11 @@ export class CharacterEditorComponent {
         result += parseInt(match[1], 10);
       }
     }
-    return this.genAbilities.armor = result;
+    return this.genAbilities.Armor = result;
   }
 
   calcGrit(): number {
-    return this.genAbilities.grit = (this.iconic >= 5) ? 1 : 0;
+    return this.genAbilities.Grit = (this.iconic >= 5) ? 1 : 0;
   }
   
   get iconic(): number {

@@ -181,13 +181,13 @@
     </label>
     <div class="lifestyle">
       <div class="label">Lifestyle</div>
-      <div>{{ tup.lifestyle[genAbilities.lifestyle + 2] }}</div>
+      <div>{{ tup.lifestyle[genAbilities.Lifestyle + 2] }}</div>
       <div class="ability-value">
-        <div [ngClass]="'circle' + ((genAbilities.lifestyle <= -2) ? ' filled' : '')" (click)="genAbilities.lifestyle = -2">−2</div>
-        <div [ngClass]="'circle' + ((genAbilities.lifestyle <= -1) ? ' filled' : '')" (click)="genAbilities.lifestyle = -1">−1</div>
-        <div class="circle filled" (click)="genAbilities.lifestyle = 0">0</div>
-        <div [ngClass]="'circle' + ((genAbilities.lifestyle >= 1) ? ' filled' : '')" (click)="genAbilities.lifestyle = 1">+1</div>
-        <div [ngClass]="'circle' + ((genAbilities.lifestyle >= 2) ? ' filled' : '')" (click)="genAbilities.lifestyle = 2">+2</div>
+        <div [ngClass]="'circle' + ((genAbilities.Lifestyle <= -2) ? ' filled' : '')" (click)="genAbilities.Lifestyle = -2">−2</div>
+        <div [ngClass]="'circle' + ((genAbilities.Lifestyle <= -1) ? ' filled' : '')" (click)="genAbilities.Lifestyle = -1">−1</div>
+        <div class="circle filled" (click)="genAbilities.Lifestyle = 0">0</div>
+        <div [ngClass]="'circle' + ((genAbilities.Lifestyle >= 1) ? ' filled' : '')" (click)="genAbilities.Lifestyle = 1">+1</div>
+        <div [ngClass]="'circle' + ((genAbilities.Lifestyle >= 2) ? ' filled' : '')" (click)="genAbilities.Lifestyle = 2">+2</div>
       </div>
     </div>
   </div>
@@ -196,22 +196,22 @@
       <div class="label">Health</div>
       <div class="ability-value">
         <div *ngFor="let i of aiToFrom(15)">
-          <div class="circle" [ngClass]="'circle' + ((genAbilities.health >= i) ? ' filled' : '')" (click)="setGenAbility('health', i)">{{ i }}</div>
+          <div class="circle" [ngClass]="'circle' + ((genAbilities.Health >= i) ? ' filled' : '')" (click)="setGenAbility('Health', i)">{{ i }}</div>
         </div>
       </div>
       <div class="label">Morale</div>
       <div class="ability-value">
         <div *ngFor="let i of aiToFrom(15)">
-          <div class="circle" [ngClass]="'circle' + ((genAbilities.morale >= i) ? ' filled' : '')" (click)="setGenAbility('morale', i)">{{ i }}</div>
+          <div class="circle" [ngClass]="'circle' + ((genAbilities.Morale >= i) ? ' filled' : '')" (click)="setGenAbility('Morale', i)">{{ i }}</div>
         </div>
       </div>
     </div>
     <div class="table">
       <div class="label">Threshold</div>
       <div class="label">Armor</div>
-      <div class="value">{{ genAbilities.healthThreshold }}</div>
+      <div class="value">{{ genAbilities.HealthThreshold }}</div>
       <div class="value">{{ calcArmor() }}</div>
-      <div class="value">{{ genAbilities.moraleThreshold }}</div>
+      <div class="value">{{ genAbilities.MoraleThreshold }}</div>
       <div class="value">{{ calcGrit() }}</div>
       <div class="label">Threshold</div>
       <div class="label">Grit</div>
