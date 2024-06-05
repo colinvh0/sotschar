@@ -160,12 +160,12 @@
             <div class="ability-value">
               <div *ngFor="let i of aiToFrom(15)">
                 <div
-                  [ngClass]="'circle' + ((genAbilities[ability.name] >= i) ? ' filled' : '') + (i == 8 ? ' talent' : '')"
+                  [ngClass]="'circle' + ((genAbilities[ability.name].ranks >= i) ? ' filled' : '') + (i == 8 ? ' talent' : '')"
                   (click)="setGenAbility(ability.name, i)"
                 ></div>
               </div>
             </div>
-            <div [ngClass]="'talent-name' + ((genAbilities[ability.name] < 8) ? ' locked' : '')">{{ ability.talent }}</div>
+            <div [ngClass]="'talent-name' + ((genAbilities[ability.name].ranks < 8) ? ' locked' : '')">{{ ability.talent }}</div>
           </div>
         </div>
       }
