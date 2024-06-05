@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+// TODO: validation
 // TODO: image url/upload/crop
 // TODO: alternate views (play, print)
 // TODO: load/save
