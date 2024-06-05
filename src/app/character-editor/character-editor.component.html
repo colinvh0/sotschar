@@ -3,11 +3,6 @@
     <option [attr.value]="faction"></option>
   }
 </datalist>
-<datalist id="sphere-list">
-  @for (sphere of tup.spheres; track sphere;) {
-    <option [attr.value]="sphere[0]"></option>
-  }
-</datalist>
 <datalist id="health-sphere-list">
   @for (sphere of tup.spheres; track sphere;) {
     @if (sphere[1]) {
@@ -78,8 +73,10 @@
   </div>
   <div class="logo"><img src="assets/logo.png" alt="Swords of the Serpentine"></div>
   <div class="panel portrait-panel">
-    <div>
+    <div class="flex-column">
       <div class="head label">Character Portrait</div>
+      <div class="input">URL: <input type="url" formControlName="portraitUrl"></div>
+      <div class="portrait" [ngStyle]="{'background-image': 'url(' + formGroup.controls.portraitUrl.value + ')'}"></div>
     </div>
   </div>
   <div class="panel drives-panel">

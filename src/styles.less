@@ -281,6 +281,21 @@ body {
   margin-top: 1.6em;
   margin-left: 1.5em;
 }
+.character-edit .portrait-panel .input input[type="url"] {
+  width: 9em;
+}
+.character-edit .portrait-panel .flex-column {
+  height: 100%;
+}
+.character-edit .portrait-panel .flex-column>* {
+  flex-shrink: 0;
+}
+.character-edit .portrait-panel .flex-column>.portrait {
+  height: 100%;
+  width: 100%;
+  flex-shrink: 1;
+  background-size: cover;
+}
 
 .character-edit .drives-panel {
   grid-column: three 1 / three 2;

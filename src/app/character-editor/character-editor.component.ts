@@ -49,6 +49,7 @@ export class CharacterEditorComponent {
     drive1: new FormControl(''),
     drive2: new FormControl(''),
     drive3: new FormControl(''),
+    portraitUrl: new FormControl(''),
     spotFrailty: new FormControl(''),
     sorceryAffects: new FormControl('health'),
     wealth: new FormControl('0'),
