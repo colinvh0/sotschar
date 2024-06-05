@@ -75,7 +75,7 @@
   <div class="panel portrait-panel">
     <div class="flex-column">
       <div class="head label">Character Portrait</div>
-      <div class="input">URL: <input type="url" formControlName="portraitUrl"></div>
+      <div class="input flex"><div>URL:</div><input type="url" formControlName="portraitUrl"></div>
       <div class="portrait" [ngStyle]="{'background-image': 'url(' + formGroup.controls.portraitUrl.value + ')'}"></div>
     </div>
   </div>
