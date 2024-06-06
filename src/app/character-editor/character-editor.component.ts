@@ -28,6 +28,7 @@ export class CharacterEditorComponent {
   cookies = inject(CookieService);
 
   #mode = 'off';
+  #showConfig = true;
   canSave = false;
   adjectives = [''];
   drives = [new Drive(), new Drive(), new Drive()];
@@ -67,7 +68,7 @@ export class CharacterEditorComponent {
   });
   
   constructor() {
-    this.initMode();
+    this.initView();
     this.initFields();
     afterNextRender(() => {
       this.loadFromLocal();
@@ -155,10 +156,21 @@ export class CharacterEditorComponent {
     }
   }
   
-  initMode(): void {
-    const m = this.cookies.get('_m');
-    if (m) {
-      this.#mode = m;
+  initView(): void {
+    const vr = this.cookies.get('_v');
+    if (vr) {
+      const v = JSON.parse(vr);
+      if (v) {
+        if ('m' in v && v['m']) {
+          this.#mode = v['m'];
+        }
+        if ('sc' in v) {
+          this.#showConfig = v['sc'];
+        }
+      }
+    }
+    if (this.mode == 'off') {
+      this.mode = 'edit';
     }
   }
   
@@ -168,7 +180,23 @@ export class CharacterEditorComponent {
   
   set mode(m: string) {
     this.#mode = m;
-    this.cookies.set('_m', m);
+    this.saveView();
+  }
+  
+  get showConfig() {
+    return this.#showConfig;
+  }
+  
+  set showConfig(sc: boolean) {
+    this.#showConfig = sc;
+    this.saveView();
+  }
+  
+  saveView(): void {
+    this.cookies.set('_v', JSON.stringify({
+      m: this.mode,
+      sc: this.showConfig,
+    }));
   }
   
   get invCatNames(): string[] {
