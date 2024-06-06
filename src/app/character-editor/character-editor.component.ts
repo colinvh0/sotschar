@@ -76,6 +76,13 @@ export class CharacterEditorComponent {
     }
   }
   
+  fmt(i: number): string {
+    if (i >= 0) {
+      return i + '';
+    }
+    return '−' + -i;
+  }
+  
   aiToFrom(t: number, f?: number): Array<number> {
     if (t == undefined) {
       t = 0;
@@ -136,6 +143,29 @@ export class CharacterEditorComponent {
       }
     }
     return result;
+  }
+  
+  staminaPlayColor(i: number): string {
+    if (i < 0 && i >= -5) {
+      return 'yellow';
+    }
+    if (i < -5 && i >= -10) {
+      return 'orange';
+    }
+    if (i < -10) {
+      return 'red';
+    }
+    return '';
+  }
+
+  staminaPrintColor(i: number): string {
+    if (i < 0) {
+      return 'orange';
+    }
+    if (i > 0) {
+      return 'green';
+    }
+    return '';
   }
 
   addAdjective() {

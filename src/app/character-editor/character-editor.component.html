@@ -292,15 +292,27 @@
         <div class="ability-value">
           @if (mode == 'edit') {
             <div *ngFor="let i of aiToFrom(15)">
-              <div class="circle" [ngClass]="(genAbilities[s].ranks >= i) ? ' filled' : ''" (click)="setGenAbility(s, i)">{{ i }}</div>
+              <div
+                class="circle"
+                [ngClass]="(genAbilities[s].ranks >= i) ? ' filled' : ''"
+                (click)="setGenAbility(s, i)"
+              >
+                {{ fmt(i) }}
+              </div>
             </div>
           } @else {
             <div *ngFor="let i of aiToFrom(15, -12)">
               @if (genAbilities[s].ranks >= i) {
                 @if (mode == 'play') {
-                  <div class="circle" [ngClass]="(genAbilities[s].pool >= i) ? ' filled' : ''" (click)="adjustGenPool(s, genAbilities[s].pool < i)">{{ i }}</div>
+                  <div
+                    class="circle"
+                    [ngClass]="((genAbilities[s].pool >= i) ? ' filled' : '') + ' ' + staminaPlayColor(genAbilities[s].pool)"
+                    (click)="adjustGenPool(s, genAbilities[s].pool < i)"
+                  >
+                    {{ i }}
+                  </div>
                 } @else if (mode == 'print') {
-                  <div class="circle">{{ i }}</div>
+                  <div class="circle" [ngClass]="staminaPrintColor(i)">{{ fmt(i) }}</div>
                 }
               } @else {
                 <div class="circle spacer"></div>
