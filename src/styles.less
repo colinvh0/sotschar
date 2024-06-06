@@ -35,6 +35,10 @@ body {
   font-size: 15px;
 }
 
+.invisible {
+  visibility: hidden;
+}
+
 .flex {
   display: flex;
   align-items: center;
@@ -191,9 +195,6 @@ body {
   border-color: green;
   background-color: green;
 }
-.character-sheet div.add.add-full button {
-  display: none;
-}
 
 .character-sheet input[type="text"] {
   font-size: 12px;
@@ -250,6 +251,11 @@ body {
 .character-sheet .title3 {
   grid-column: two / right;
   padding-top: .25em;
+}
+
+.character-sheet .input>span {
+  height: 1.9em;
+  padding: 3px 4px;
 }
 
 .character-edit section.config {

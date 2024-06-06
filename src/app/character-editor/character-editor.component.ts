@@ -9,6 +9,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 // TODO: load from template
 // TODO: factions list editor
 // TODO: advancement (explicitly buy Build points)
+// TODO: fix text knockouts in h4s
 
 @Component({
   selector: 'app-character-editor',
