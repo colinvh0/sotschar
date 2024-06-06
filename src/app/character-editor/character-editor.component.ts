@@ -2,12 +2,13 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+// TODO: MS evaluate alternate views strategy
 // TODO: validation
 // TODO: image url/upload/crop
-// TODO: alternate views (play, print)
 // TODO: load/save
 // TODO: load from template
 // TODO: factions list editor
+// TODO: advancement (explicitly buy Build points)
 
 @Component({
   selector: 'app-character-editor',
@@ -52,8 +53,8 @@ export class CharacterEditorComponent {
     tnk: new FormControl(''),
     profession: new FormControl(''),
     portraitUrl: new FormControl(''),
-    spotFrailty: new FormControl('health'),
-    sorceryAffects: new FormControl('health'),
+    spotFrailty: new FormControl('Health'),
+    sorceryAffects: new FormControl('Health'),
     wealth: new FormControl('0'),
   });
   
@@ -113,7 +114,10 @@ export class CharacterEditorComponent {
     for (let i = 0; i < this.gear.length; i++) {
       const matches = this.gear[i].value.matchAll(re);
       for (const match of matches) {
-        result += parseInt(match[1], 10);
+        const a = parseInt(match[1], 10);
+        if (a > result) {
+          result = a;
+        }
       }
     }
     return this.genAbilities.Armor = result;
@@ -162,11 +166,11 @@ export class CharacterEditorComponent {
   }
   
   setInvAbility(cat: string, name: string, i: number): void {
-    const a = this.invAbilities[cat];
-    if (a[name].ranks == i) {
-      a[name].ranks--;
+    const a = this.invAbilities[cat][name];
+    if (a.ranks == i) {
+      a.ranks--;
     } else {
-      a[name].ranks = i;
+      a.ranks = i;
     }
   }
 
@@ -180,16 +184,53 @@ export class CharacterEditorComponent {
   }
 
   setGenAbility(name: string, i: number): void {
-    if (this.genAbilities[name] == i) {
-      this.genAbilities[name].ranks--;
+   const a = this.genAbilities[name];
+    if (a.ranks == i) {
+      a.ranks--;
     } else {
-      this.genAbilities[name].ranks = i;
+      a.ranks = i;
     }
-    if (name == 'health' || name == 'morale') {
-      this.genAbilities[name + 'Threshold'] = (i > 9) ? 4 : 3;
+    if (name == 'Health' || name == 'Morale') {
+      this.extAbilities[name + 'Threshold'] = (i > 9) ? 4 : 3;
     }
   }
   
+  adjustGenPool(name: string, increment = true): void {
+    const a = this.genAbilities[name];
+    if (increment) {
+      a.pool++;
+    } else {
+      a.pool--;
+    }
+  }
+
+  setAlly(i: number, v: number): void {
+    const a = this.allegiances[i];
+    if (a.ally.ranks == v) {
+      a.ally.ranks--;
+    } else {
+      a.ally.ranks = v;
+    }
+  }
+  
+  setEnemy(i: number, v: number): void {
+    const a = this.allegiances[i];
+    if (a.enemy.ranks == v) {
+      a.enemy.ranks--;
+    } else {
+      a.enemy.ranks = v;
+    }
+  }
+  
+  adjustAllyPool(i: number, increment = true): void {
+    const a = this.allegiances[i];
+    if (increment) {
+      a.ally.pool++;
+    } else {
+      a.ally.pool--;
+    }
+  }
+
   genAbilityDefs = [
     new GeneralAbility("Athletics", "Dodge"),
     new GeneralAbility("Bind Wounds", "Plenty of Leeches"),

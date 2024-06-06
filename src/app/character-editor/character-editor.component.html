@@ -130,15 +130,19 @@
                     ></div>
                   </div>
                 } @else {
-                  <div *ngFor="let i of aiToFrom(invAbilities[category][ability.name].ranks)">
-                    @if (mode == 'play') {
-                      @if (invAbilities[category][ability.name].pool >= i) {
-                        <div class="circle filled" (click)="adjustInvPool(category, ability.name, false)"></div>
-                      } @else {
-                        <div class="circle" (click)="adjustInvPool(category, ability.name)"></div>
+                  <div *ngFor="let i of aiToFrom(5)">
+                    @if (invAbilities[category][ability.name].ranks >= i) {
+                      @if (mode == 'play') {
+                        @if (invAbilities[category][ability.name].pool >= i) {
+                          <div class="circle filled" (click)="adjustInvPool(category, ability.name, false)"></div>
+                        } @else {
+                          <div class="circle" (click)="adjustInvPool(category, ability.name)"></div>
+                        }
+                      } @else if (mode == 'print') {
+                        <div class="circle"></div>
                       }
-                    } @else if (mode == 'print') {
-                      <div class="circle"></div>
+                    } @else {
+                      <div class="circle spacer"></div>
                     }
                   </div>
                 }
@@ -159,13 +163,29 @@
           <div class="general-ability">
             <div class="ability-value">
               <div *ngFor="let i of aiToFrom(15)">
-                <div
-                  [ngClass]="'circle' + ((genAbilities[ability.name].ranks >= i) ? ' filled' : '') + (i == 8 ? ' talent' : '')"
-                  (click)="setGenAbility(ability.name, i)"
-                ></div>
+                @if (mode == 'edit') {
+                  <div
+                    [ngClass]="'circle' + ((genAbilities[ability.name].ranks >= i) ? ' filled' : '') + (i == 8 ? ' talent' : '')"
+                    (click)="setGenAbility(ability.name, i)"
+                  ></div>
+                } @else {
+                  @if (genAbilities[ability.name].ranks >= i) {
+                    @if (mode == 'play') {
+                      @if (genAbilities[ability.name].pool >= i) {
+                        <div class="circle filled" (click)="adjustGenPool(ability.name, false)"></div>
+                      } @else {
+                        <div class="circle" (click)="adjustGenPool(ability.name)"></div>
+                      }
+                    } @else if (mode == 'print') {
+                      <div class="circle"></div>
+                    }
+                  } @else {
+                    <div class="circle spacer"></div>
+                  }
+                }
               </div>
             </div>
-            <div [ngClass]="'talent-name' + ((genAbilities[ability.name].ranks < 8) ? ' locked' : '')">{{ ability.talent }}</div>
+            <div *ngIf="mode == 'edit' || genAbilities[ability.name].ranks >= 8" [ngClass]="'talent-name' + ((genAbilities[ability.name].ranks < 8) ? ' locked' : '')">{{ ability.talent }}</div>
           </div>
         </div>
       }
@@ -175,29 +195,52 @@
     <div>
       @for (adj of allegiances; track adj; let i = $index) {
         <div class="input">
-          <input type="text" class="allegiances" id="alleg{{i}}" [(ngModel)]="allegiances[i].name" [ngModelOptions]="{standalone: true}" list="faction-list" />
-          <div>
-            <div class="ability-value">
-              <div *ngFor="let j of aiToFrom(5)">
-                <div
-                  [ngClass]="'circle' + ((allegiances[i].ally.ranks >= j) ? ' filled' : '')"
-                  (click)="allegiances[i].ally.ranks = j"
-                >A</div>
+          @if (mode == 'edit') {
+            <input type="text" class="allegiances" id="alleg{{i}}" [(ngModel)]="allegiances[i].name" [ngModelOptions]="{standalone: true}" list="faction-list" />
+            <div>
+              <div class="ability-value">
+                <div *ngFor="let j of aiToFrom(5)">
+                  <div
+                    [ngClass]="'circle' + ((allegiances[i].ally.ranks >= j) ? ' filled' : '')"
+                    (click)="setAlly(i, j)"
+                  >A</div>
+                </div>
+              </div>
+              <div class="ability-value">
+                <div *ngFor="let j of aiToFrom(5)">
+                  <div
+                    [ngClass]="'circle red' + ((allegiances[i].enemy.ranks >= j) ? ' filled' : '')"
+                    (click)="setEnemy(i, j)"
+                  >E</div>
+                </div>
               </div>
             </div>
-            <div class="ability-value">
-              <div *ngFor="let j of aiToFrom(5)">
+            <button class="del" (click)="delAllegiance(i)">−</button>
+          } @else {
+            {{ allegiances[i].name }}
+            <div>
+              <div class="ability-value">
+                <div *ngFor="let j of aiToFrom(allegiances[i].ally.ranks)">
+                  @if (mode == 'play') {
+                    @if (allegiances[i].ally.pool >= j) {
+                      <div class="circle filled" (click)="adjustAllyPool(i, false)">A</div>
+                    } @else {
+                      <div class="circle" (click)="adjustAllyPool(i)">A</div>
+                    }
+                  } @else if (mode == 'print') {
+                    <div class="circle">A</div>
+                  }
+                </div>
                 <div
-                  [ngClass]="'circle red' + ((allegiances[i].enemy.ranks >= j) ? ' filled' : '')"
-                  (click)="allegiances[i].enemy.ranks = j"
+                  *ngFor="let j of aiToFrom(allegiances[i].enemy.ranks)"
+                  [ngClass]="'circle red' + ((mode == 'play' && allegiances[i].enemy.pool >= j) ? ' filled' : '')"
                 >E</div>
               </div>
             </div>
-          </div>
-          <button class="del" (click)="delAllegiance(i)">−</button>
+          }
         </div>
       }
-      <div [ngClass]="'add' + ((allegiances.length >= 12) ? ' add-full' : '')"><button (click)="addAllegiance()">+</button></div>
+      <div *ngIf="mode == 'edit'" [ngClass]="'add' + ((allegiances.length >= 12) ? ' add-full' : '')"><button (click)="addAllegiance()">+</button></div>
     </div>
   </div>
   <div class="panel wealth-panel">
@@ -207,28 +250,50 @@
     </label>
     <div class="lifestyle">
       <div class="label">Lifestyle</div>
-      <div>{{ tup.lifestyle[extAbilities.Lifestyle + 2] }}</div>
-      <div class="ability-value">
-        <div [ngClass]="'circle' + ((extAbilities.Lifestyle <= -2) ? ' filled' : '')" (click)="extAbilities.Lifestyle = -2">−2</div>
-        <div [ngClass]="'circle' + ((extAbilities.Lifestyle <= -1) ? ' filled' : '')" (click)="extAbilities.Lifestyle = -1">−1</div>
-        <div class="circle filled" (click)="extAbilities.Lifestyle = 0">0</div>
-        <div [ngClass]="'circle' + ((extAbilities.Lifestyle >= 1) ? ' filled' : '')" (click)="extAbilities.Lifestyle = 1">+1</div>
-        <div [ngClass]="'circle' + ((extAbilities.Lifestyle >= 2) ? ' filled' : '')" (click)="extAbilities.Lifestyle = 2">+2</div>
-      </div>
+      @if (mode == 'edit' || mode == 'play') {
+        <div>{{ tup.lifestyle[extAbilities.Lifestyle + 2] }}</div>
+        <div class="ability-value">
+          <div [ngClass]="'circle' + ((extAbilities.Lifestyle <= -2) ? ' filled' : '')" (click)="extAbilities.Lifestyle = -2">−2</div>
+          <div [ngClass]="'circle' + ((extAbilities.Lifestyle <= -1) ? ' filled' : '')" (click)="extAbilities.Lifestyle = -1">−1</div>
+          <div class="circle filled" (click)="extAbilities.Lifestyle = 0">0</div>
+          <div [ngClass]="'circle' + ((extAbilities.Lifestyle >= 1) ? ' filled' : '')" (click)="extAbilities.Lifestyle = 1">+1</div>
+          <div [ngClass]="'circle' + ((extAbilities.Lifestyle >= 2) ? ' filled' : '')" (click)="extAbilities.Lifestyle = 2">+2</div>
+        </div>
+      } @else if (mode == 'print') {
+        <div>_________________</div>
+        <div class="ability-value">
+          <div class="circle"></div>
+          <div class="circle"></div>
+        </div>
+      }
     </div>
   </div>
   <div class="stamina-section">
     <div class="panel grid">
       <div class="label">Health</div>
       <div class="ability-value">
-        <div *ngFor="let i of aiToFrom(15)">
-          <div class="circle" [ngClass]="'circle' + ((genAbilities.Health.ranks >= i) ? ' filled' : '')" (click)="setGenAbility('Health', i)">{{ i }}</div>
-        </div>
+        @if (mode == 'edit') {
+          <div *ngFor="let i of aiToFrom(15)">
+            <div [ngClass]="'circle' + ((genAbilities.Health.ranks >= i) ? ' filled' : '')" (click)="setGenAbility('Health', i)">{{ i }}</div>
+          </div>
+        } @else {
+          <div *ngFor="let i of aiToFrom(15, -12)">
+            @if (genAbilities.Health.ranks >= i) {
+              @if (mode == 'play') {
+                <div [ngClass]="'circle' + ((genAbilities.Health.pool >= i) ? ' filled' : '')" (click)="adjustGenPool('Health', genAbilities.Health.pool < i)">{{ i }}</div>
+              } @else if (mode == 'print') {
+                <div class="circle">{{ i }}</div>
+              }
+            } @else {
+              <div class="circle spacer"></div>
+            }
+          </div>
+        }
       </div>
       <div class="label">Morale</div>
       <div class="ability-value">
         <div *ngFor="let i of aiToFrom(15)">
-          <div class="circle" [ngClass]="'circle' + ((genAbilities.Morale.ranks >= i) ? ' filled' : '')" (click)="setGenAbility('Morale', i)">{{ i }}</div>
+          <div [ngClass]="'circle' + ((genAbilities.Morale.ranks >= i) ? ' filled' : '')" (click)="setGenAbility('Morale', i)">{{ i }}</div>
         </div>
       </div>
     </div>
