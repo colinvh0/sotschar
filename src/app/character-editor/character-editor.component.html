@@ -87,7 +87,7 @@
           <button class="del" (click)="delAdjective(i)">−</button>
         </div>
       }
-      <div class="add" *ngIf="adjectives.length >= 5"><button (click)="addAdjective()">+</button></div>
+      <div class="add" *ngIf="adjectives.length < 5"><button (click)="addAdjective()">+</button></div>
     </div>
   </div>
   <div class="logo"><img src="assets/logo.png" alt="Swords of the Serpentine"></div>
