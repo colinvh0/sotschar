@@ -1,8 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { AfterRenderPhase, Component, Input, afterNextRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-// TODO: MS evaluate alternate views strategy
 // TODO: validation
 // TODO: image url/upload/crop
 // TODO: load/save
@@ -10,6 +9,10 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 // TODO: factions list editor
 // TODO: advancement (explicitly buy Build points)
 // TODO: fix text knockouts in h4s
+// TODO: play/print: adjectives, allegiances
+// TODO KC: handle favors/grudges
+// TODO KC: square General checkboxes??
+// TODO KC: adjectives just a text field?
 
 @Component({
   selector: 'app-character-editor',
@@ -19,7 +22,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
   styleUrl: './character-editor.component.less'
 })
 export class CharacterEditorComponent {
-  mode = 'edit';
+  #mode = 'edit';
   adjectives = [{key: '0', value: ''}];
   drives = [new Drive(0), new Drive(1), new Drive(2)];
   invAbilities: any = {};
@@ -60,6 +63,13 @@ export class CharacterEditorComponent {
   });
   
   constructor() {
+    this.initMode();
+    this.initFields();
+    this.loadLocal('char');
+    this.initSubscribe();
+  }
+  
+  initFields(): void {
     for (const i in this.invAbilityDefs) {
       let a = this.invAbilityDefs[i];
       if (!(a.category in this.invCats)) {
@@ -75,7 +85,53 @@ export class CharacterEditorComponent {
       this.genAbilities[gen[i].name] = new Ability();
     }
   }
+
+  loadLocal(key: string): void {
+    afterNextRender(() => {
+      const json = localStorage.getItem(key);
+      if (json) {
+        this.formGroup.setValue(JSON.parse(json));
+      }
+    }, {phase: AfterRenderPhase.Read});
+  }
+
+  saveLocal(key: string): void {
+    localStorage.setItem(key, JSON.stringify({
+      g: JSON.stringify(this.formGroup.getRawValue()),
+      e: this.extAbilities,
+      ai: this.invAbilities,
+      ag: this.genAbilities,
+    }));
+  }
+
+  initSubscribe(): void {
+    for (const name in this.formGroup.controls) {
+      this.formGroup.get(name)!.valueChanges.subscribe((formValue) => {
+        this.saveLocal('char');
+      });
+    }
+  }
   
+  initMode(): void {
+    afterNextRender(() => {
+      const m = localStorage.getItem('_m');
+      if (m) {
+        this.#mode = m;
+      }
+    }, {phase: AfterRenderPhase.Read});
+  }
+  
+  get mode() {
+    return this.#mode;
+  }
+  
+  set mode(m: string) {
+    this.#mode = m;
+    afterNextRender(() => {
+      localStorage.setItem('_m', m);
+    }, {phase: AfterRenderPhase.Write});
+  }
+
   fmt(i: number): string {
     if (i >= 0) {
       return i + '';
@@ -143,6 +199,16 @@ export class CharacterEditorComponent {
       }
     }
     return result;
+  }
+  
+  get nonIconicGear(): string {
+    const acc = [];
+    for (let i = 0; i < this.gear.length; i++) {
+      if (!this.gear[i].iconic && this.gear[i].value.length) {
+        acc.push(this.gear[i].value);
+      }
+    }
+    return acc.join(', ');
   }
   
   staminaPlayColor(i: number): string {

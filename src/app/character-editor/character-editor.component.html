@@ -17,7 +17,7 @@
     }
   }
 </datalist>
-<div class="character-edit" [formGroup]="formGroup">
+<div class="character-sheet-wrap" [formGroup]="formGroup">
 <section class="config" *ngIf="mode == 'edit'">
   <h1 class="head">Edit Character</h1>
   <div>
@@ -101,17 +101,22 @@
   <div class="panel drives-panel">
     <div>
       <div class="head label">What is Best in Life?</div>
-      @for (drive of drives; track drive;) {
-        <div class="input">
-          @if (mode == 'edit') {
-            <input type="text" [(ngModel)]="drive.value" [ngModelOptions]="{standalone: true}">
-          } @else if (mode == 'play') {
-            <div class="circle" [ngClass]="(drive.pool >= 1) ? ' filled' : ''" (click)="drive.pool = (drive.pool == 1) ? 0 : 1"></div> {{ drive.value }}
-          } @else if (mode == 'print') {
-            <div class="circle" ></div> {{ drive.value }}
-          }
-        </div>
-      }
+      <div class="flex-column">
+        @for (drive of drives; track drive;) {
+          <div class="input">
+            @if (mode == 'edit') {
+              <input type="text" [(ngModel)]="drive.value" [ngModelOptions]="{standalone: true}">
+            } @else {
+              @if (mode == 'play') {
+                <div class="circle" [ngClass]="(drive.pool >= 1) ? ' filled' : ''" (click)="drive.pool = (drive.pool == 1) ? 0 : 1"></div>
+              } @else if (mode == 'print') {
+                <div class="circle" ></div> 
+              }
+              <div>{{ drive.value }}</div>
+            }
+          </div>
+        }
+      </div>
     </div>
   </div>
   <section class="investigative-abilities subgrid">
@@ -233,7 +238,7 @@
             </div>
             <button class="del" (click)="delAllegiance(i)">−</button>
           } @else {
-            {{ allegiances[i].name }}
+            <div>{{ allegiances[i].name }}</div>
             <div>
               <div class="ability-value">
                 <div *ngFor="let j of aiToFrom(allegiances[i].ally.ranks)">
@@ -337,23 +342,44 @@
   <h4 class="title3"><span>Sorcerous Spheres</span></h4>
   <div class="panel gear-panel">
     <div>
-      @for (_ of gear; track _; let i = $index) {
-        <div class="input">
-          <input type="checkbox" class="gear" id="gear-iconic{{i}}" [(ngModel)]="gear[i].iconic" [ngModelOptions]="{standalone: true}">
-          <input type="text" class="gear" id="gear{{i}}" [(ngModel)]="gear[i].value" [ngModelOptions]="{standalone: true}">
-          <button class="del" (click)="delGear(i)">−</button>
-        </div>
+      @if (mode == 'edit') {
+        @for (_ of gear; track _; let i = $index) {
+          <div class="input">
+            <input type="checkbox" class="gear" id="gear-iconic{{i}}" [(ngModel)]="gear[i].iconic" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="gear" id="gear{{i}}" [(ngModel)]="gear[i].value" [ngModelOptions]="{standalone: true}">
+            <button class="del" (click)="delGear(i)">−</button>
+          </div>
+        }
+        <div class="add" *ngIf="gear.length < 100"><button (click)="addGear()">+</button></div>
+      } @else {
+        @for (_ of gear; track _; let i = $index) {
+          @if (gear[i].iconic) {
+            <div class="gear">{{ gear[i].value }}</div>
+          }
+        }
+        <div class="gear">{{ nonIconicGear }}</div>
       }
-      <div class="add" *ngIf="gear.length < 100"><button (click)="addGear()">+</button></div>
     </div>
   </div>
   <div class="panel spheres-panel">
-    <div class="flex-column">
+    <div>
       @if (invAbilities.Sorcerer.Corruption.ranks > 0) {
-        <div class="label-tiny">Affects: <label><input type="radio" formControlName="sorceryAffects" value="Health" /> Health</label>&nbsp;<label><input type="radio" formControlName="sorceryAffects" value="Morale" /> Morale</label></div>
+        <div class="label-tiny center">
+          Affects:
+          @if (mode == 'edit') {
+            <label><input type="radio" formControlName="sorceryAffects" value="Health" /> Health </label>
+            <label><input type="radio" formControlName="sorceryAffects" value="Morale" /> Morale </label>
+          } @else {
+            {{ formGroup.controls.sorceryAffects.value }}
+          }
+        </div>
       }
       @for (i of aiToFrom(invAbilities.Sorcerer.Corruption.ranks); track i;) {
-        <input type="text" class="sphere" id="sphere{{i}}" [(ngModel)]="spheres[i]" [ngModelOptions]="{standalone: true}" [attr.list]="formGroup.controls.sorceryAffects.value!.toLowerCase() + '-sphere-list'" />
+        @if (mode == 'edit') {
+          <input type="text" class="sphere" id="sphere{{i}}" [(ngModel)]="spheres[i]" [ngModelOptions]="{standalone: true}" [attr.list]="formGroup.controls.sorceryAffects.value!.toLowerCase() + '-sphere-list'" />
+        } @else {
+          <div class="value">{{ spheres[i] }}</div>
+        }
       }
     </div>
   </div>
