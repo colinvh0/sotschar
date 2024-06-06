@@ -137,6 +137,7 @@ body {
 .character-edit-grid {
   display: grid;
   grid-template-columns: [left] 4fr [three] 3fr [two] 1fr [three] 4fr [right];
+  grid-template-rows: auto auto auto auto auto auto auto 7em;
   gap: .25em;
 }
 
@@ -366,6 +367,7 @@ body {
 
 .character-sheet .wealth-panel {
   grid-column: two / right;
+  height: 7em;
   border-top-width: .95em;
   display: flex;
   flex-direction: column;

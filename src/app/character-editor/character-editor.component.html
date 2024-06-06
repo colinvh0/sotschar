@@ -270,32 +270,28 @@
   </div>
   <div class="stamina-section">
     <div class="panel grid">
-      <div class="label">Health</div>
-      <div class="ability-value">
-        @if (mode == 'edit') {
-          <div *ngFor="let i of aiToFrom(15)">
-            <div [ngClass]="'circle' + ((genAbilities.Health.ranks >= i) ? ' filled' : '')" (click)="setGenAbility('Health', i)">{{ i }}</div>
-          </div>
-        } @else {
-          <div *ngFor="let i of aiToFrom(15, -12)">
-            @if (genAbilities.Health.ranks >= i) {
-              @if (mode == 'play') {
-                <div [ngClass]="'circle' + ((genAbilities.Health.pool >= i) ? ' filled' : '')" (click)="adjustGenPool('Health', genAbilities.Health.pool < i)">{{ i }}</div>
-              } @else if (mode == 'print') {
-                <div class="circle">{{ i }}</div>
+      @for (s of ['Health', 'Morale']; track s) {
+        <div class="label">{{ s }}</div>
+        <div class="ability-value">
+          @if (mode == 'edit') {
+            <div *ngFor="let i of aiToFrom(15)">
+              <div [ngClass]="'circle' + ((genAbilities[s].ranks >= i) ? ' filled' : '')" (click)="setGenAbility(s, i)">{{ i }}</div>
+            </div>
+          } @else {
+            <div *ngFor="let i of aiToFrom(15, -12)">
+              @if (genAbilities[s].ranks >= i) {
+                @if (mode == 'play') {
+                  <div [ngClass]="'circle' + ((genAbilities[s].pool >= i) ? ' filled' : '')" (click)="adjustGenPool(s, genAbilities[s].pool < i)">{{ i }}</div>
+                } @else if (mode == 'print') {
+                  <div class="circle">{{ i }}</div>
+                }
+              } @else {
+                <div class="circle spacer"></div>
               }
-            } @else {
-              <div class="circle spacer"></div>
-            }
-          </div>
-        }
-      </div>
-      <div class="label">Morale</div>
-      <div class="ability-value">
-        <div *ngFor="let i of aiToFrom(15)">
-          <div [ngClass]="'circle' + ((genAbilities.Morale.ranks >= i) ? ' filled' : '')" (click)="setGenAbility('Morale', i)">{{ i }}</div>
+            </div>
+          }
         </div>
-      </div>
+      }
     </div>
     <div class="table">
       <div class="label">Threshold</div>
