@@ -172,7 +172,7 @@
             <div class="ability">
               <div class="ability-name">{{ ability }}</div>
               @if (invDef(category, ability)!.healthMorale) {
-                <div class="label-tiny" *ngIf="invAbilities[category][ability].ranks >= 1">
+                <div class="label-tiny" *ngIf="invAbilities[category][ability].ranks == 1">
                   @if (mode == 'edit') {
                     <div><label><input type="radio" formControlName="spotFrailty" value="Health"> Health</label></div>
                     <div><label><input type="radio" formControlName="spotFrailty" value="Morale"> Morale</label></div>
