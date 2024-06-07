@@ -246,18 +246,21 @@
                       class="circle"
                       [ngClass]="((genAbilities[ability.name].ranks >= i) ? ' filled' : '') + (i == 8 ? ' talent' : '')"
                       (click)="setGenAbility(ability.name, i)"
-                    ></div>
+                    >{{ curGenRank(ability.name, i) }}</div>
                   } @else {
                     @if (genAbilities[ability.name].ranks >= i) {
                       @if (mode == 'play') {
-                        @if (genAbilities[ability.name].pool >= i) {
-                          <div class="circle filled" (click)="adjustGenPool(ability.name, false)"></div>
-                        } @else {
-                          <div class="circle" (click)="adjustGenPool(ability.name)"></div>
-                        }
+                        <div
+                          class="circle"
+                          [ngClass]="(genAbilities[ability.name].pool >= i) ? ' filled' : ''"
+                          (click)="adjustGenPool(ability.name, genAbilities[ability.name].pool < i)"
+                        >
+                          {{ curGenRank(ability.name, i) }}
+                        </div>
                       } @else if (mode == 'print') {
-                        <div class="circle"></div>
+                        <div class="circle">{{ curGenRank(ability.name, i) }}</div>
                       }
+
                     } @else {
                       <div class="circle spacer"></div>
                     }

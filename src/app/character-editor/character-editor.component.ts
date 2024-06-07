@@ -9,10 +9,22 @@ import { CookieService } from 'ngx-cookie-service';
 // TODO: factions list editor
 // TODO: advancement (explicitly buy Build points)
 // TODO: fix text knockouts in h4s
-// TODO: mobile
+// TODO: mobile input[number] has strong validation, desktop does not
 // TODO KC: handle favors/grudges
 // TODO KC: square General checkboxes??
 // TODO KC: adjectives just a text field?
+// TODO KC: editable during play?
+
+/* M$ PowerHELL
+// approx 5 - 6.5 chars per "word"
+
+type '.\src\app\character-editor\character-editor.component.html', '.\src\app\character-editor\character-editor.component.ts', '.\src\styles.less' | Measure-Object -line -word -char
+echo 'html, ts, styles.less'
+foreach ($file in 'src\app\character-editor\character-editor.component.html', 'src\app\character-editor\character-editor.component.ts', 'src\styles.less', 'src\reset.less', 'src\font.less', 'src\svg.less' ) {
+  type $file | Measure-Object -line -word -char
+  echo $file
+}
+*/
 
 @Component({
   selector: 'app-character-editor',
@@ -428,6 +440,14 @@ export class CharacterEditorComponent {
       }
     }
     return acc.join(', ');
+  }
+  
+  curGenRank(name: string, i: number): string {
+    if (i > 4 && this.genAbilities[name].ranks == i) {
+      return i + '';
+    } else {
+      return '';
+    }
   }
   
   staminaPlayColor(i: number): string {

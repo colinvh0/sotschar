@@ -2,6 +2,8 @@
 
 @mainFgColor: #6c1f17;
 @mainBgColor: #e8dbce;
+@pageBgUrl: url(assets/page-bg.webp);
+@pageBgColor: #e0d5c5;
 @outsideBorder: 2px solid @mainFgColor;
 @insideBorder: 1px solid @mainFgColor;
 
@@ -175,8 +177,8 @@ body {
   grid-template-rows: 110px auto auto auto auto auto auto 7em;
   gap: .25em;
   padding: 1.5em 3.3em;
-  background-image: url(assets/page-bg.webp);
-  background-color: #e0d5c5;
+  background-image: @pageBgUrl;
+  background-color: @pageBgColor;
   background-size: 1224px;
   background-position-x: -120px;
   color: @mainFgColor;
@@ -245,7 +247,10 @@ body {
   flex-shrink: 0;
 }*/
 .character-sheet h4>span {
-  background-image: url(assets/page-bg.webp);
+  background-image: @pageBgUrl;
+  /*background-color: @pageBgColor;*/
+  background-size: 1224px;
+  background-position-x: -120px;
   background-clip: text;
   color: transparent;
 }
