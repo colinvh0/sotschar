@@ -12,6 +12,7 @@ import { CookieService } from 'ngx-cookie-service';
 // TODO: advancement (explicitly buy Build points)
 // TODO: fix text knockouts in h4s
 // TODO: play/print: adjectives, allegiances
+// TODO: mobile
 // TODO KC: handle favors/grudges
 // TODO KC: square General checkboxes??
 // TODO KC: adjectives just a text field?
@@ -79,9 +80,9 @@ export class CharacterEditorComponent {
   loadFromLocal(): void {
     let c;
     try {
-      c = localStorage.getItem('char');
+      c = localStorage.getItem('char'); // TODO: LZString.decompress(...)
     } catch (e) {
-      console.trace(e);
+      console.trace(e); // TODO: only in dev
     }
     if (c) {
       this.json = c;
@@ -152,7 +153,9 @@ export class CharacterEditorComponent {
   
   saveToLocal(): void {
     if (this.canSave) {
-      localStorage.setItem('char', this.json);
+      afterNextRender(() => {
+        localStorage.setItem('char', this.json); // TODO: LZString.compress(this.json)
+      }, {phase: AfterRenderPhase.Read});
     }
   }
   
