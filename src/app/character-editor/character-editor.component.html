@@ -273,7 +273,7 @@
   </div>
   <div class="allegiances-panel flex-panel-wrap">
     <div class="faux-grid-above" *ngIf="mode == 'edit' && (freeAllies != 0 || freeEnemies != 0 || blankFactions > 0)">
-      <div class="message incomplete" *ngIf="mode == 'edit' && (freeAllies > 0)">
+      <div class="message error" *ngIf="mode == 'edit' && (freeAllies > 0)">
         <div [ngPlural]="freeAllies">
           <ng-template ngPluralCase="one">1 unassigned Ally</ng-template>
           <ng-template ngPluralCase="other">{{ freeAllies }} unassigned Allies</ng-template>
@@ -381,6 +381,12 @@
           <ng-template ngPluralCase="other">{{ staminaUnspent }} unspent Stamina Build Points</ng-template>
         </div>
       </div>
+      <div class="message error" *ngIf="mode == 'edit' && staminaUnspent < 0">
+        <div [ngPlural]="-staminaUnspent">
+          <ng-template ngPluralCase="one">1 overspent Stamina Build Point</ng-template>
+          <ng-template ngPluralCase="other">{{ -staminaUnspent }} overspent Stamina Build Points</ng-template>
+        </div>
+      </div>
     </div>
     <div class="flex">
       <div class="panel grid">
@@ -443,7 +449,7 @@
             <button class="del" (click)="delGear(i)">−</button>
           </div>
         }
-        <div class="add" *ngIf="gear.length < 100"><button (click)="addGear()">+</button></div>
+        <div class="add" *ngIf="gear.length < 10"><button (click)="addGear()">+</button></div>
       } @else {
         @for (_ of gear; track _; let i = $index) {
           @if (gear[i].iconic) {

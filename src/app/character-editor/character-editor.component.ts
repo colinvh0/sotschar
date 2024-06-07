@@ -3,15 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
-// TODO: validation
 // TODO: image url/upload/crop
 // TODO: load/save
-// TODO: keep current character in localstorage
 // TODO: load from template
 // TODO: factions list editor
 // TODO: advancement (explicitly buy Build points)
 // TODO: fix text knockouts in h4s
-// TODO: play/print: adjectives, allegiances
 // TODO: mobile
 // TODO KC: handle favors/grudges
 // TODO KC: square General checkboxes??
@@ -397,8 +394,8 @@ export class CharacterEditorComponent {
   
   get iconic(): number {
     let result = 0;
-    for (let i = 0; i < this.gear.length; i++) {
-      if (this.gear[i].iconic) {
+    for (let g of this.gear) {
+      if (g.iconic && g.value != '') {
         result++;
       }
     }
@@ -548,8 +545,10 @@ export class CharacterEditorComponent {
   }
   
   addGear() {
-    this.gear.push(new Gear());
-    this.saveToLocal();
+    if (this.gear.length < 10) {
+      this.gear.push(new Gear());
+      this.saveToLocal();
+    }
   }
 
   delGear(i: number) {
