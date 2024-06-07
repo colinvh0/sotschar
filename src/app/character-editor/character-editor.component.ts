@@ -85,7 +85,7 @@ export class CharacterEditorComponent {
   saveToLocal(): void {
     if (this.canSave) {
       localStorage.setItem('char', this.json); // TODO: LZString.compress(this.json)
-      console.log('SAVED');
+      //console.log('SAVED');
     }
   }
     
@@ -113,14 +113,32 @@ export class CharacterEditorComponent {
       this.genAbilities[name].set(o.ag[name]);
     }
     this.adjectives = o.x.adj;
+    if (this.drives.length > o.x.d.length) {
+      this.drives.splice(o.x.d.length);
+    }
     o.x.d.forEach((d: Drive, i: number) => {
+      if (i > this.drives.length - 1) {
+        this.drives[i] = new Drive();
+      }
       this.drives[i].set(d);
     });
+    if (this.allegiances.length > o.x.all.length) {
+      this.allegiances.splice(o.x.all.length);
+    }
     o.x.all.forEach((a: Allegiance, i: number) => {
+      if (i > this.allegiances.length - 1) {
+        this.allegiances[i] = new Allegiance();
+      }
       this.allegiances[i].set(a);
     });
     this.lifestyle = o.x.ls;
+    if (this.gear.length > o.x.g.length) {
+      this.gear.splice(o.x.g.length);
+    }
     o.x.g.forEach((g: Gear, i: number) => {
+      if (i > this.gear.length - 1) {
+        this.gear[i] = new Gear();
+      }
       this.gear[i].set(g);
     });
     this.spheres = o.x.s;
