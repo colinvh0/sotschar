@@ -3,17 +3,19 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
-// TODO: image url/upload/crop
-// TODO: load/save
-// TODO: load from template
-// TODO: factions list editor
 // TODO: advancement (explicitly buy Build points)
-// TODO: fix text knockouts in h4s
-// TODO: mobile input[number] has strong validation, desktop does not
+// TODO: factions list editor
+
 // TODO KC: handle favors/grudges
-// TODO KC: square General checkboxes??
 // TODO KC: adjectives just a text field?
 // TODO KC: editable during play?
+
+// TODO: load/save
+// TODO: load from template
+// TODO: mobile input[number] has strong validation, desktop does not
+// TODO: image url/upload/crop
+// TODO: fix text knockouts in h4s
+// TODO: multiplayer
 
 /* M$ PowerHELL
 // approx 5 - 6.5 chars per "word"
