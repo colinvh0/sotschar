@@ -20,7 +20,7 @@
 <div *ngIf="mode != 'off'" class="character-sheet-wrap" [formGroup]="formGroup">
 <section class="config" *ngIf="mode == 'edit'">
   <h1 class="head">Edit Character</h1>
-  <div>
+  <div *ngIf="showConfig">
     <div><label><input type="checkbox" formControlName="configS2S"> Session 2 started</label></div>
     <div><label><input type="number" formControlName="configCharacterCount"> Number of Heroes</label></div>
     <div class="flex">
@@ -46,7 +46,12 @@
 <section class="config" *ngIf="mode == 'print'">
   <h1 class="head">Print Character</h1>
 </section>
-<section class="mode"><button (click)="mode = 'edit'">Edit</button><button (click)="mode = 'play'">Play</button><button (click)="mode = 'print'">Print</button></section>
+<section class="view">
+  <button (click)="showConfig = !showConfig" [disabled]="(mode == 'play' || mode == 'print') ? 'disabled' : ''">⚙️</button>
+  <button (click)="mode = 'edit'">Edit</button>
+  <button (click)="mode = 'play'">Play</button>
+  <button (click)="mode = 'print'">Print</button>
+</section>
 <div class="character-edit-grid character-sheet">
   <div class="panel name-panel">
     <div class="name-field">
