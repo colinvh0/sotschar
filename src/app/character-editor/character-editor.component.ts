@@ -153,9 +153,9 @@ export class CharacterEditorComponent {
   
   saveToLocal(): void {
     if (this.canSave) {
-      afterNextRender(() => {
+      //afterNextRender(() => {
         localStorage.setItem('char', this.json); // TODO: LZString.compress(this.json)
-      }, {phase: AfterRenderPhase.Read});
+      //}, {phase: AfterRenderPhase.Read});
     }
   }
   
@@ -202,14 +202,6 @@ export class CharacterEditorComponent {
     }));
   }
   
-  get invCatNames(): string[] {
-    return Object.keys(this.invAbilities);
-  }
-
-  invNames(category: string): string[] {
-    return Object.keys(this.invAbilities[category]);
-  }
-
   fmt(i: number): string {
     if (i >= 0) {
       return i + '';
@@ -246,10 +238,139 @@ export class CharacterEditorComponent {
     return result;
   }
   
-  /*get invCats() {
-    return [...this.gameData.abilities.investigative.keys()];
-  }*/
+  get invBuild(): number {
+    if (this.formGroup.controls.configInvestigativeBuild.value === null) {
+      return 0;
+    } else {
+      return parseInt(this.formGroup.controls.configInvestigativeBuild.value, 10);
+    }
+  }
+
+  get genBuild(): number {
+    if (this.formGroup.controls.configGeneralBuild.value === null) {
+      return 0;
+    } else {
+      return parseInt(this.formGroup.controls.configGeneralBuild.value, 10);
+    }
+  }
+
+  get aFree(): number {
+    if (this.formGroup.controls.configFreeAllies.value === null) {
+      return 0;
+    } else {
+      return parseInt(this.formGroup.controls.configFreeAllies.value, 10);
+    }
+  }
+
+  get eFree(): number {
+    if (this.formGroup.controls.configFreeEnemies.value === null) {
+      return 0;
+    } else {
+      return parseInt(this.formGroup.controls.configFreeEnemies.value, 10);
+    }
+  }
+
+  get staminaBuild(): number {
+    if (this.formGroup.controls.configStaminaBuild.value === null) {
+      return 0;
+    } else {
+      return parseInt(this.formGroup.controls.configStaminaBuild.value, 10);
+    }
+  }
+
+  get unspentAdvancement(): number {
+    if (this.formGroup.controls.advancement.value === null) {
+      return 0;
+    } else {
+      return parseInt(this.formGroup.controls.advancement.value, 10);
+    }
+  }
   
+  get drivesEntered(): number {
+    let r = 0;
+    for (let d of this.drives) {
+      if (d.value) {
+        r++;
+      }
+    }
+    return r;
+  }
+  
+  get invCatNames(): string[] {
+    return Object.keys(this.invAbilities);
+  }
+
+  invNames(category: string): string[] {
+    return Object.keys(this.invAbilities[category]);
+  }
+  
+  get invUnspent(): number {
+    let r = this.invBuild;
+    for (let ad of this.invAbilityDefs) {
+      r -= this.invAbilities[ad.category][ad.name].ranks;
+    }
+    let fa = this.aFree;
+    let fe = this.eFree;
+    for (const a of this.allegiances) {
+      fa -= a.ally.ranks;
+      fe -= a.enemy.ranks;
+    }
+    if (fa < 0) {
+      r += fa;
+    }
+    if (fe < 0) {
+      r += fe;
+    }
+    return r;
+  }
+
+  get genUnspent(): number {
+    let r = this.genBuild;
+    for (const ad of this.genAbilityDefs) {
+      r -= this.genAbilities[ad.name].ranks;
+    }
+    return r;
+  }
+  
+  get freeAllies(): number {
+    let r = 0;
+    for (const a of this.allegiances) {
+      r += a.ally.ranks;
+    }
+    if (r < this.aFree) {
+      return this.aFree - r;
+    }
+    return 0;
+  }
+
+  get freeEnemies(): number {
+    let r = 0;
+    for (const a of this.allegiances) {
+      r += a.enemy.ranks;
+    }
+    if (r < this.eFree) {
+      return this.eFree - r;
+    }
+    return 0;
+  }
+
+  get staminaUnspent(): number {
+    let r = this.staminaBuild;
+    r -= this.genAbilities['Health'].ranks;
+    r -= this.genAbilities['Morale'].ranks;
+    return r;
+  }
+  
+  get spheresUnspent(): number {
+    let r = this.invAbilities['Sorcerer']['Corruption'].ranks;
+    for (let s of this.spheres) {
+      if (s) {
+        r--;
+      }
+    }
+    return r;
+  }
+
   calcArmor(): number {
     let result = 0;
     const re = /\(Armor (\d+)\)/g;
