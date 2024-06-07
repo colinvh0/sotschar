@@ -38,13 +38,7 @@ export class CharacterEditorComponent {
     Health: new Ability(),
     Morale: new Ability(),
   };
-  extAbilities: Record<string, number> = {
-    Lifestyle: 0,
-    HealthThreshold: 3,
-    MoraleThreshold: 3,
-    Armor: 0,
-    Grit: 0,
-  };
+  lifestyle = 0;
   allegiances = [new Allegiance(), new Allegiance()];
   gear = initGear(5);
   spheres: Array<string> = [];
@@ -67,6 +61,7 @@ export class CharacterEditorComponent {
     sorceryAffects: new FormControl('Health'),
     wealth: new FormControl('0'),
   });
+  ctl = this.formGroup.controls;
   
   constructor() {
     this.initView();
@@ -89,7 +84,14 @@ export class CharacterEditorComponent {
     }
     this.canSave = true;
   }
-  
+
+  saveToLocal(): void {
+    if (this.canSave) {
+      localStorage.setItem('char', this.json); // TODO: LZString.compress(this.json)
+      console.log('SAVED');
+    }
+  }
+    
   initFields(): void {
     for (const i in this.invAbilityDefs) {
       let a = this.invAbilityDefs[i];
@@ -107,19 +109,20 @@ export class CharacterEditorComponent {
   set json(json: string) {
     const o = JSON.parse(json);
     this.formGroup.setValue(o.g);
-    this.extAbilities = o.e;
     for (let def of this.invAbilityDefs) {
       this.invAbilities[def.category][def.name].set(o.ai[def.category][def.name]);
     }
     for (let name in this.genAbilities) {
       this.genAbilities[name].set(o.ag[name]);
     }
+    this.adjectives = o.x.adj;
     o.x.d.forEach((d: Drive, i: number) => {
       this.drives[i].set(d);
     });
     o.x.all.forEach((a: Allegiance, i: number) => {
       this.allegiances[i].set(a);
     });
+    this.lifestyle = o.x.ls;
     o.x.g.forEach((g: Gear, i: number) => {
       this.gear[i].set(g);
     });
@@ -129,13 +132,13 @@ export class CharacterEditorComponent {
   get json(): string {
     return JSON.stringify({
       g: this.formGroup.getRawValue(),
-      e: this.extAbilities,
       ai: this.invAbilities,
       ag: this.genAbilities,
       x: {
         adj: this.adjectives,
         d: this.drives,
         all: this.allegiances,
+        ls: this.lifestyle,
         g: this.gear,
         s: this.spheres,
       },
@@ -148,14 +151,6 @@ export class CharacterEditorComponent {
       this.formGroup.get(name)!.valueChanges.subscribe((formValue) => {
         self.saveToLocal();
       });
-    }
-  }
-  
-  saveToLocal(): void {
-    if (this.canSave) {
-      //afterNextRender(() => {
-        localStorage.setItem('char', this.json); // TODO: LZString.compress(this.json)
-      //}, {phase: AfterRenderPhase.Read});
     }
   }
   
@@ -331,7 +326,7 @@ export class CharacterEditorComponent {
     }
     return r;
   }
-  
+
   get freeAllies(): number {
     let r = 0;
     for (const a of this.allegiances) {
@@ -354,6 +349,16 @@ export class CharacterEditorComponent {
     return 0;
   }
 
+  get blankFactions(): number {
+    let r = 0;
+    for (const a of this.allegiances) {
+      if (a.name == '' && (a.ally.ranks || a.favor || a.enemy.ranks || a.grudge )) {
+        r++;
+      }
+    }
+    return r;
+  }
+
   get staminaUnspent(): number {
     let r = this.staminaBuild;
     r -= this.genAbilities['Health'].ranks;
@@ -371,7 +376,7 @@ export class CharacterEditorComponent {
     return r;
   }
 
-  calcArmor(): number {
+  get armor(): number {
     let result = 0;
     const re = /\(Armor (\d+)\)/g;
     for (let i = 0; i < this.gear.length; i++) {
@@ -383,20 +388,11 @@ export class CharacterEditorComponent {
         }
       }
     }
-    if (this.extAbilities['Armor'] != result) {
-      this.extAbilities['Armor'] = result;
-      this.saveToLocal();
-    }
     return result;
   }
 
-  calcGrit(): number {
-    const result = (this.iconic >= 5) ? 1 : 0;
-    if (this.extAbilities['Grit'] != result) {
-      this.extAbilities['Grit'] = result;
-      this.saveToLocal();
-    }
-    return result;
+  get grit(): number {
+    return (this.iconic >= 5) ? 1 : 0;
   }
   
   get iconic(): number {
@@ -453,29 +449,17 @@ export class CharacterEditorComponent {
     this.adjectives.splice(i, 1);
     this.saveToLocal();
   }
-
-  addAllegiance() {
-    if(this.allegiances.length < 12) {
-      this.allegiances.push(new Allegiance());
-      this.saveToLocal();
-    }
-  }
-
-  delAllegiance(i: number) {
-    this.allegiances.splice(i, 1);
-    this.saveToLocal();
-  }
-
-  addGear() {
-    this.gear.push(new Gear());
-    this.saveToLocal();
-  }
-
-  delGear(i: number) {
-    this.gear.splice(i, 1);
-    this.saveToLocal();
-  }
   
+  setAdjective(i: number, v: string) {
+    this.adjectives[i] = v;
+    this.saveToLocal();
+  }
+
+  setDrive(d: Drive, v: string) {
+    d.value = v;
+    this.saveToLocal();
+  }
+
   setInvAbility(cat: string, name: string, i: number): void {
     const a = this.invAbilities[cat][name];
     if (a.ranks == i) {
@@ -503,9 +487,6 @@ export class CharacterEditorComponent {
     } else {
       a.ranks = i;
     }
-    if (name == 'Health' || name == 'Morale') {
-      this.extAbilities[name + 'Threshold'] = (i > 9) ? 4 : 3;
-    }
     this.saveToLocal();
   }
   
@@ -516,6 +497,23 @@ export class CharacterEditorComponent {
     } else {
       a.pool--;
     }
+    this.saveToLocal();
+  }
+
+  addAllegiance() {
+    if(this.allegiances.length < 12) {
+      this.allegiances.push(new Allegiance());
+      this.saveToLocal();
+    }
+  }
+
+  delAllegiance(i: number) {
+    this.allegiances.splice(i, 1);
+    this.saveToLocal();
+  }
+
+  setAllegiance(i: number, v: string) {
+    this.allegiances[i].name = v;
     this.saveToLocal();
   }
 
@@ -549,6 +547,32 @@ export class CharacterEditorComponent {
     this.saveToLocal();
   }
   
+  addGear() {
+    this.gear.push(new Gear());
+    this.saveToLocal();
+  }
+
+  delGear(i: number) {
+    this.gear.splice(i, 1);
+    this.saveToLocal();
+  }
+  
+  setGear(i: number, v: string) {
+    this.gear[i].value = v;
+    this.saveToLocal();
+  }
+
+  setGearIconic(i: number, ico: boolean) {
+    this.gear[i].iconic = ico;
+    this.saveToLocal();
+  }
+
+  setSphere(i: number, v: string) {
+    this.spheres[i] = v;
+    this.saveToLocal();
+  }
+
+  // TODO: look for this algo and refactor to a call to this
   invDef(cat: string, name: string): InvestigativeAbility|undefined {
     for (let a of this.invAbilityDefs) {
       if (a.category == cat && a.name == name) {

@@ -17,7 +17,7 @@
     }
   }
 </datalist>
-<div *ngIf="mode != 'off'" class="character-sheet-wrap" [formGroup]="formGroup">
+<div *ngIf="mode != 'off' && canSave" class="character-sheet-wrap" [formGroup]="formGroup">
 <section class="config" *ngIf="mode == 'edit'">
   <h1 class="head">Edit Character</h1>
   <div *ngIf="showConfig">
@@ -38,8 +38,18 @@
     <div><label><input type="number" formControlName="configFreeAllies"> Free Allies</label></div>
     <div><label><input type="number" formControlName="configFreeEnemies"> Free Enemies</label></div>
     <div><label><input type="number" formControlName="advancement"> Advancement Points</label></div>
-    <div class="message incomplete" *ngIf="unspentAdvancement > 0">{{ unspentAdvancement }} unspent Advancement Points</div>
-    <div class="message error" *ngIf="unspentAdvancement < 0">{{ -unspentAdvancement }} overspent Advancement Points</div>
+    <div class="message incomplete" *ngIf="unspentAdvancement > 0">
+      <div [ngPlural]="unspentAdvancement">
+        <ng-template ngPluralCase="one">1 unspent Advancement Point</ng-template>
+        <ng-template ngPluralCase="other">{{ unspentAdvancement }} unspent Advancement Points</ng-template>
+      </div>
+    </div>
+    <div class="message error" *ngIf="unspentAdvancement < 0">
+      <div [ngPlural]="-unspentAdvancement">
+        <ng-template ngPluralCase="one">1 unspent overspent Point</ng-template>
+        <ng-template ngPluralCase="other">{{ -unspentAdvancement }} overspent Advancement Points</ng-template>
+      </div>
+    </div>
   </div>
 </section>
 <section class="config" *ngIf="mode == 'play'">
@@ -91,7 +101,7 @@
       @if (mode == 'edit') {
         @for (adj of adjectives; track adj; let i = $index) {
           <div class="input">
-            <input type="text" id="adj{{i}}" [(ngModel)]="adjectives[i]" [ngModelOptions]="{standalone: true}">
+            <input type="text" id="adj{{i}}" [ngModel]="adjectives[i]" (ngModelChange)="setAdjective(i, $event)" [ngModelOptions]="{standalone: true}">
             <button class="del" (click)="delAdjective(i)">−</button>
           </div>
         }
@@ -112,12 +122,17 @@
   <div class="panel drives-panel">
     <div>
       <div class="head label">What is Best in Life?</div>
-      <div class="message error" *ngIf="mode == 'edit' && drivesEntered < 3">{{ 3 - drivesEntered }} Drives not selected</div>
+      <div class="message error" *ngIf="mode == 'edit' && drivesEntered < 3">
+        <div [ngPlural]="3 - drivesEntered">
+          <ng-template ngPluralCase="one">1 Drive not selected</ng-template>
+          <ng-template ngPluralCase="other">{{ 3 - drivesEntered }} Drives not selected</ng-template>
+        </div>
+      </div>
       <div class="flex-column">
         @for (drive of drives; track drive;) {
           <div class="input">
             @if (mode == 'edit') {
-              <input type="text" [(ngModel)]="drive.value" [ngModelOptions]="{standalone: true}">
+              <input type="text" [ngModel]="drive.value" (ngModelChange)="setDrive(drive, $event)" [ngModelOptions]="{standalone: true}">
             } @else {
               @if (mode == 'play') {
                 <div class="circle" [ngClass]="(drive.pool >= 1) ? ' filled' : ''" (click)="drive.pool = (drive.pool == 1) ? 0 : 1"></div>
@@ -135,8 +150,18 @@
     <div class="title1">
       <h4><span>Investigative Abilities</span></h4>
       <div class="faux-grid-below" *ngIf="mode == 'edit' && invUnspent != 0">
-        <div class="message incomplete" *ngIf="mode == 'edit' && invUnspent > 0">{{ invUnspent }} unspent Investigative Build Points</div>
-        <div class="message error" *ngIf="mode == 'edit' && invUnspent < 0">{{ -invUnspent }} overspent Investigative Build Points</div>
+        <div class="message incomplete" *ngIf="mode == 'edit' && invUnspent > 0">
+          <div [ngPlural]="invUnspent">
+            <ng-template ngPluralCase="one">1 unspent Investigative Build Point</ng-template>
+            <ng-template ngPluralCase="other">{{ invUnspent }} unspent Investigative Build Points</ng-template>
+          </div>
+        </div>
+        <div class="message error" *ngIf="mode == 'edit' && invUnspent < 0">
+          <div [ngPlural]="-invUnspent">
+            <ng-template ngPluralCase="one">1 overspent Investigative Build Point</ng-template>
+            <ng-template ngPluralCase="other">{{ -invUnspent }} overspent Investigative Build Points</ng-template>
+          </div>
+        </div>
       </div>
     </div>
     @for (category of invCatNames; track category) {
@@ -193,8 +218,18 @@
   <h4 class="title3"><span>Allegiances</span></h4>
   <div class="general-panel flex-panel-wrap">
     <div class="faux-grid-above" *ngIf="mode == 'edit' && genUnspent != 0">
-      <div class="message incomplete" *ngIf="mode == 'edit' && genUnspent > 0">{{ genUnspent }} unspent General Build Points</div>
-      <div class="message error" *ngIf="mode == 'edit' && genUnspent < 0">{{ -genUnspent }} overspent General Build Points</div>
+      <div class="message incomplete" *ngIf="mode == 'edit' && genUnspent > 0">
+        <div [ngPlural]="genUnspent">
+          <ng-template ngPluralCase="one">1 unspent General Build Point</ng-template>
+          <ng-template ngPluralCase="other">{{ genUnspent }} unspent General Build Points</ng-template>
+        </div>
+      </div>
+      <div class="message error" *ngIf="mode == 'edit' && genUnspent < 0">
+        <div [ngPlural]="-genUnspent">
+          <ng-template ngPluralCase="one">1 overspent General Build Point</ng-template>
+          <ng-template ngPluralCase="other">{{ -genUnspent }} overspent General Build Points</ng-template>
+        </div>
+      </div>
     </div>
     <div class="panel">
       <div>
@@ -237,16 +272,32 @@
     </div>
   </div>
   <div class="allegiances-panel flex-panel-wrap">
-    <div class="faux-grid-above" *ngIf="mode == 'edit' && (freeAllies != 0 || freeEnemies != 0)">
-      <div class="message incomplete" *ngIf="mode == 'edit' && freeAllies > 0">{{ freeAllies }} unassigned Allies</div>
-      <div class="message error" *ngIf="mode == 'edit' && freeEnemies > 0">{{ freeEnemies }} unassigned Enemies</div>
+    <div class="faux-grid-above" *ngIf="mode == 'edit' && (freeAllies != 0 || freeEnemies != 0 || blankFactions > 0)">
+      <div class="message incomplete" *ngIf="mode == 'edit' && (freeAllies > 0)">
+        <div [ngPlural]="freeAllies">
+          <ng-template ngPluralCase="one">1 unassigned Ally</ng-template>
+          <ng-template ngPluralCase="other">{{ freeAllies }} unassigned Allies</ng-template>
+        </div>
+      </div>
+      <div class="message error" *ngIf="mode == 'edit' && freeEnemies > 0">
+        <div [ngPlural]="freeEnemies">
+          <ng-template ngPluralCase="one">1 unassigned Enemy</ng-template>
+          <ng-template ngPluralCase="other">{{ freeEnemies }} unassigned Enemies</ng-template>
+        </div>
+      </div>
+      <div class="message error" *ngIf="mode == 'edit' && blankFactions > 0">
+        <div [ngPlural]="blankFactions">
+          <ng-template ngPluralCase="one">1 Faction not selected</ng-template>
+          <ng-template ngPluralCase="other">{{ blankFactions }} Factions not selected</ng-template>
+        </div>
+      </div>
     </div>
     <div class="panel">
       <div>
         @for (_ of allegiances; track _; let i = $index) {
           <div class="input">
             @if (mode == 'edit') {
-              <input type="text" class="allegiances" id="alleg{{i}}" [(ngModel)]="allegiances[i].name" [ngModelOptions]="{standalone: true}" list="faction-list" />
+              <input type="text" class="allegiances" id="alleg{{i}}" [ngModel]="allegiances[i].name" (ngModelChange)="setAllegiance(i, $event)" [ngModelOptions]="{standalone: true}" list="faction-list" />
               <div>
                 <div class="ability-value">
                   <div *ngFor="let j of aiToFrom(5)">
@@ -305,13 +356,13 @@
     <div class="lifestyle">
       <div class="label">Lifestyle</div>
       @if (mode == 'edit' || mode == 'play') {
-        <div>{{ tup.lifestyle[extAbilities['Lifestyle'] + 2] }}</div>
+        <div>{{ tup.lifestyle[lifestyle + 2] }}</div>
         <div class="ability-value">
-          <div class="circle" [ngClass]="(extAbilities['Lifestyle'] <= -2) ? ' filled' : ''" (click)="extAbilities['Lifestyle'] = -2">−2</div>
-          <div class="circle" [ngClass]="(extAbilities['Lifestyle'] <= -1) ? ' filled' : ''" (click)="extAbilities['Lifestyle'] = -1">−1</div>
-          <div class="circle filled" (click)="extAbilities['Lifestyle'] = 0">0</div>
-          <div class="circle" [ngClass]="(extAbilities['Lifestyle'] >= 1) ? ' filled' : ''" (click)="extAbilities['Lifestyle'] = 1">+1</div>
-          <div class="circle" [ngClass]="(extAbilities['Lifestyle'] >= 2) ? ' filled' : ''" (click)="extAbilities['Lifestyle'] = 2">+2</div>
+          <div class="circle" [ngClass]="(lifestyle <= -2) ? ' filled' : ''" (click)="lifestyle = -2">−2</div>
+          <div class="circle" [ngClass]="(lifestyle <= -1) ? ' filled' : ''" (click)="lifestyle = -1">−1</div>
+          <div class="circle filled" (click)="lifestyle = 0">0</div>
+          <div class="circle" [ngClass]="(lifestyle >= 1) ? ' filled' : ''" (click)="lifestyle = 1">+1</div>
+          <div class="circle" [ngClass]="(lifestyle >= 2) ? ' filled' : ''" (click)="lifestyle = 2">+2</div>
         </div>
       } @else if (mode == 'print') {
         <div>_________________</div>
@@ -324,7 +375,12 @@
   </div>
   <div class="stamina-section">
     <div *ngIf="mode == 'edit' && (staminaUnspent != 0)">
-      <div class="message error" *ngIf="mode == 'edit' && staminaUnspent > 0">{{ staminaUnspent }} unspent Stamina Build Points</div>
+      <div class="message error" *ngIf="mode == 'edit' && staminaUnspent > 0">
+        <div [ngPlural]="staminaUnspent">
+          <ng-template ngPluralCase="one">1 unspent Stamina Build Point</ng-template>
+          <ng-template ngPluralCase="other">{{ staminaUnspent }} unspent Stamina Build Points</ng-template>
+        </div>
+      </div>
     </div>
     <div class="flex">
       <div class="panel grid">
@@ -366,10 +422,10 @@
       <div class="table">
         <div class="label">Threshold</div>
         <div class="label">Armor</div>
-        <div class="value">{{ extAbilities['HealthThreshold'] }}</div>
-        <div class="value">{{ calcArmor() }}</div>
-        <div class="value">{{ extAbilities['MoraleThreshold'] }}</div>
-        <div class="value">{{ calcGrit() }}</div>
+        <div class="value">{{ (genAbilities['Health'].ranks > 9) ? 4 : 3 }}</div>
+        <div class="value">{{ armor }}</div>
+        <div class="value">{{ (genAbilities['Morale'].ranks > 9) ? 4 : 3 }}</div>
+        <div class="value">{{ grit }}</div>
         <div class="label">Threshold</div>
         <div class="label">Grit</div>
       </div>
@@ -382,8 +438,8 @@
       @if (mode == 'edit') {
         @for (_ of gear; track _; let i = $index) {
           <div class="input">
-            <input type="checkbox" class="gear" id="gear-iconic{{i}}" [(ngModel)]="gear[i].iconic" [ngModelOptions]="{standalone: true}">
-            <input type="text" class="gear" id="gear{{i}}" [(ngModel)]="gear[i].value" [ngModelOptions]="{standalone: true}">
+            <input type="checkbox" class="gear" id="gear-iconic{{i}}" [ngModel]="gear[i].iconic" (ngModelChange)="setGearIconic(i, $event)" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="gear" id="gear{{i}}" [ngModel]="gear[i].value" (ngModelChange)="setGear(i, $event)"  [ngModelOptions]="{standalone: true}">
             <button class="del" (click)="delGear(i)">−</button>
           </div>
         }
@@ -400,7 +456,12 @@
   </div>
   <div class="spheres-panel flex-panel-wrap">
     <div class="faux-grid-above" *ngIf="mode == 'edit' && (spheresUnspent != 0)">
-      <div class="message error" *ngIf="mode == 'edit' && spheresUnspent > 0">{{ spheresUnspent }} Sorcerous Spheres not selected</div>
+      <div class="message error" *ngIf="mode == 'edit' && spheresUnspent > 0">
+        <div [ngPlural]="spheresUnspent">
+          <ng-template ngPluralCase="one">1 Sorcerous Sphere not selected</ng-template>
+          <ng-template ngPluralCase="other">{{ spheresUnspent }} Sorcerous Spheres not selected</ng-template>
+        </div>
+      </div>
     </div>
     <div class="panel">
       <div>
@@ -417,7 +478,7 @@
         }
         @for (i of aiToFrom(invAbilities['Sorcerer']['Corruption'].ranks); track i;) {
           @if (mode == 'edit') {
-            <input type="text" class="sphere" id="sphere{{i}}" [(ngModel)]="spheres[i]" [ngModelOptions]="{standalone: true}" [attr.list]="formGroup.controls.sorceryAffects.value!.toLowerCase() + '-sphere-list'" />
+            <input type="text" class="sphere" id="sphere{{i}}" [ngModel]="spheres[i]" (ngModelChange)="setSphere(i, $event)" [ngModelOptions]="{standalone: true}" [attr.list]="formGroup.controls.sorceryAffects.value!.toLowerCase() + '-sphere-list'" />
           } @else {
             <div class="value">{{ spheres[i] }}</div>
           }
