@@ -216,7 +216,7 @@
   </section>
   <h4 class="title2"><span>General Abilities</span></h4>
   <h4 class="title3"><span>Allegiances</span></h4>
-  <div class="general-panel flex-panel-wrap">
+  <div class="general-section flex-panel-wrap">
     <div class="faux-grid-above" *ngIf="mode == 'edit' && genUnspent != 0">
       <div class="message incomplete" *ngIf="mode == 'edit' && genUnspent > 0">
         <div [ngPlural]="genUnspent">
@@ -274,7 +274,7 @@
       </div>
     </div>
   </div>
-  <div class="allegiances-panel flex-panel-wrap">
+  <div class="allegiances-section flex-panel-wrap">
     <div class="faux-grid-above" *ngIf="mode == 'edit' && (freeAllies != 0 || freeEnemies != 0 || blankFactions > 0)">
       <div class="message error" *ngIf="mode == 'edit' && (freeAllies > 0)">
         <div [ngPlural]="freeAllies">
@@ -463,7 +463,7 @@
       }
     </div>
   </div>
-  <div class="spheres-panel flex-panel-wrap">
+  <div class="spheres-section flex-panel-wrap">
     <div class="faux-grid-above" *ngIf="mode == 'edit' && (spheresUnspent != 0)">
       <div class="message error" *ngIf="mode == 'edit' && spheresUnspent > 0">
         <div [ngPlural]="spheresUnspent">

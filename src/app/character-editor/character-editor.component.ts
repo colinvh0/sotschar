@@ -4,6 +4,7 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { CookieService } from 'ngx-cookie-service';
 
 // TODO: Fix Spot Frailty Health/Morale vertical alignment for play/print
+// TODO: print minimum heights
 // TODO: advancement (explicitly buy Build points)
 // TODO: factions list editor
 
