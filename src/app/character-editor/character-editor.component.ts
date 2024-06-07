@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
+// TODO: Fix Spot Frailty Health/Morale vertical alignment for play/print
 // TODO: advancement (explicitly buy Build points)
 // TODO: factions list editor
 
