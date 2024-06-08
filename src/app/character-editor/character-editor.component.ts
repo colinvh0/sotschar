@@ -14,10 +14,10 @@ import { CookieService } from 'ngx-cookie-service';
 
 /* THE BIG RESTRUCT
 
-version
-storage
-buildConfig
-advancement:
+version string
+storage volatile
+buildConfig int[7], boolean (7 * b64 + 1b)
+advancement: 6b * 5
   points
   general
   stamina
@@ -25,29 +25,30 @@ advancement:
   enemy
 abilities:
   general:
-    general
-    stamina
+    general 8b * 8 (16 * b64)
+    stamina (5b + 6b) * 2 (4 * b64)
   investigative:
-    investigative
-    allies
-    enemies
+    investigative 6b * 24
+    allies 8b[]
+    enemies 8b[]
 traits:
-  row1 (name, drives, ...): string
-  spotFrailty: string
-  allegiances: string
-  lifestyle: int
-  thresholds: int
-  armor: int
-  grit: int
-  gear: int, boolean
-  sorceryAffects: string
+  row1 (name, drives, ...): string[]
+  trueName: boolean 1b
+  spotFrailty: string -> 1b
+  allegiances: string[]
+  lifestyle: int 3b
+  thresholds(): int
+  armor(): int
+  grit(): int
+  gear: (int, boolean)[]
+  sorceryAffects: string -> 1b
   spheres: string
-pools:
-  drives
-  favors
-  grudges
-  wealth
-  
+pools: 
+  drives 3b
+  favors 3b[]
+  grudges 3b[]
+  wealth 6b
+
 */
 
 // TODO: load/save
@@ -168,9 +169,9 @@ export class CharacterEditorComponent {
       this.genAbilities[gen[i].name] = new Ability();
     }
   }
-
-  get json(): string {
-    return JSON.stringify({
+  
+  get rawValue(): any {
+    return {
       V: this.version,
       g: this.formGroup.getRawValue(),
       ai: this.invAbilities,
@@ -183,7 +184,13 @@ export class CharacterEditorComponent {
         g: this.gear,
         s: this.spheres,
       },
-    });
+    };
+  }
+  
+  get json(): string {
+    const s = JSON.stringify(this.rawValue);
+    console.log('json.length', s.length);
+    return s;
   }
 
   set json(json: string) {
@@ -567,6 +574,21 @@ export class CharacterEditorComponent {
     }
     return r;
   }
+  
+  get dupSpheres(): string[] {
+    let a: Record<string, boolean> = {};
+    let d: Record<string, boolean> = {};
+    for (let s of this.spheres) {
+      if (s != '') {
+        if (s in a) {
+          d[s] = true;
+        } else {
+          a[s] = true;
+        }
+      }
+    }
+    return Object.keys(d);
+  }
 
   get armor(): number {
     let result = 0;
@@ -675,6 +697,15 @@ export class CharacterEditorComponent {
     } else {
       a.ranks = i;
     }
+    if (cat == 'Sorcerer' && name == 'Corruption') {
+      if (this.spheres.length > a.ranks) {
+        this.spheres.splice(a.ranks);
+      }
+      for (let i = this.spheres.length; i < a.ranks; i++) {
+        this.spheres[i] = '';
+      }
+    }
+    console.log(this.spheres);
     this.saveToLocal();
   }
 

@@ -491,8 +491,11 @@
     </div>
   </div>
   <div class="spheres-section flex-panel-wrap">
-    <div class="faux-grid-above" *ngIf="mode == 'edit' && (spheresUnspent != 0)">
-      <div class="message error" *ngIf="mode == 'edit' && spheresUnspent > 0">
+    <div class="faux-grid-above" *ngIf="mode == 'edit' && ((spheresUnspent != 0) || (dupSpheres.length > 0))">
+      <div class="message error" *ngIf="dupSpheres.length > 0">
+        <div>Duplicate Sorcerous Spheres: {{ dupSpheres.join(', ') }}</div>
+      </div>
+      <div class="message error" *ngIf="spheresUnspent > 0">
         <div [ngPlural]="spheresUnspent">
           <ng-template ngPluralCase="one">1 Sorcerous Sphere not selected</ng-template>
           <ng-template ngPluralCase="other">{{ spheresUnspent }} Sorcerous Spheres not selected</ng-template>
@@ -512,7 +515,7 @@
             }
           </div>
         }
-        @for (i of aiToFrom(invAbilities['Sorcerer']['Corruption'].ranks); track i;) {
+        @for (i of aii(invAbilities['Sorcerer']['Corruption'].ranks); track i;) {
           @if (mode == 'edit') {
             <input type="text" class="sphere" [ngModel]="spheres[i]" (ngModelChange)="setSphere(i, $event)" [ngModelOptions]="{standalone: true}" [attr.list]="formGroup.controls.sorceryAffects.value!.toLowerCase() + '-sphere-list'" />
           } @else {
