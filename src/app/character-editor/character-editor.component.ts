@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
-// TODO: Fix Spot Frailty Health/Morale vertical alignment for play/print
+// TODO: implement configS2S
+// TODO: move custom configs to hidden panel
+// TODO: fix Spot Frailty Health/Morale vertical alignment for play/print
 // TODO: print minimum heights
+// TODO: hide 0-rank Abilities in play/print?
 // TODO: advancement (explicitly buy Build points)
 // TODO: factions list editor
 
@@ -41,9 +44,14 @@ foreach ($file in 'src\app\character-editor\character-editor.component.html', 's
 export class CharacterEditorComponent {
   cookies = inject(CookieService);
 
+  get defCharCount() { return 4; }
+  get defInvBuild() { return 10; }
+
   #mode = 'off';
   #showConfig = true;
   canSave = false;
+  
+  version = 'α1';
   adjectives = [''];
   drives = [new Drive(), new Drive(), new Drive()];
   invAbilities: Record<string, Record<string, Ability>> = {};
@@ -57,9 +65,8 @@ export class CharacterEditorComponent {
   spheres: Array<string> = [];
   formGroup = new FormGroup({
     configS2S: new FormControl(false),
-    configCharacterCount: new FormControl('4'),
-    configAutoInvB: new FormControl('on'),
-    configInvestigativeBuild: new FormControl('11'),
+    configCharacterCount: new FormControl(this.defCharCount + ''),
+    configInvestigativeBuild: new FormControl(this.defInvBuild + ''),
     configGeneralBuild: new FormControl('30'),
     configStaminaBuild: new FormControl('18'),
     configMinStamina: new FormControl('3'),
@@ -119,8 +126,26 @@ export class CharacterEditorComponent {
     }
   }
 
+  get json(): string {
+    return JSON.stringify({
+      V: this.version,
+      g: this.formGroup.getRawValue(),
+      ai: this.invAbilities,
+      ag: this.genAbilities,
+      x: {
+        adj: this.adjectives,
+        d: this.drives,
+        all: this.allegiances,
+        ls: this.lifestyle,
+        g: this.gear,
+        s: this.spheres,
+      },
+    });
+  }
+
   set json(json: string) {
     const o = JSON.parse(json);
+    this.charCompat(o);
     this.formGroup.setValue(o.g);
     for (let def of this.invAbilityDefs) {
       this.invAbilities[def.category][def.name].set(o.ai[def.category][def.name]);
@@ -160,20 +185,17 @@ export class CharacterEditorComponent {
     this.spheres = o.x.s;
   }
 
-  get json(): string {
-    return JSON.stringify({
-      g: this.formGroup.getRawValue(),
-      ai: this.invAbilities,
-      ag: this.genAbilities,
-      x: {
-        adj: this.adjectives,
-        d: this.drives,
-        all: this.allegiances,
-        ls: this.lifestyle,
-        g: this.gear,
-        s: this.spheres,
-      },
-    });
+  charCompat(c: any) {
+    if (this.version != c['V']) {
+      if (!('V' in c)) {
+        delete c['g']['configAutoInvB'];
+        const ib = parseInt(c['g']['configInvestigativeBuild'], 10);
+        const pc = parseInt(c['g']['configCharacterCount'], 10);
+        c['g']['configInvestigativeBuild'] = ib + '';
+      } else if (c['V'] == 'α1') {
+        // next compatibility changes go here
+      }
+    }
   }
 
   initSubscribe(): void {
@@ -235,6 +257,14 @@ export class CharacterEditorComponent {
     return '−' + -i;
   }
   
+  aii(len: number): Array<number> {
+    const result = Array(len);
+    for (let i = 0; i < len; i++) {
+      result[i] = i;
+    }
+    return result;
+  }
+  
   aiToFrom(t: number, f?: number): Array<number> {
     if (t == undefined) {
       t = 0;
@@ -264,12 +294,15 @@ export class CharacterEditorComponent {
     return result;
   }
   
+  get charCount(): number {
+    const v = this.formGroup.controls.configCharacterCount.value;
+    return (v !== null) ? parseInt(v, 10) : this.defCharCount;
+  }
+  
   get invBuild(): number {
-    if (this.formGroup.controls.configInvestigativeBuild.value === null) {
-      return 0;
-    } else {
-      return parseInt(this.formGroup.controls.configInvestigativeBuild.value, 10);
-    }
+    const v = this.formGroup.controls.configInvestigativeBuild.value;
+    const b = (v !== null) ? parseInt(v, 10) : this.defInvBuild;
+    return b + 5 - clamp(this.charCount, 1, 5);
   }
 
   get genBuild(): number {
@@ -279,7 +312,7 @@ export class CharacterEditorComponent {
       return parseInt(this.formGroup.controls.configGeneralBuild.value, 10);
     }
   }
-
+  
   get aFree(): number {
     if (this.formGroup.controls.configFreeAllies.value === null) {
       return 0;
@@ -358,6 +391,25 @@ export class CharacterEditorComponent {
     return r;
   }
 
+  get genTooHigh(): boolean {
+    let h1 = 0;
+    let h2 = 0;
+    for (const ad of this.genAbilityDefs) {
+      const rank = this.genAbilities[ad.name].ranks;
+      if (rank > h1) {
+        h2 = h1;
+        h1 = rank;
+      } else if (rank > h2) {
+        h2 = rank;
+      }
+    }
+    return h1 > 2 && h2 * 2 < h1;
+  }
+  
+  get sorcWithoutCorr(): boolean {
+    return this.genAbilities['Sorcery'].ranks > 0 && this.invAbilities['Sorcerer']['Corruption'].ranks == 0;
+  }
+  
   get freeAllies(): number {
     let r = 0;
     for (const a of this.allegiances) {
@@ -449,6 +501,14 @@ export class CharacterEditorComponent {
   curGenRank(name: string, i: number): string {
     if (i > 4 && this.genAbilities[name].ranks == i) {
       return i + '';
+    } else {
+      return '';
+    }
+  }
+  
+  curGenPool(name: string, i: number): string {
+    if (this.genAbilities[name].pool == i || this.genAbilities[name].ranks == i) {
+      return this.fmt(i) + '';
     } else {
       return '';
     }
@@ -622,7 +682,7 @@ export class CharacterEditorComponent {
     }
     return;
   }
-
+  
   genAbilityDefs = [
     new GeneralAbility("Athletics", "Dodge"),
     new GeneralAbility("Bind Wounds", "Plenty of Leeches"),
@@ -756,6 +816,16 @@ function initGear(len = 0): Gear[] {
     result.push(new Gear());
   }
   return result;
+}
+
+function clamp(v: number, lo: number, hi: number): number {
+  if (v < lo) {
+    return lo;
+  }
+  if (v > hi) {
+    return hi;
+  }
+  return v;
 }
 
 class GeneralAbility {
