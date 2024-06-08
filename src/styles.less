@@ -11,6 +11,7 @@ body {
 	font-family: Galliard;
   font-size: 15px;
   background-color: black;
+  color: white;
 }
 
 .invisible {
@@ -290,22 +291,34 @@ body {
   padding: 3px 4px;
 }
 
+.character-sheet-wrap section.manage {
+  padding: 1.5em 3.3em;
+  /*grid-column: left / right;*/
+  background-color: dimgray;
+  font-family: sans-serif;
+}
+.character-sheet-wrap section.manage .flex {
+  align-items: revert;
+}
+
 .character-sheet-wrap section.config {
   padding: 1.5em 3.3em;
   grid-column: left / right;
   background-color: dimgray;
-  color: white;
   font-family: sans-serif;
 }
 .character-sheet-wrap section.config input {
   background-color: dimgray;
   color: white;
 }
-.character-sheet-wrap section.config>div {
+.character-sheet-wrap section.config .fields {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-auto-rows: 1fr;
   align-items: center;
+}
+.character-sheet-wrap section.config .advancement .fields {
+  grid-template-columns: 1fr 1fr;
 }
 .character-sheet-wrap section.config>div .wide {
   grid-column: span 3;

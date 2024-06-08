@@ -4,16 +4,51 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { CookieService } from 'ngx-cookie-service';
 
 // TODO: implement configS2S
-// TODO: move custom configs to hidden panel
-// TODO: fix Spot Frailty Health/Morale vertical alignment for play/print
 // TODO: print minimum heights
 // TODO: hide 0-rank Abilities in play/print?
-// TODO: advancement (explicitly buy Build points)
 // TODO: factions list editor
 
 // TODO KC: handle favors/grudges
 // TODO KC: adjectives just a text field?
 // TODO KC: editable during play?
+
+/* THE BIG RESTRUCT
+
+version
+storage
+buildConfig
+advancement:
+  points
+  general
+  stamina
+  investigative
+  enemy
+abilities:
+  general:
+    general
+    stamina
+  investigative:
+    investigative
+    allies
+    enemies
+traits:
+  row1 (name, drives, ...): string
+  spotFrailty: string
+  allegiances: string
+  lifestyle: int
+  thresholds: int
+  armor: int
+  grit: int
+  gear: int, boolean
+  sorceryAffects: string
+  spheres: string
+pools:
+  drives
+  favors
+  grudges
+  wealth
+  
+*/
 
 // TODO: load/save
 // TODO: load from template
@@ -50,9 +85,12 @@ export class CharacterEditorComponent {
   #mode = 'off';
   #showConfig = true;
   #showAdvConfig = false;
+  #showManage = false;
   canSave = false;
   
   version = 'α1';
+  importData = '';
+  importErr = '';
   adjectives = [''];
   drives = [new Drive(), new Drive(), new Drive()];
   invAbilities: Record<string, Record<string, Ability>> = {};
@@ -74,6 +112,10 @@ export class CharacterEditorComponent {
     configFreeAllies: new FormControl('2'),
     configFreeEnemies: new FormControl('1'),
     advancement: new FormControl('0'),
+    advGenB: new FormControl('0'),
+    advStamB: new FormControl('0'),
+    advInvB: new FormControl('0'),
+    advEnemy: new FormControl('0'),
     name: new FormControl(''),
     tnk: new FormControl(''),
     profession: new FormControl(''),
@@ -188,14 +230,37 @@ export class CharacterEditorComponent {
 
   charCompat(c: any) {
     if (this.version != c['V']) {
+      // using chained ifs (instead of if-elses) here allows the compat functions to make partial upgrades
       if (!('V' in c)) {
-        delete c['g']['configAutoInvB'];
-        const ib = parseInt(c['g']['configInvestigativeBuild'], 10);
-        const pc = parseInt(c['g']['configCharacterCount'], 10);
-        c['g']['configInvestigativeBuild'] = ib + '';
-      } else if (c['V'] == 'α1') {
+        this.compatNoVer(c);
+      }
+      if (c['V'] == 'α1') {
         // next compatibility changes go here
       }
+    }
+  }
+  
+  compatNoVer(c: any) {
+    delete c['g']['configAutoInvB'];
+    const ib = parseInt(c['g']['configInvestigativeBuild'], 10);
+    const pc = parseInt(c['g']['configCharacterCount'], 10);
+    c['g']['configInvestigativeBuild'] = ib + '';
+    for (const n of ['advGenB', 'advStamB', 'advInvB', 'advEnemy']) {
+      if (!(n in c['g'])) {
+        c['g'][n] = '0';
+      }
+    }
+    c['g']['advGenB'] = 0;
+    c['V'] = 'α1';
+  }
+  
+  import(): void {
+    try {
+      this.json = this.importData;
+      this.importErr = '';
+    } catch (e: any) {
+      console.log(e);
+      this.importErr = e;
     }
   }
 
@@ -221,6 +286,9 @@ export class CharacterEditorComponent {
         }
         if ('sca' in v) {
           this.#showAdvConfig = v['sca'];
+        }
+        if ('sm' in v) {
+          this.#showManage = v['sm'];
         }
       }
     }
@@ -256,12 +324,30 @@ export class CharacterEditorComponent {
     this.saveView();
   }
   
+  get showManage() {
+    return this.#showManage;
+  }
+  
+  set showManage(sc: boolean) {
+    this.#showManage = sc;
+    this.saveView();
+  }
+  
   saveView(): void {
     this.cookies.set('_v', JSON.stringify({
       m: this.mode,
       sc: this.showConfig,
       sca: this.showAdvConfig,
+      sm: this.showManage,
     }));
+  }
+  
+  int(s: string | null, d = 0): number {
+    if (s) {
+      return parseInt(s, 10);
+    } else {
+      return d;
+    }
   }
   
   fmt(i: number): string {
@@ -306,6 +392,10 @@ export class CharacterEditorComponent {
       j += inc;
     }
     return result;
+  }
+  
+  copyToClipboard(s: string): void {
+    navigator.clipboard.writeText(s);
   }
   
   get charCount(): number {
@@ -355,7 +445,12 @@ export class CharacterEditorComponent {
     if (this.formGroup.controls.advancement.value === null) {
       return 0;
     } else {
-      return parseInt(this.formGroup.controls.advancement.value, 10);
+      let u = this.int(this.formGroup.controls.advancement.value);
+      u -= this.int(this.formGroup.controls.advGenB.value);
+      u -= this.int(this.formGroup.controls.advStamB.value);
+      u -= this.int(this.formGroup.controls.advInvB.value) * 3;
+      u -= this.int(this.formGroup.controls.advEnemy.value) * 3;
+      return u;
     }
   }
   
@@ -378,12 +473,12 @@ export class CharacterEditorComponent {
   }
   
   get invUnspent(): number {
-    let r = this.invBuild;
+    let r = this.invBuild + this.int(this.formGroup.controls.advInvB.value);
     for (let ad of this.invAbilityDefs) {
       r -= this.invAbilities[ad.category][ad.name].ranks;
     }
     let fa = this.aFree;
-    let fe = this.eFree;
+    let fe = this.eFree - this.int(this.formGroup.controls.advEnemy.value);
     for (const a of this.allegiances) {
       fa -= a.ally.ranks;
       fe -= a.enemy.ranks;
@@ -398,7 +493,7 @@ export class CharacterEditorComponent {
   }
 
   get genUnspent(): number {
-    let r = this.genBuild;
+    let r = this.genBuild + this.int(this.formGroup.controls.advGenB.value);
     for (const ad of this.genAbilityDefs) {
       r -= this.genAbilities[ad.name].ranks;
     }
@@ -440,7 +535,7 @@ export class CharacterEditorComponent {
     for (const a of this.allegiances) {
       r += a.enemy.ranks;
     }
-    if (r < this.eFree) {
+    if (r < this.eFree - this.int(this.formGroup.controls.advEnemy.value)) {
       return this.eFree - r;
     }
     return 0;
@@ -457,7 +552,7 @@ export class CharacterEditorComponent {
   }
 
   get staminaUnspent(): number {
-    let r = this.staminaBuild;
+    let r = this.staminaBuild + this.int(this.formGroup.controls.advStamB.value);
     r -= this.genAbilities['Health'].ranks;
     r -= this.genAbilities['Morale'].ranks;
     return r;
@@ -943,6 +1038,7 @@ class Allegiance {
   }
 
   set(o: Allegiance): void {
+    this.name = o['name'];
     this.ally.set(o['ally']);
     this.favor = o['favor'];
     this.enemy.set(o['enemy']);

@@ -18,31 +18,58 @@
   }
 </datalist>
 <div *ngIf="mode != 'off' && canSave" class="character-sheet-wrap" [ngClass]="'mode-' + mode" [formGroup]="formGroup">
+<section class="manage">
+  <h1 class="head"><button (click)="showManage = !showManage">⚙️</button> Manage Character</h1>
+  <div *ngIf="showManage" class="flex">
+    <div>
+      <div>Export:</div>
+      <div><textarea id="json-export" readonly>{{ json }}</textarea></div>
+      <div><button (click)="copyToClipboard(json)">📋 Copy</button></div>
+    </div>
+    <div>
+      <div>Import:</div>
+      <div class="message error" *ngIf="importErr">{{ importErr }}</div>
+      <div><textarea [(ngModel)]="importData" [ngModelOptions]="{standalone: true}"></textarea></div>
+      <div><button (click)="import()">Import</button> <button (click)="importErr = importData = ''">Clear</button></div>
+    </div>
+  </div>
+</section>
 <section class="config" *ngIf="mode == 'edit'">
   <h1 class="head">Edit Character</h1>
   <div *ngIf="showConfig">
-    <div *ngIf="showAdvConfig" class="subgrid">
-      <div><label><input type="number" formControlName="configInvestigativeBuild"> Base Investigative Build Points</label></div>
-      <div><label><input type="number" formControlName="configGeneralBuild"> General Build Points</label></div>
-      <div><label><input type="number" formControlName="configStaminaBuild"> Stamina Build Points</label></div>
-      <div><label><input type="number" formControlName="configMinStamina"> Minimum Stamina</label></div>
-      <div><label><input type="number" formControlName="configFreeAllies"> Free Allies</label></div>
-      <div><label><input type="number" formControlName="configFreeEnemies"> Free Enemies</label></div>
-    </div>
-    <div class="wide"><button (click)="showAdvConfig = !showAdvConfig">⚙️</button></div>
-    <div><label><input type="checkbox" formControlName="configS2S"> Session 2 started</label></div>
-    <div><label><input type="number" formControlName="configCharacterCount"> Number of Heroes</label></div>
-    <div><label><input type="number" formControlName="advancement"> Advancement Points</label></div>
-    <div class="message incomplete" *ngIf="unspentAdvancement > 0">
-      <div [ngPlural]="unspentAdvancement">
-        <ng-template ngPluralCase="one">1 unspent Advancement Point</ng-template>
-        <ng-template ngPluralCase="other">{{ unspentAdvancement }} unspent Advancement Points</ng-template>
+    <div class="fields">
+      <div *ngIf="showAdvConfig" class="subgrid">
+        <div><label><input type="number" formControlName="configInvestigativeBuild"> Base Investigative Build Points</label></div>
+        <div><label><input type="number" formControlName="configGeneralBuild"> General Build Points</label></div>
+        <div><label><input type="number" formControlName="configStaminaBuild"> Stamina Build Points</label></div>
+        <div><label><input type="number" formControlName="configMinStamina"> Minimum Stamina</label></div>
+        <div><label><input type="number" formControlName="configFreeAllies"> Free Allies</label></div>
+        <div><label><input type="number" formControlName="configFreeEnemies"> Free Enemies</label></div>
       </div>
+      <div class="wide"><button (click)="showAdvConfig = !showAdvConfig">⚙️</button></div>
+      <div><label><input type="checkbox" formControlName="configS2S"> Session 2 started</label></div>
+      <div><label><input type="number" formControlName="configCharacterCount"> Number of Heroes</label></div>
+      <div><label><input type="number" formControlName="advancement"> Advancement Points</label></div>
     </div>
-    <div class="message error" *ngIf="unspentAdvancement < 0">
-      <div [ngPlural]="-unspentAdvancement">
-        <ng-template ngPluralCase="one">1 unspent overspent Point</ng-template>
-        <ng-template ngPluralCase="other">{{ -unspentAdvancement }} overspent Advancement Points</ng-template>
+    <div *ngIf="int(formGroup.controls['advancement'].value) > 0" class="advancement">
+      <div class="message incomplete" *ngIf="unspentAdvancement > 0">
+        <div [ngPlural]="unspentAdvancement">
+          <ng-template ngPluralCase="one">1 unspent Advancement Point</ng-template>
+          <ng-template ngPluralCase="other">{{ unspentAdvancement }} unspent Advancement Points</ng-template>
+        </div>
+      </div>
+      <div class="message error" *ngIf="unspentAdvancement < 0">
+        <div [ngPlural]="-unspentAdvancement">
+          <ng-template ngPluralCase="one">1 overspent Advancement Point</ng-template>
+          <ng-template ngPluralCase="other">{{ -unspentAdvancement }} overspent Advancement Points</ng-template>
+        </div>
+      </div>
+      <h1 class="head">Advancement</h1>
+      <div class="fields">
+        <div><label><input type="number" formControlName="advGenB"> General Build Points</label></div>
+        <div><label><input type="number" formControlName="advStamB"> Stamina Build Points (Health/Morale)</label></div>
+        <div><label><input type="number" formControlName="advInvB"> Investigative Build Points/Ally ranks</label></div>
+        <div><label><input type="number" formControlName="advEnemy"> Remove Enemy ranks</label></div>
       </div>
     </div>
   </div>
