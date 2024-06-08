@@ -21,14 +21,17 @@
 <section class="config" *ngIf="mode == 'edit'">
   <h1 class="head">Edit Character</h1>
   <div *ngIf="showConfig">
+    <div *ngIf="showAdvConfig" class="subgrid">
+      <div><label><input type="number" formControlName="configInvestigativeBuild"> Base Investigative Build Points</label></div>
+      <div><label><input type="number" formControlName="configGeneralBuild"> General Build Points</label></div>
+      <div><label><input type="number" formControlName="configStaminaBuild"> Stamina Build Points</label></div>
+      <div><label><input type="number" formControlName="configMinStamina"> Minimum Stamina</label></div>
+      <div><label><input type="number" formControlName="configFreeAllies"> Free Allies</label></div>
+      <div><label><input type="number" formControlName="configFreeEnemies"> Free Enemies</label></div>
+    </div>
+    <div class="wide"><button (click)="showAdvConfig = !showAdvConfig">⚙️</button></div>
     <div><label><input type="checkbox" formControlName="configS2S"> Session 2 started</label></div>
     <div><label><input type="number" formControlName="configCharacterCount"> Number of Heroes</label></div>
-    <div><label><input type="number" formControlName="configInvestigativeBuild"> Base Investigative Build Points</label></div>
-    <div><label><input type="number" formControlName="configGeneralBuild"> General Build Points</label></div>
-    <div><label><input type="number" formControlName="configStaminaBuild"> Stamina Build Points</label></div>
-    <div><label><input type="number" formControlName="configMinStamina"> Minimum Stamina</label></div>
-    <div><label><input type="number" formControlName="configFreeAllies"> Free Allies</label></div>
-    <div><label><input type="number" formControlName="configFreeEnemies"> Free Enemies</label></div>
     <div><label><input type="number" formControlName="advancement"> Advancement Points</label></div>
     <div class="message incomplete" *ngIf="unspentAdvancement > 0">
       <div [ngPlural]="unspentAdvancement">

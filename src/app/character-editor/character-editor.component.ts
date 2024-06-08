@@ -49,6 +49,7 @@ export class CharacterEditorComponent {
 
   #mode = 'off';
   #showConfig = true;
+  #showAdvConfig = false;
   canSave = false;
   
   version = 'α1';
@@ -218,6 +219,9 @@ export class CharacterEditorComponent {
         if ('sc' in v) {
           this.#showConfig = v['sc'];
         }
+        if ('sca' in v) {
+          this.#showAdvConfig = v['sca'];
+        }
       }
     }
     if (this.mode == 'off') {
@@ -243,10 +247,20 @@ export class CharacterEditorComponent {
     this.saveView();
   }
   
+  get showAdvConfig() {
+    return this.#showAdvConfig;
+  }
+  
+  set showAdvConfig(sc: boolean) {
+    this.#showAdvConfig = sc;
+    this.saveView();
+  }
+  
   saveView(): void {
     this.cookies.set('_v', JSON.stringify({
       m: this.mode,
       sc: this.showConfig,
+      sca: this.showAdvConfig,
     }));
   }
   
