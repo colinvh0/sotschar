@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
-// TODO: style save slots
 // TODO: style config
 // TODO: implement configS2S
 // TODO: print minimum heights
@@ -108,7 +107,7 @@ export class CharacterEditorComponent {
   };
   lifestyle = 0;
   allegiances = [new Allegiance(), new Allegiance()];
-  gear = initGear(5);
+  gear = Gear.new(5);
   spheres: Array<string> = [];
   formGroup = new FormGroup({
     configS2S: new FormControl(false),
@@ -141,6 +140,13 @@ export class CharacterEditorComponent {
       this.loadFromLocal();
       this.initSubscribe();
     }, {phase: AfterRenderPhase.Read});
+    /*@HostListener('window:storage', ['$event'])
+      onMessage(event) {
+        if (event.storageArea === localStorage) {
+          
+        }
+      }
+    }*/
   }
   
   /// state management ///
@@ -294,7 +300,7 @@ export class CharacterEditorComponent {
       const k = localStorage.key(i);
       if (k !== null) {
         if (k.match(re)) {
-          a.push(new SaveSlot(k));
+          a.push(new SaveSlot(this, k));
         }
       }
     }
@@ -346,6 +352,7 @@ export class CharacterEditorComponent {
     const k = this.selectedSaveSlot!.key;
     if (k !== null) {
       localStorage.removeItem(k);
+      this.selectedSaveSlot = null;
     } else {
       console.trace('localStorage.' + k + ' is null');
     }
@@ -478,6 +485,20 @@ export class CharacterEditorComponent {
     return Math.floor((new Date()).getTime() / 1000);
   }
   
+  clamp(v: number, lo: number, hi: number): number {
+    if (v < lo) {
+      return lo;
+    }
+    if (v > hi) {
+      return hi;
+    }
+    return v;
+  }
+
+  cipboardWrite(s: string): void {
+    navigator.clipboard.writeText(s);
+  }
+  
   aii(len: number): Array<number> {
     const result = Array(len);
     for (let i = 0; i < len; i++) {
@@ -515,10 +536,6 @@ export class CharacterEditorComponent {
     return result;
   }
   
-  copyToClipboard(s: string): void {
-    navigator.clipboard.writeText(s);
-  }
-  
   /// user input values ///
   
   get charCount(): number {
@@ -529,7 +546,7 @@ export class CharacterEditorComponent {
   get invBuild(): number {
     const v = this.formGroup.controls.configInvestigativeBuild.value;
     const b = (v !== null) ? parseInt(v, 10) : this.defInvBuild;
-    return b + 5 - clamp(this.charCount, 1, 5);
+    return b + 5 - this.clamp(this.charCount, 1, 5);
   }
 
   get genBuild(): number {
@@ -1069,35 +1086,16 @@ export class CharacterEditorComponent {
   };
 }
 
-/// utilities ///
-
-function initGear(len = 0): Gear[] {
-  var result: Gear[]; 
-  result = [];
-  for (let i = 0; i < len; i++) {
-    result.push(new Gear());
-  }
-  return result;
-}
-
-function clamp(v: number, lo: number, hi: number): number {
-  if (v < lo) {
-    return lo;
-  }
-  if (v > hi) {
-    return hi;
-  }
-  return v;
-}
-
 /// classes ///
 
 class SaveSlot {
+  ed: CharacterEditorComponent;
   key: string;
   ts: number;
   c: any;
   
-  constructor(key: string) {
+  constructor(ed: CharacterEditorComponent, key: string) {
+  this.ed = ed;
     this.key = key;
     const str = localStorage.getItem(key) as string;
     const save = JSON.parse(str);
@@ -1111,6 +1109,10 @@ class SaveSlot {
 
   get dateUtc(): string {
     return new Date(this.ts * 1000).toUTCString();
+  }
+  
+  get isSlected(): boolean {
+    return this.ed.selectedSaveSlot !== null && this.ed.selectedSaveSlot.key == this.key;
   }
 }
 
@@ -1162,6 +1164,15 @@ class Gear {
     this.value = o['value'] as string;
     this.iconic = o['iconic'] as boolean;
   }
+  
+  static new(len = 0): Gear[] {
+    var g: Gear[]; 
+    g = [];
+    for (let i = 0; i < len; i++) {
+      g.push(new Gear());
+    }
+    return g;
+  }
 }
 
 class Ability {
@@ -1172,26 +1183,26 @@ class Ability {
     this.#ranks = this.pool = init;
   }
 
-	set ranks(v: number) {
-		this.setRanks(v);
-	}
-	
-	get ranks() {
-		return this.#ranks;
-	}
-	
-	setRanks(v: number, adjustPool: boolean = true):number {
-		const old = this.#ranks;
-		const diff = v - old;
-		this.#ranks = v;
-		if (adjustPool) {
-			this.pool += diff;
+  set ranks(v: number) {
+    this.setRanks(v);
+  }
+  
+  get ranks() {
+    return this.#ranks;
+  }
+  
+  setRanks(v: number, adjustPool: boolean = true):number {
+    const old = this.#ranks;
+    const diff = v - old;
+    this.#ranks = v;
+    if (adjustPool) {
+      this.pool += diff;
       if (this.pool < 0) {
         this.pool = 0;
       }
-		}
-		return v;
-	}
+    }
+    return v;
+  }
 
   set(o: Ability): void {
     this.#ranks = o['ranks'];
@@ -1204,13 +1215,13 @@ class Ability {
 }
 
 class Allegiance {
-	name: string;
-	ally = new Ability();
-	favor = 0;
-	enemy = new Ability();
-	grudge = 0;
+  name: string;
+  ally = new Ability();
+  favor = 0;
+  enemy = new Ability();
+  grudge = 0;
 
-	constructor(name = '') {
+  constructor(name = '') {
     this.name = name;
   }
 
@@ -1222,3 +1233,4 @@ class Allegiance {
     this.grudge = o['grudge'];
   }
 }
+

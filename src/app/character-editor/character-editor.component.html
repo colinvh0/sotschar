@@ -30,7 +30,7 @@
       <div>
         <div>Export:</div>
         <div><textarea readonly>{{ json }}</textarea></div>
-        <div><button (click)="copyToClipboard(json)">📋 Copy</button></div>
+        <div><button (click)="cipboardWrite(json)">📋 Copy</button></div>
       </div>
       <div>
         <div>Import:</div>
@@ -43,9 +43,11 @@
       <div>Save slots:</div>
       <div class="storage" [ngClass]="(spaceLeft <= 5) ? ' low' : ''">(Approximately {{ spaceLeft }}% of storage remaining) <div class="note">Why is this approximate?</div></div>
       <div></div>
-      <div *ngIf="saveSlots.length == 1" class="save-slots">{{ saveSlots[0].c.g.name }} ({{ saveSlots[0].dateLocal }})</div>
       <div class="save-slots">
-        <div *ngFor="let slot of saveSlots" [ngClass]="(selectedSaveSlot && selectedSaveSlot!.key == slot.key) ? ' selected' : ''" (click)="selectedSaveSlot = slot">{{ slot.c.g.name }} ({{ slot.dateLocal }})</div>
+        <div *ngFor="let slot of saveSlots" class="subgrid" [ngClass]="slot.isSlected ? ' selected' : ''" (click)="selectedSaveSlot = slot">
+          <div>{{ slot.c.g.name }}</div>
+          <div>({{ slot.dateLocal }})</div>
+        </div>
       </div>
       <div>
         <button (click)="saveNew()">Save (new)</button>

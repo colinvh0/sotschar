@@ -321,6 +321,20 @@ dialog button.close {
   width: 20em;
 }
 
+.character-sheet-wrap section.manage .save-slots {
+  display: grid;
+  grid-template-columns: auto auto;
+  overflow-y: scroll;
+  max-height: 146px;
+  user-select: none;
+}
+.character-sheet-wrap section.manage .save-slots>div>div {
+  padding-bottom: 2px;
+}
+.save-slots .selected * {
+  background-color: gray;
+}
+
 .character-sheet-wrap section.config {
   padding: 1.5em 3.3em;
   grid-column: left / right;
