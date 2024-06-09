@@ -599,16 +599,14 @@ export class CharacterEditorComponent {
   }
 
   closeDialog(e: MouseEvent):void {
-    afterNextRender(() => {
-      const ot = (e as any)['originalTarget'];
-      console.log(e.target, ot);
-      if (e.target !== null && ot !== null) {
-        const d = e.target as HTMLDialogElement;
-        if (d == ot) {
-          d.close();
-        }
+    const ot = (e as any)['originalTarget'];
+    console.log(e.target, ot);
+    if (e.target !== null && ot !== null) {
+      const d = e.target as HTMLDialogElement;
+      if (d == ot) {
+        (d as any)['close']!();
       }
-    }, {phase: AfterRenderPhase.Write});
+    }
   }
 
   clipboardWrite(s: string): void {
@@ -1064,7 +1062,6 @@ export class CharacterEditorComponent {
     this.saveToLocal();
   }
 
-  // TODO: look for this algo and refactor to a call to this
   invDef(cat: string, name: string): InvestigativeAbility|undefined {
     for (let a of this.invAbilityDefs) {
       if (a.category == cat && a.name == name) {
