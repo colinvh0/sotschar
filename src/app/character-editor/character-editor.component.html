@@ -18,20 +18,26 @@
     }
   }
 </datalist>
-<dialog id="confirm-save">
-  <button class="close" (click)="hideModal('confirm-save')">❌</button>
-  Overwrite save?
-  <button (click)="saveToSlot()">Confirm</button>
+<dialog id="confirm-save" class="warn" onclick="(e) => { console.log(e, this); if (e.target == this) this.close() }">
+  <div class="close"><button (click)="hideModal('confirm-save')">❌</button></div>
+  <div class="content">
+    <div>Overwrite save?</div>
+    <div><button class="confirm" (click)="saveToSlot()">Overwrite</button></div>
+  </div>
 </dialog>
-<dialog id="confirm-load">
-  <button class="close" (click)="hideModal('confirm-load')">❌</button>
-  Any unsaved changes will be discarded.  Load character?
-  <button (click)="loadFromSlot()">Confirm</button>
+<dialog id="confirm-load" class="warn" onclick="(e) => { console.log(e, this); if (e.target == this) this.close() }">
+  <div class="close"><button (click)="hideModal('confirm-load')">❌</button></div>
+  <div class="content">
+    <div>Any unsaved changes will be discarded.  Load character?</div>
+    <div><button class="confirm" (click)="loadFromSlot()">Discard and load</button></div>
+  </div>
 </dialog>
-<dialog id="confirm-delete">
-  <button class="close" (click)="hideModal('confirm-delete')">❌</button>
-  Delete saved character?
-  <button (click)="deleteSlot()">Confirm</button>
+<dialog id="confirm-delete" class="warn" onclick="(e) => { console.log(e, this); if (e.target == this) this.close() }">
+  <div class="close"><button (click)="hideModal('confirm-delete')">❌</button></div>
+  <div class="content">
+    <div>Delete saved character?</div>
+    <div><button class="confirm" (click)="deleteSlot()">Delete</button></div>
+  </div>
 </dialog>
 <!-- end hidden elements -->
 <div *ngIf="mode != 'off' && canSave" class="character-sheet-wrap" [ngClass]="'mode-' + mode" [formGroup]="formGroup">

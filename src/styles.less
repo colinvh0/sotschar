@@ -19,11 +19,41 @@ dialog {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  min-width: 20em;
+  padding: 4px;
+  text-align: center;
 }
-dialog button.close {
-  position: fixed;
+dialog.warn {
+  border: 2px solid firebrick;
+  border-radius: 7px;
+  background-color: #333;
+  color: lightgray;
+}
+dialog.warn button {
+  border: 2px solid firebrick;
+  /*border-radius: 4;*/
+  background-color: black;
+  color: lightgray;
+}
+dialog.warn button.confirm {
+  border-color: black;
+  background-color: firebrick;
+}
+dialog .close {
+  /*position: fixed;
   top: 0;
-  right: 0;
+  right: 0;*/
+  height: 30px;
+  text-align: right;
+}
+dialog .content {
+  margin: 0 30px 15px;
+}
+dialog .content>div {
+  margin-bottom: 15px;
+}
+dialog .content>div:last-child {
+  margin-bottom: 0;
 }
 
 .invisible {
