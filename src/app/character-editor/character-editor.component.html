@@ -18,7 +18,7 @@
     }
   }
 </datalist>
-<dialog id="confirm-save" class="warn" onclick="(e) => { console.log(e, this); if (e.target == this) this.close() }">
+<dialog id="confirm-save" class="warn" (click)="closeDialog($event)">
   <div class="close"><button (click)="hideModal('confirm-save')">❌</button></div>
   <div class="content">
     <div>Overwrite save?</div>
@@ -29,7 +29,7 @@
   <div class="close"><button (click)="hideModal('confirm-load')">❌</button></div>
   <div class="content">
     <div>Any unsaved changes will be discarded.  Load character?</div>
-    <div><button class="confirm" (click)="loadFromSlot()">Discard and load</button></div>
+    <div><button class="confirm" (click)="loadFromSlot()">Discard and Load</button></div>
   </div>
 </dialog>
 <dialog id="confirm-delete" class="warn" onclick="(e) => { console.log(e, this); if (e.target == this) this.close() }">
@@ -48,7 +48,7 @@
       <div>
         <div>Export:</div>
         <div><textarea readonly>{{ json }}</textarea></div>
-        <div><button (click)="cipboardWrite(json)">📋 Copy</button></div>
+        <div><button (click)="clipboardWrite(json)">📋 Copy</button></div>
       </div>
       <div>
         <div>Import:</div>
@@ -68,8 +68,12 @@
         </div>
       </div>
       <div>
-        <button (click)="saveNew()">Save (new)</button>
-        <button (click)="maybeSaveToSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Save (overwrite)</button>
+        <button (click)="saveToNewSlot()">Save to new</button>
+        @if (selectedSaveSlot !== null && selectedSaveSlot.key == saveSlotKey) {
+          <button (click)="saveToSlot()" [disabled]="(saveSlots.length == 0) ? 'disabled' : ''">Update</button>
+        } @else {
+          <button (click)="maybeSaveToSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Overwrite</button>
+        }
         <button (click)="maybeLoadFromSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Load</button>
         <button (click)="maybeDeleteSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Delete</button>
       </div>
@@ -127,6 +131,15 @@
   <button (click)="mode = 'edit'">Edit</button>
   <button (click)="mode = 'play'">Play</button>
   <button (click)="mode = 'print'">Print</button>
+</section>
+<section class="quick-save">
+  <button (click)="quickSaveToSlot">
+    @if (saveSlotKey) {
+      Update Save
+    } @else {
+      Save to New
+    }
+  </button>
 </section>
 <div class="character-edit-grid character-sheet">
   <div class="panel name-panel">

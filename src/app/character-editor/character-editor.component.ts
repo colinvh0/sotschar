@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
+// TODO: refactor modal dialog
+// TODO: optional adjectives datalist
+// TODO: subscribe to localStorage changes
+// TODO: clicking modal dialog background dismisses dialog (maybe https://itnext.io/angular-and-pure-html-dialogs-da79a37ac1e7)
 // TODO: style dialogs
 // TODO: style config
 // TODO: handle/display load/save errors
@@ -24,6 +28,11 @@ import { CookieService } from 'ngx-cookie-service';
 
 /* THE BIG RESTRUCT
 
+character manager
+
+character sheet
+
+character
 version string
 storage volatile
 buildConfig int[7], boolean (7 * b64 + 1b)
@@ -95,7 +104,7 @@ export class CharacterEditorComponent {
   #selectedSaveSlot: SaveSlot | null = null;
   canSave = false;
   saveSlotClean = false;
-  saveSlotKey = '';
+  saveSlotKey = ''; // TODO: persist
   
   version = 'α1';
   importData = '';
@@ -349,24 +358,63 @@ export class CharacterEditorComponent {
     return 'char' + i;
   }
   
-  saveNew(): void {
+  maybeClearCharacter(): void { // TODO: UI
+    if (this.saveSlotClean) {
+      this.clearCharacter();
+    } else {
+      this.showModal('confirm-clear');
+    }
+  }
+
+  clearCharacter(): void {
+    // TODO (or wait until big refactor)
+  }
+  
+  quickSaveToSlot(): void {
+    if (this.saveSlotKey) {
+      this.saveToSlot(new SaveSlot(this, this.saveSlotKey));
+    } else {
+      this.saveToNewSlot();
+    }
+  }
+  
+  saveToNewSlot(): void {
     const s = {
       c: this.rawValue,
       ts: this.timestamp,
     };
+    const k = this.nextSlotKey;
     localStorage.setItem(this.nextSlotKey, JSON.stringify(s));
+    this.saveSlotKey = k;
   }
   
   maybeSaveToSlot(): void {
-    this.showModal('confirm-save');
+    if (this.selectedSaveSlot === null) {
+      console.trace('this.selectedSaveSlot is null');
+    } else {
+      if (this.selectedSaveSlot.key == this.saveSlotKey) {
+        this.saveToSlot();
+      } else {
+        this.showModal('confirm-save');
+      }
+    }
   }
   
-  saveToSlot(): void {
-    const s = {
+  saveToSlot(slot: SaveSlot | null = null): void {
+    if (slot === null) {
+      if (this.selectedSaveSlot === null) {
+        console.trace('this.selectedSaveSlot is null');
+        this.hideModal('confirm-save');
+        return;
+      } else {
+        slot = this.selectedSaveSlot;
+      }
+    }
+    const save = {
       c: this.rawValue,
       ts: this.timestamp,
     };
-    localStorage.setItem(this.selectedSaveSlot!.key, JSON.stringify(s));
+    localStorage.setItem(slot.key, JSON.stringify(save));
     this.hideModal('confirm-save');
   }
   
@@ -378,9 +426,18 @@ export class CharacterEditorComponent {
     }
   }
   
-  loadFromSlot(): void {
-    this.rawValue = this.selectedSaveSlot!.c;
-    this.saveSlotKey = this.selectedSaveSlot!.key;
+  loadFromSlot(s: SaveSlot | null = null): void {
+    if (s === null) {
+      if (this.selectedSaveSlot === null) {
+        console.trace('this.selectedSaveSlot is null');
+        this.hideModal('confirm-load');
+        return;
+      } else {
+        s = this.selectedSaveSlot;
+      }
+    }
+    this.rawValue = s.c;
+    this.saveSlotKey = s.key;
     this.hideModal('confirm-load');
   }
   
@@ -541,7 +598,20 @@ export class CharacterEditorComponent {
     return v;
   }
 
-  cipboardWrite(s: string): void {
+  closeDialog(e: MouseEvent):void {
+    afterNextRender(() => {
+      const ot = (e as any)['originalTarget'];
+      console.log(e.target, ot);
+      if (e.target !== null && ot !== null) {
+        const d = e.target as HTMLDialogElement;
+        if (d == ot) {
+          d.close();
+        }
+      }
+    }, {phase: AfterRenderPhase.Write});
+  }
+
+  clipboardWrite(s: string): void {
     navigator.clipboard.writeText(s);
   }
   
