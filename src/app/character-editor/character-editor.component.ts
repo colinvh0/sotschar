@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
+// TODO: style save slots
+// TODO: style config
 // TODO: implement configS2S
 // TODO: print minimum heights
 // TODO: hide 0-rank Abilities in play/print?
@@ -89,10 +91,10 @@ export class CharacterEditorComponent {
   #showConfig = true;
   #showAdvConfig = false;
   #showManage = false;
+  selectedSaveSlot: SaveSlot | null = null;
   canSave = false;
-  slotClean = false;
-  slotKey = '';
-  selectedSlotKeyIn = null;
+  saveSlotClean = false;
+  saveSlotKey = '';
   
   version = 'α1';
   importData = '';
@@ -310,25 +312,6 @@ export class CharacterEditorComponent {
     return 'char' + i;
   }
   
-  get selectedSlotKey(): string | null {
-    const ss = this.saveSlots;
-    if (ss.length == 0) {
-      return null;
-    } else if (ss.length == 1) {
-      return ss[0].key;
-    } else {
-      return this.selectedSlotKeyIn;
-    }
-  }
-  
-  get selectedSlot(): SaveSlot | null {
-    const k = this.selectedSlotKey;
-    if (k !== null) {
-      return new SaveSlot(k);
-    }
-    return null;
-  }
-
   saveNew(): void {
     const s = {
       c: this.rawValue,
@@ -346,11 +329,11 @@ export class CharacterEditorComponent {
   }
   
   loadFromSlot(): void {
-    if (!this.slotClean) { // TODO: implement checking for cleanliness
+    if (!this.saveSlotClean) { // TODO: implement checking for cleanliness
       if (window.confirm(`
         Load character?
       `)) {
-        
+        // don't forget to set this.saveSlotKey
       }
     }
   }
@@ -360,9 +343,9 @@ export class CharacterEditorComponent {
   }
   
   deleteSlot(): void {
-    const k = this.selectedSlotKey;
+    const k = this.selectedSaveSlot!.key;
     if (k !== null) {
-      localStorage.removeItem(k); // TODO: refresh/invalidate save slot list
+      localStorage.removeItem(k);
     } else {
       console.trace('localStorage.' + k + ' is null');
     }

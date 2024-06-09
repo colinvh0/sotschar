@@ -44,14 +44,14 @@
       <div class="storage" [ngClass]="(spaceLeft <= 5) ? ' low' : ''">(Approximately {{ spaceLeft }}% of storage remaining) <div class="note">Why is this approximate?</div></div>
       <div></div>
       <div *ngIf="saveSlots.length == 1" class="save-slots">{{ saveSlots[0].c.g.name }} ({{ saveSlots[0].dateLocal }})</div>
-      <select *ngIf="saveSlots.length > 1" class="save-slots" [size]="(saveSlots.length < 6) ? saveSlots.length : 6" [(ngModel)]="selectedSlotKeyIn" [ngModelOptions]="{standalone: true}">
-        <option *ngFor="let slot of saveSlots" [value]="slot.key">{{ slot.c.g.name }} ({{ slot.dateLocal }})</option>
-      </select>
+      <div class="save-slots">
+        <div *ngFor="let slot of saveSlots" [ngClass]="(selectedSaveSlot && selectedSaveSlot!.key == slot.key) ? ' selected' : ''" (click)="selectedSaveSlot = slot">{{ slot.c.g.name }} ({{ slot.dateLocal }})</div>
+      </div>
       <div>
         <button (click)="saveNew()">Save (new)</button>
-        <button (click)="saveToSlot()" [disabled]="(saveSlots.length == 0 || selectedSlot === null) ? 'disabled' : ''">Save (overwrite)</button>
-        <button (click)="loadFromSlot()" [disabled]="(saveSlots.length == 0|| selectedSlot === null) ? 'disabled' : ''">Load</button>
-        <button (click)="maybeDeleteSlot()" [disabled]="(saveSlots.length == 0|| selectedSlot === null) ? 'disabled' : ''">Delete</button>
+        <button (click)="saveToSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Save (overwrite)</button>
+        <button (click)="loadFromSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Load</button>
+        <button (click)="maybeDeleteSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Delete</button>
       </div>
     </div>
   </div>
