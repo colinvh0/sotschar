@@ -1,3 +1,4 @@
+<!-- begin hidden elements -->
 <datalist id="faction-list">
   @for (faction of tup.factions; track faction;) {
     <option [attr.value]="faction"></option>
@@ -17,11 +18,22 @@
     }
   }
 </datalist>
+<dialog id="confirm-save">
+  <button class="close" (click)="hideModal('confirm-save')">❌</button>
+  Overwrite save?
+  <button (click)="saveToSlot()">Confirm</button>
+</dialog>
+<dialog id="confirm-load">
+  <button class="close" (click)="hideModal('confirm-load')">❌</button>
+  Any unsaved changes will be discarded.  Load character?
+  <button (click)="loadFromSlot()">Confirm</button>
+</dialog>
 <dialog id="confirm-delete">
-  <button class="close" (click)="closeDeleteSlotConfirm()">❌</button>
+  <button class="close" (click)="hideModal('confirm-delete')">❌</button>
   Delete saved character?
   <button (click)="deleteSlot()">Confirm</button>
 </dialog>
+<!-- end hidden elements -->
 <div *ngIf="mode != 'off' && canSave" class="character-sheet-wrap" [ngClass]="'mode-' + mode" [formGroup]="formGroup">
 <section class="manage">
   <h1 class="head"><button (click)="showManage = !showManage">⚙️</button> Manage Character</h1>
@@ -44,15 +56,15 @@
       <div class="storage" [ngClass]="(spaceLeft <= 5) ? ' low' : ''">(Approximately {{ spaceLeft }}% of storage remaining) <div class="note">Why is this approximate?</div></div>
       <div></div>
       <div class="save-slots">
-        <div *ngFor="let slot of saveSlots" class="subgrid" [ngClass]="slot.isSlected ? ' selected' : ''" (click)="selectedSaveSlot = slot">
+        <div *ngFor="let slot of saveSlots" class="subgrid" [ngClass]="(saveSlots.length == 1 || slot.isSlected) ? ' selected' : ''" (click)="selectedSaveSlot = slot">
           <div>{{ slot.c.g.name }}</div>
           <div>({{ slot.dateLocal }})</div>
         </div>
       </div>
       <div>
         <button (click)="saveNew()">Save (new)</button>
-        <button (click)="saveToSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Save (overwrite)</button>
-        <button (click)="loadFromSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Load</button>
+        <button (click)="maybeSaveToSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Save (overwrite)</button>
+        <button (click)="maybeLoadFromSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Load</button>
         <button (click)="maybeDeleteSlot()" [disabled]="(saveSlots.length == 0 || selectedSaveSlot === null) ? 'disabled' : ''">Delete</button>
       </div>
     </div>

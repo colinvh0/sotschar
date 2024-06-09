@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
+// TODO: style dialogs
 // TODO: style config
 // TODO: implement configS2S
 // TODO: print minimum heights
@@ -90,7 +91,7 @@ export class CharacterEditorComponent {
   #showConfig = true;
   #showAdvConfig = false;
   #showManage = false;
-  selectedSaveSlot: SaveSlot | null = null;
+  #selectedSaveSlot: SaveSlot | null = null;
   canSave = false;
   saveSlotClean = false;
   saveSlotKey = '';
@@ -203,7 +204,7 @@ export class CharacterEditorComponent {
   
   get json(): string {
     const j = JSON.stringify(this.rawValue);
-    console.log('json.length', j.length);
+    //console.log('json.length', j.length);
     return j;
   }
   
@@ -292,17 +293,46 @@ export class CharacterEditorComponent {
     let c = unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
     return this.fmtPct(1 - (c / (5 * 1024 * 1024)));
   }
+  
+  set selectedSaveSlot(s: SaveSlot | null) {
+    this.#selectedSaveSlot = s;
+  }
 
-  get saveSlots(): SaveSlot[] {
+  get selectedSaveSlot(): SaveSlot | null {
+    const ss = this.saveSlots;
+    if (ss.length == 0) {
+      return this.#selectedSaveSlot = null;
+    }
+    if (ss.length == 1) {
+      return ss[0];
+    }
+    if (this.#selectedSaveSlot === null) {
+      return null;
+    }
+    if (!(this.#selectedSaveSlot.key in this.saveSlotKeys)) {
+      return this.#selectedSaveSlot = null;
+    }
+    return this.#selectedSaveSlot;
+  }
+  
+  get saveSlotKeys(): Record<string, boolean> {
     const re = /char(\d+)/;
-    let a: SaveSlot[] = [];
+    let a: Record<string, boolean> = {};
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k !== null) {
         if (k.match(re)) {
-          a.push(new SaveSlot(this, k));
+          a[k] = true;
         }
       }
+    }
+    return a;
+  }
+
+  get saveSlots(): SaveSlot[] {
+    let a: SaveSlot[] = [];
+    for (const k in this.saveSlotKeys) {
+      a.push(new SaveSlot(this, k));
     }
     return a.sort((a, b) => { return b.ts - a.ts; });
   }
@@ -326,26 +356,35 @@ export class CharacterEditorComponent {
     localStorage.setItem(this.nextSlotKey, JSON.stringify(s));
   }
   
+  maybeSaveToSlot(): void {
+    this.showModal('confirm-save');
+  }
+  
   saveToSlot(): void {
-    if (window.confirm(`
-      Overwrite save?
-    `)) {
-      
+    const s = {
+      c: this.rawValue,
+      ts: this.timestamp,
+    };
+    localStorage.setItem(this.selectedSaveSlot!.key, JSON.stringify(s));
+    this.hideModal('confirm-save');
+  }
+  
+  maybeLoadFromSlot(): void {
+    if (this.saveSlotClean) { // TODO: implement checking for cleanliness
+      this.loadFromSlot();
+    } else {
+      this.showModal('confirm-load');
     }
   }
   
   loadFromSlot(): void {
-    if (!this.saveSlotClean) { // TODO: implement checking for cleanliness
-      if (window.confirm(`
-        Load character?
-      `)) {
-        // don't forget to set this.saveSlotKey
-      }
-    }
+    // TODO
+    // TODO: don't forget to set this.saveSlotKey
+    this.hideModal('confirm-load');
   }
   
   maybeDeleteSlot(): void {
-    (document.querySelector('#confirm-delete') as HTMLDialogElement).showModal();
+     this.showModal('confirm-delete');
   }
   
   deleteSlot(): void {
@@ -356,11 +395,17 @@ export class CharacterEditorComponent {
     } else {
       console.trace('localStorage.' + k + ' is null');
     }
-    this.closeDeleteSlotConfirm();
+    this.hideModal('confirm-delete');
+  }
+  
+  getModal = (id: string) => { return document.querySelector('dialog#' + id) as HTMLDialogElement; };
+
+  showModal(id: string): void {
+    this.getModal(id).showModal();
   }
 
-  closeDeleteSlotConfirm(): void {
-    (document.querySelector('#confirm-delete') as HTMLDialogElement).close();
+  hideModal(id: string): void {
+    this.getModal(id).close();
   }
 
   initSubscribe(): void {
