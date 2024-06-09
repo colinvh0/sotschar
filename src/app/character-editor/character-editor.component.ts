@@ -78,6 +78,8 @@ foreach ($file in 'src\app\character-editor\character-editor.component.html', 's
   styleUrl: './character-editor.component.less'
 })
 export class CharacterEditorComponent {
+  /// properties ///
+
   cookies = inject(CookieService);
 
   get defCharCount() { return 4; }
@@ -88,6 +90,9 @@ export class CharacterEditorComponent {
   #showAdvConfig = false;
   #showManage = false;
   canSave = false;
+  slotClean = false;
+  slotKey = '';
+  selectedSlotKeyIn = null;
   
   version = 'α1';
   importData = '';
@@ -136,6 +141,8 @@ export class CharacterEditorComponent {
     }, {phase: AfterRenderPhase.Read});
   }
   
+  /// state management ///
+
   loadFromLocal(): void {
     let c;
     try {
@@ -152,7 +159,6 @@ export class CharacterEditorComponent {
   saveToLocal(): void {
     if (this.canSave) {
       localStorage.setItem('char', this.json); // TODO: LZString.compress(this.json)
-      //console.log('SAVED');
     }
   }
     
@@ -188,13 +194,16 @@ export class CharacterEditorComponent {
   }
   
   get json(): string {
-    const s = JSON.stringify(this.rawValue);
-    console.log('json.length', s.length);
-    return s;
+    const j = JSON.stringify(this.rawValue);
+    console.log('json.length', j.length);
+    return j;
   }
-
-  set json(json: string) {
-    const o = JSON.parse(json);
+  
+  set json(j: string) {
+    this.rawValue = JSON.parse(j);
+  }
+  
+  set rawValue(o: any) {
     this.charCompat(o);
     this.formGroup.setValue(o.g);
     for (let def of this.invAbilityDefs) {
@@ -270,6 +279,99 @@ export class CharacterEditorComponent {
       this.importErr = e;
     }
   }
+  
+  get spaceLeft(): number {
+    let c = unescape(encodeURIComponent(JSON.stringify(localStorage))).length;
+    return this.fmtPct(1 - (c / (5 * 1024 * 1024)));
+  }
+
+  get saveSlots(): SaveSlot[] {
+    const re = /char(\d+)/;
+    let a: SaveSlot[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k !== null) {
+        if (k.match(re)) {
+          a.push(new SaveSlot(k));
+        }
+      }
+    }
+    return a.sort((a, b) => { return b.ts - a.ts; });
+  }
+
+  get nextSlotKey(): string {
+    let i = 0;
+    while (localStorage.getItem('char' + ++i) !== null) {
+      if (i > localStorage.length) { // if we're here, the pigeonhole principle broke or I made the while loop wrong
+        console.trace('wtf no');
+        break;
+      }
+    }
+    return 'char' + i;
+  }
+  
+  get selectedSlotKey(): string | null {
+    const ss = this.saveSlots;
+    if (ss.length == 0) {
+      return null;
+    } else if (ss.length == 1) {
+      return ss[0].key;
+    } else {
+      return this.selectedSlotKeyIn;
+    }
+  }
+  
+  get selectedSlot(): SaveSlot | null {
+    const k = this.selectedSlotKey;
+    if (k !== null) {
+      return new SaveSlot(k);
+    }
+    return null;
+  }
+
+  saveNew(): void {
+    const s = {
+      c: this.rawValue,
+      ts: this.timestamp,
+    };
+    localStorage.setItem(this.nextSlotKey, JSON.stringify(s));
+  }
+  
+  saveToSlot(): void {
+    if (window.confirm(`
+      Overwrite save?
+    `)) {
+      
+    }
+  }
+  
+  loadFromSlot(): void {
+    if (!this.slotClean) { // TODO: implement checking for cleanliness
+      if (window.confirm(`
+        Load character?
+      `)) {
+        
+      }
+    }
+  }
+  
+  maybeDeleteSlot(): void {
+    (document.querySelector('#confirm-delete') as HTMLDialogElement).showModal();
+  }
+  
+  deleteSlot(): void {
+    const k = this.selectedSlotKey;
+    if (k !== null) {
+      localStorage.removeItem(k); // TODO: refresh/invalidate save slot list
+    } else {
+      console.trace('localStorage.' + k + ' is null');
+    }
+    this.closeDeleteSlotConfirm();
+  }
+
+  closeDeleteSlotConfirm(): void {
+    (document.querySelector('#confirm-delete') as HTMLDialogElement).close();
+  }
 
   initSubscribe(): void {
     const self = this;
@@ -303,6 +405,8 @@ export class CharacterEditorComponent {
       this.mode = 'edit';
     }
   }
+  
+  /// view state ///
   
   get mode() {
     return this.#mode;
@@ -349,6 +453,8 @@ export class CharacterEditorComponent {
     }));
   }
   
+  /// utilities ///
+  
   int(s: string | null, d = 0): number {
     if (s) {
       return parseInt(s, 10);
@@ -362,6 +468,31 @@ export class CharacterEditorComponent {
       return i + '';
     }
     return '−' + -i;
+  }
+  
+  fmtPct(q: number): number {
+    const a = ((q * 100) + '').split('.');
+    const ip = a[0];
+    const i = parseInt(ip, 10);
+    if (ip.length <= 2 && 1 in a) {
+      const fp = a[1];
+      if (fp.length > 1) {
+        let d0 = parseInt(fp[0], 10);
+        const d1 = parseInt(fp[1], 10);
+        if (d1 >= 5) {
+          d0++;
+        }
+        if (d0 >= 10) {
+          return i + 1;
+        }
+        return i + (d0 / 10);
+      }
+    }
+    return i;
+  }
+  
+  get timestamp(): number {
+    return Math.floor((new Date()).getTime() / 1000);
   }
   
   aii(len: number): Array<number> {
@@ -405,6 +536,8 @@ export class CharacterEditorComponent {
     navigator.clipboard.writeText(s);
   }
   
+  /// user input values ///
+  
   get charCount(): number {
     const v = this.formGroup.controls.configCharacterCount.value;
     return (v !== null) ? parseInt(v, 10) : this.defCharCount;
@@ -447,6 +580,8 @@ export class CharacterEditorComponent {
       return parseInt(this.formGroup.controls.configStaminaBuild.value, 10);
     }
   }
+
+  /// character data ///
 
   get unspentAdvancement(): number {
     if (this.formGroup.controls.advancement.value === null) {
@@ -823,6 +958,8 @@ export class CharacterEditorComponent {
     return;
   }
   
+  /// static config ///
+  
   genAbilityDefs = [
     new GeneralAbility("Athletics", "Dodge"),
     new GeneralAbility("Bind Wounds", "Plenty of Leeches"),
@@ -949,6 +1086,8 @@ export class CharacterEditorComponent {
   };
 }
 
+/// utilities ///
+
 function initGear(len = 0): Gear[] {
   var result: Gear[]; 
   result = [];
@@ -966,6 +1105,30 @@ function clamp(v: number, lo: number, hi: number): number {
     return hi;
   }
   return v;
+}
+
+/// classes ///
+
+class SaveSlot {
+  key: string;
+  ts: number;
+  c: any;
+  
+  constructor(key: string) {
+    this.key = key;
+    const str = localStorage.getItem(key) as string;
+    const save = JSON.parse(str);
+    this.ts = save['ts'];
+    this.c = save['c'];
+  }
+
+  get dateLocal(): string {
+    return new Date(this.ts * 1000).toLocaleString();
+  }
+
+  get dateUtc(): string {
+    return new Date(this.ts * 1000).toUTCString();
+  }
 }
 
 class GeneralAbility {

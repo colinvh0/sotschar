@@ -17,20 +17,42 @@
     }
   }
 </datalist>
+<dialog id="confirm-delete">
+  <button class="close" (click)="closeDeleteSlotConfirm()">❌</button>
+  Delete saved character?
+  <button (click)="deleteSlot()">Confirm</button>
+</dialog>
 <div *ngIf="mode != 'off' && canSave" class="character-sheet-wrap" [ngClass]="'mode-' + mode" [formGroup]="formGroup">
 <section class="manage">
   <h1 class="head"><button (click)="showManage = !showManage">⚙️</button> Manage Character</h1>
   <div *ngIf="showManage" class="flex">
-    <div>
-      <div>Export:</div>
-      <div><textarea id="json-export" readonly>{{ json }}</textarea></div>
-      <div><button (click)="copyToClipboard(json)">📋 Copy</button></div>
+    <div class="flex-column">
+      <div>
+        <div>Export:</div>
+        <div><textarea readonly>{{ json }}</textarea></div>
+        <div><button (click)="copyToClipboard(json)">📋 Copy</button></div>
+      </div>
+      <div>
+        <div>Import:</div>
+        <div class="message error" *ngIf="importErr">{{ importErr }}</div>
+        <div><textarea [(ngModel)]="importData" [ngModelOptions]="{standalone: true}"></textarea></div>
+        <div><button (click)="import()">Import</button> <button (click)="importErr = importData = ''">Clear</button></div>
+      </div>
     </div>
     <div>
-      <div>Import:</div>
-      <div class="message error" *ngIf="importErr">{{ importErr }}</div>
-      <div><textarea [(ngModel)]="importData" [ngModelOptions]="{standalone: true}"></textarea></div>
-      <div><button (click)="import()">Import</button> <button (click)="importErr = importData = ''">Clear</button></div>
+      <div>Save slots:</div>
+      <div class="storage" [ngClass]="(spaceLeft <= 5) ? ' low' : ''">(Approximately {{ spaceLeft }}% of storage remaining) <div class="note">Why is this approximate?</div></div>
+      <div></div>
+      <div *ngIf="saveSlots.length == 1" class="save-slots">{{ saveSlots[0].c.g.name }} ({{ saveSlots[0].dateLocal }})</div>
+      <select *ngIf="saveSlots.length > 1" class="save-slots" [size]="(saveSlots.length < 6) ? saveSlots.length : 6" [(ngModel)]="selectedSlotKeyIn" [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let slot of saveSlots" [value]="slot.key">{{ slot.c.g.name }} ({{ slot.dateLocal }})</option>
+      </select>
+      <div>
+        <button (click)="saveNew()">Save (new)</button>
+        <button (click)="saveToSlot()" [disabled]="(saveSlots.length == 0 || selectedSlot === null) ? 'disabled' : ''">Save (overwrite)</button>
+        <button (click)="loadFromSlot()" [disabled]="(saveSlots.length == 0|| selectedSlot === null) ? 'disabled' : ''">Load</button>
+        <button (click)="maybeDeleteSlot()" [disabled]="(saveSlots.length == 0|| selectedSlot === null) ? 'disabled' : ''">Delete</button>
+      </div>
     </div>
   </div>
 </section>

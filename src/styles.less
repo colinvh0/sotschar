@@ -14,6 +14,18 @@ body {
   color: white;
 }
 
+dialog {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+dialog button.close {
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
 .invisible {
   visibility: hidden;
 }
@@ -299,6 +311,14 @@ body {
 }
 .character-sheet-wrap section.manage .flex {
   align-items: revert;
+  justify-content: space-between;
+}
+.character-sheet-wrap section.manage textarea {
+  width: 20em;
+  word-break: break-all;
+}
+.character-sheet-wrap section.manage select {
+  width: 20em;
 }
 
 .character-sheet-wrap section.config {
