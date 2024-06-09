@@ -5,6 +5,8 @@ import { CookieService } from 'ngx-cookie-service';
 
 // TODO: style dialogs
 // TODO: style config
+// TODO: handle/display load/save errors
+// TODO: make validation report and share
 // TODO: implement configS2S
 // TODO: print minimum heights
 // TODO: hide 0-rank Abilities in play/print?
@@ -13,6 +15,12 @@ import { CookieService } from 'ngx-cookie-service';
 // TODO KC: handle favors/grudges
 // TODO KC: adjectives just a text field?
 // TODO KC: editable during play?
+
+// TODO: load from template
+// TODO: mobile input[number] has strong validation, desktop does not
+// TODO: image url/upload/crop
+// TODO: fix text knockouts in h4s
+// TODO: multiplayer
 
 /* THE BIG RESTRUCT
 
@@ -52,13 +60,6 @@ pools:
   wealth 6b
 
 */
-
-// TODO: load/save
-// TODO: load from template
-// TODO: mobile input[number] has strong validation, desktop does not
-// TODO: image url/upload/crop
-// TODO: fix text knockouts in h4s
-// TODO: multiplayer
 
 /* M$ PowerHELL
 // approx 5 - 6.5 chars per "word"
@@ -378,8 +379,8 @@ export class CharacterEditorComponent {
   }
   
   loadFromSlot(): void {
-    // TODO
-    // TODO: don't forget to set this.saveSlotKey
+    this.rawValue = this.selectedSaveSlot!.c;
+    this.saveSlotKey = this.selectedSaveSlot!.key;
     this.hideModal('confirm-load');
   }
   
