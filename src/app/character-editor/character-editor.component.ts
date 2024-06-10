@@ -296,8 +296,8 @@ export class CharacterEditorComponent {
       this.json = this.importData;
       this.importErr = '';
     } catch (e: any) {
-      console.log(e);
       this.importErr = e;
+      throw e;
     }
   }
   
@@ -456,7 +456,6 @@ export class CharacterEditorComponent {
   }
   
   loadFromSlot(s: SaveSlot | null = null): void {
-    console.log(this, s);
     if (s === null) {
       if (this.selectedSaveSlot === null) {
         console.trace('this.selectedSaveSlot is null');
@@ -466,7 +465,6 @@ export class CharacterEditorComponent {
         s = this.selectedSaveSlot;
       }
     }
-    console.log(s);
     this.rawValue = s.c;
     this.saveSlotKey = s.key;
     this.hideModal();
@@ -490,16 +488,6 @@ export class CharacterEditorComponent {
     this.hideModal();
   }
   
-  /*getModal = (id: string) => { return document.querySelector('dialog#' + id) as HTMLDialogElement; };
-
-  showModal(id: string): void {
-    this.getModal(id).showModal();
-  }
-
-  hideModal(id: string): void {
-    this.getModal(id).close();
-  }*/
-
   initSubscribe(): void {
     const self = this;
     for (const name in this.formGroup.controls) {
@@ -761,8 +749,30 @@ export class CharacterEditorComponent {
     return Object.keys(this.invAbilities[category]);
   }
   
+  get charClass(): string {
+    for (let a of this.allegiances) {
+      if (a.name && (a.ally.ranks >= 4 || a.enemy.ranks >= 4)) {
+        return a.name;
+      }
+    }
+    const c = new Set<string>();
+    for (let ad of this.invAbilityDefs) {
+      if (this.invAbilities[ad.category][ad.name].ranks > 0) {
+        c.add(ad.category);
+      }
+    }
+    if (c.size == 1) {
+      return c.keys().next().value as string;
+    }
+    c.delete('Social');
+    if (c.size == 1) {
+      return c.keys().next().value as string;
+    }
+    return '';
+  }
+  
   get invUnspent(): number {
-    let r = this.invBuild + this.int(this.formGroup.controls.advInvB.value);
+    let r = this.invBuild + this.int(this.formGroup.controls.advInvB.value) + (this.charClass ? 1 : 0);
     for (let ad of this.invAbilityDefs) {
       r -= this.invAbilities[ad.category][ad.name].ranks;
     }
@@ -987,7 +997,6 @@ export class CharacterEditorComponent {
         this.spheres[i] = '';
       }
     }
-    console.log(this.spheres);
     this.saveToLocal();
   }
 
