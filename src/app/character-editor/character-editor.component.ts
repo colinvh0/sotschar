@@ -1,13 +1,13 @@
-import { AfterRenderPhase, Component, Input, afterNextRender, inject } from '@angular/core';
+import { AfterRenderPhase, Component, HostListener, Input, afterNextRender, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
+// TODO: fix gear height
+// TODO: add bonus build point for being in one class
 // TODO: refactor modal dialog
 // TODO: optional adjectives datalist
 // TODO: subscribe to localStorage changes
-// TODO: clicking modal dialog background dismisses dialog (maybe https://itnext.io/angular-and-pure-html-dialogs-da79a37ac1e7)
-// TODO: style dialogs
 // TODO: style config
 // TODO: handle/display load/save errors
 // TODO: make validation report and share
@@ -19,6 +19,7 @@ import { CookieService } from 'ngx-cookie-service';
 // TODO KC: handle favors/grudges
 // TODO KC: adjectives just a text field?
 // TODO KC: editable during play?
+// TODO KC: allegiance pseudoclass real rule?
 
 // TODO: load from template
 // TODO: mobile input[number] has strong validation, desktop does not
@@ -27,6 +28,14 @@ import { CookieService } from 'ngx-cookie-service';
 // TODO: multiplayer
 
 /* THE BIG RESTRUCT
+
+user data
+  saveSlotClean
+  saveSlotKey
+  configSuggestAdjectives
+  view state
+    mode
+    view...
 
 character manager
 
@@ -151,15 +160,8 @@ export class CharacterEditorComponent {
       this.loadFromLocal();
       this.initSubscribe();
     }, {phase: AfterRenderPhase.Read});
-    /*@HostListener('window:storage', ['$event'])
-      onMessage(event) {
-        if (event.storageArea === localStorage) {
-          
-        }
-      }
-    }*/
   }
-  
+      
   /// state management ///
 
   loadFromLocal(): void {
@@ -358,11 +360,30 @@ export class CharacterEditorComponent {
     return 'char' + i;
   }
   
-  maybeClearCharacter(): void { // TODO: UI
+  showModal(cb: () => void, ecls: string, verb: string, q: string) {
+    try {
+    const elem = document.querySelector('dialog#sotschar-modal') as HTMLDialogElement;
+    const c = elem.querySelector('button.confirm') as HTMLButtonElement;
+    c.onclick = cb;
+    c.innerText = verb;
+    elem.classList.add(ecls);
+    (elem.querySelector('.query') as HTMLElement).innerText = q;
+    elem.showModal();
+    } catch (e: any) {
+      this.hideModal();
+      throw e;
+    }
+  }
+  
+  hideModal(): void {
+    (document.querySelector('dialog#sotschar-modal') as HTMLDialogElement).close();
+  }
+
+  maybeClearCharacter(): void { // TODO: button in html
     if (this.saveSlotClean) {
       this.clearCharacter();
     } else {
-      this.showModal('confirm-clear');
+        this.showModal(this.clearCharacter.bind(this), 'warn', "Discard and Clear", "Any unsaved changes will be discarded.  Clear character?");
     }
   }
 
@@ -395,7 +416,7 @@ export class CharacterEditorComponent {
       if (this.selectedSaveSlot.key == this.saveSlotKey) {
         this.saveToSlot();
       } else {
-        this.showModal('confirm-save');
+        this.showModal(this.saveToSlot.bind(this), 'warn', "Overwrite", "Overwrite saved character?");
       }
     }
   }
@@ -404,7 +425,7 @@ export class CharacterEditorComponent {
     if (slot === null) {
       if (this.selectedSaveSlot === null) {
         console.trace('this.selectedSaveSlot is null');
-        this.hideModal('confirm-save');
+        this.hideModal();
         return;
       } else {
         slot = this.selectedSaveSlot;
@@ -415,14 +436,14 @@ export class CharacterEditorComponent {
       ts: this.timestamp,
     };
     localStorage.setItem(slot.key, JSON.stringify(save));
-    this.hideModal('confirm-save');
+    this.hideModal();
   }
   
   maybeLoadFromSlot(): void {
     if (this.saveSlotClean) { // TODO: implement checking for cleanliness
       this.loadFromSlot();
     } else {
-      this.showModal('confirm-load');
+        this.showModal(this.loadFromSlot.bind(this), 'warn', "Discard and Load", "Any unsaved changes will be discarded.  Load character?");
     }
   }
   
@@ -430,7 +451,7 @@ export class CharacterEditorComponent {
     if (s === null) {
       if (this.selectedSaveSlot === null) {
         console.trace('this.selectedSaveSlot is null');
-        this.hideModal('confirm-load');
+        this.hideModal();
         return;
       } else {
         s = this.selectedSaveSlot;
@@ -438,11 +459,11 @@ export class CharacterEditorComponent {
     }
     this.rawValue = s.c;
     this.saveSlotKey = s.key;
-    this.hideModal('confirm-load');
+    this.hideModal();
   }
   
   maybeDeleteSlot(): void {
-     this.showModal('confirm-delete');
+    this.showModal(this.deleteSlot.bind(this), 'warn', "Delete", "Delete saved character?");
   }
   
   deleteSlot(): void {
@@ -450,13 +471,16 @@ export class CharacterEditorComponent {
     if (k !== null) {
       localStorage.removeItem(k);
       this.selectedSaveSlot = null;
+      if (this.saveSlotKey == k) {
+        this.saveSlotKey = '';
+      }
     } else {
       console.trace('localStorage.' + k + ' is null');
     }
-    this.hideModal('confirm-delete');
+    this.hideModal();
   }
   
-  getModal = (id: string) => { return document.querySelector('dialog#' + id) as HTMLDialogElement; };
+  /*getModal = (id: string) => { return document.querySelector('dialog#' + id) as HTMLDialogElement; };
 
   showModal(id: string): void {
     this.getModal(id).showModal();
@@ -464,7 +488,7 @@ export class CharacterEditorComponent {
 
   hideModal(id: string): void {
     this.getModal(id).close();
-  }
+  }*/
 
   initSubscribe(): void {
     const self = this;
@@ -598,13 +622,12 @@ export class CharacterEditorComponent {
     return v;
   }
 
-  closeDialog(e: MouseEvent):void {
+  maybeCloseDialog(e: MouseEvent):void {
     const ot = (e as any)['originalTarget'];
-    console.log(e.target, ot);
     if (e.target !== null && ot !== null) {
-      const d = e.target as HTMLDialogElement;
-      if (d == ot) {
-        (d as any)['close']!();
+      const d = e.target as any;
+      if (d === ot && 'close' in d) {
+        d['close']();
       }
     }
   }
@@ -878,16 +901,16 @@ export class CharacterEditorComponent {
     return acc.join(', ');
   }
   
-  curGenRank(name: string, i: number): string {
-    if (i > 4 && this.genAbilities[name].ranks == i) {
+  curGenRank(name: string, i: number, fives = false): string {
+    if ((i > 4 && this.genAbilities[name].ranks == i) || (fives && i % 5 == 0)) {
       return i + '';
     } else {
       return '';
     }
   }
   
-  curGenPool(name: string, i: number): string {
-    if (this.genAbilities[name].pool == i || this.genAbilities[name].ranks == i) {
+  curGenPool(name: string, i: number, fives = false): string {
+    if (this.genAbilities[name].pool == i || this.genAbilities[name].ranks == i || (fives && i % 5 == 0)) {
       return this.fmt(i) + '';
     } else {
       return '';

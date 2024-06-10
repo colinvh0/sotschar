@@ -18,28 +18,13 @@
     }
   }
 </datalist>
-<dialog id="confirm-save" class="warn" (click)="closeDialog($event)">
-  <div class="close"><button (click)="hideModal('confirm-save')">❌</button></div>
+<dialog id="sotschar-modal" (click)="maybeCloseDialog($event)">
+  <div class="close"><button (click)="hideModal()">❌</button></div>
   <div class="content">
-    <div>Overwrite save?</div>
-    <div><button class="confirm" (click)="saveToSlot()">Overwrite</button></div>
+    <div class="query"></div>
+    <div><button class="confirm"></button></div>
   </div>
 </dialog>
-<dialog id="confirm-load" class="warn" onclick="(e) => { console.log(e, this); if (e.target == this) this.close() }">
-  <div class="close"><button (click)="hideModal('confirm-load')">❌</button></div>
-  <div class="content">
-    <div>Any unsaved changes will be discarded.  Load character?</div>
-    <div><button class="confirm" (click)="loadFromSlot()">Discard and Load</button></div>
-  </div>
-</dialog>
-<dialog id="confirm-delete" class="warn" onclick="(e) => { console.log(e, this); if (e.target == this) this.close() }">
-  <div class="close"><button (click)="hideModal('confirm-delete')">❌</button></div>
-  <div class="content">
-    <div>Delete saved character?</div>
-    <div><button class="confirm" (click)="deleteSlot()">Delete</button></div>
-  </div>
-</dialog>
-<!-- end hidden elements -->
 <div *ngIf="mode != 'off' && canSave" class="character-sheet-wrap" [ngClass]="'mode-' + mode" [formGroup]="formGroup">
 <section class="manage">
   <h1 class="head"><button (click)="showManage = !showManage">⚙️</button> Manage Character</h1>
@@ -65,6 +50,9 @@
         <div *ngFor="let slot of saveSlots" class="subgrid" [ngClass]="(saveSlots.length == 1 || slot.isSlected) ? ' selected' : ''" (click)="selectedSaveSlot = slot">
           <div>{{ slot.c.g.name }}</div>
           <div>({{ slot.dateLocal }})</div>
+          <!--<label>
+            <input type="radio" name="save-slot" [value]="slot.key">
+          </label>-->
         </div>
       </div>
       <div>
@@ -337,10 +325,10 @@
                           [ngClass]="(genAbilities[ability.name].pool >= i) ? ' filled' : ''"
                           (click)="adjustGenPool(ability.name, genAbilities[ability.name].pool < i)"
                         >
-                          {{ curGenRank(ability.name, i) }}
+                          {{ curGenRank(ability.name, i, true) }}
                         </div>
                       } @else if (mode == 'print') {
-                        <div class="circle">{{ curGenRank(ability.name, i) }}</div>
+                        <div class="circle">{{ curGenRank(ability.name, i, true) }}</div>
                       }
 
                     } @else {
@@ -497,7 +485,7 @@
                       [ngClass]="((genAbilities[s].pool >= i) ? ' filled' : '') + ' ' + staminaPlayColor(i)"
                       (click)="adjustGenPool(s, genAbilities[s].pool < i)"
                     >
-                      {{ curGenPool(s, i) }}
+                      {{ curGenPool(s, i, true) }}
                     </div>
                   } @else if (mode == 'print') {
                     <div class="circle" [ngClass]="staminaPrintColor(i)">{{ fmt(i) }}</div>
