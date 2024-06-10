@@ -414,14 +414,22 @@ label:has([name="save-slot"]:focus) {
   grid-row-end: span 2;
   margin-top: 1.6em;
   margin-right: 1.5em;
+  padding-top: 3px;
 }
 
 .character-sheet .name-panel>div {
   border-bottom: @insideBorder;
 }
+.character-sheet .name-panel .input>.value {
+  padding-top: 0;
+}
+.character-sheet .profession-field .input>.value, .character-sheet .adjectives-field .input>.value {
+  font-size: 12px;
+}
 .character-sheet .name-panel>div:last-child {
   border-bottom: none;
 }
+
 
 .character-sheet .logo {
   grid-column: three 1 / three 2;
@@ -526,6 +534,9 @@ label:has([name="save-slot"]:focus) {
 .character-sheet .allegiances-section .input>div:first-child {
   margin-right: auto;
 }
+.character-sheet .allegiances-section .input .value {
+  font-size: 12px;
+}
 .character-sheet .allegiances-section .ability-value {
   position: relative;
   top: 0;
@@ -547,6 +558,13 @@ label:has([name="save-slot"]:focus) {
 .character-sheet .wealth-panel .lifestyle {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
+}
+.character-sheet .wealth-panel .lifestyle .value {
+  font-size: 12px;
+}
+.character-sheet .wealth-panel .lifestyle .ability-value {
+  align-self: start;
 }
 
 .character-sheet .stamina-section {

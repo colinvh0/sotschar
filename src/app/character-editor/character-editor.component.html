@@ -134,13 +134,13 @@
     <div class="name-field">
       <label>
         <div class="label">Name</div>
-        @if (mode == 'edit') {
-          <div class="input">
+        <div class="input">
+          @if (mode == 'edit') {
             <input type="text" formControlName="name" class="large">
-          </div>
-        } @else {
-          <div class="input-value">{{ formGroup.controls.name.value }}</div>
-        }
+          } @else {
+            <div class="value">{{ formGroup.controls.name.value }}</div>
+          }
+        </div>
       </label>
     </div>
     <div class="true-name-known-field">
@@ -156,7 +156,7 @@
           @if (mode == 'edit') {
             <input type="text" formControlName="profession" class="large">
           } @else {
-            <span>{{ formGroup.controls.profession.value }}</span>
+            <div class="value">{{ formGroup.controls.profession.value }}</div>
           }
         </div>
       </label>
@@ -172,7 +172,7 @@
         }
         <div class="add" *ngIf="adjectives.length < 5"><button (click)="addAdjective()">+</button></div>
       } @else {
-        <div class="input-value">{{ adjectives.join(', ') }}</div>
+        <div class="input"><div class="value">{{ adjectives.join(', ') }}</div></div>
       }
     </div>
   </div>
@@ -393,9 +393,9 @@
               </div>
               <button class="del" (click)="delAllegiance(i)">−</button>
             } @else {
-              <div>{{ allegiances[i].name }}</div>
+              <div class="value">{{ allegiances[i].name }}</div>
               <div>
-                <div class="ability-value">
+                <div class="ability-value" *ngIf="allegiances[i].ally.ranks > 0">
                   <div *ngFor="let j of aiToFrom(allegiances[i].ally.ranks)">
                     @if (mode == 'play') {
                       @if (allegiances[i].ally.pool >= j) {
@@ -407,6 +407,8 @@
                       <div class="circle">A</div>
                     }
                   </div>
+                </div>
+                <div class="ability-value" *ngIf="allegiances[i].enemy.ranks > 0">
                   <div
                     *ngFor="let j of aiToFrom(allegiances[i].enemy.ranks)"
                     class="circle red"
@@ -429,7 +431,7 @@
     <div class="lifestyle">
       <div class="label">Lifestyle</div>
       @if (mode == 'edit' || mode == 'play') {
-        <div>{{ tup.lifestyle[lifestyle + 2] }}</div>
+        <div class="value">{{ tup.lifestyle[lifestyle + 2] }}</div>
         <div class="ability-value">
           <div class="circle" [ngClass]="(lifestyle <= -2) ? ' filled' : ''" (click)="lifestyle = -2">−2</div>
           <div class="circle" [ngClass]="(lifestyle <= -1) ? ' filled' : ''" (click)="lifestyle = -1">−1</div>
