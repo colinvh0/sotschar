@@ -113,7 +113,7 @@ export class CharacterEditorComponent {
   #selectedSaveSlot: SaveSlot | null = null;
   canSave = false;
   saveSlotClean = false;
-  saveSlotKey = ''; // TODO: persist
+  //saveSlotKey = ''; // TODO: persist
   
   version = 'α1';
   importData = '';
@@ -306,6 +306,14 @@ export class CharacterEditorComponent {
     return this.fmtPct(1 - (c / (5 * 1024 * 1024)));
   }
   
+  get saveSlotKey(): string | null {
+    return localStorage.getItem('charkey');
+  }
+  
+  set saveSlotKey(k: string) {
+    localStorage.setItem('charkey', k);
+  }
+  
   set selectedSaveSlot(s: SaveSlot | null) {
     this.#selectedSaveSlot = s;
   }
@@ -443,11 +451,12 @@ export class CharacterEditorComponent {
     if (this.saveSlotClean) { // TODO: implement checking for cleanliness
       this.loadFromSlot();
     } else {
-        this.showModal(this.loadFromSlot.bind(this), 'warn', "Discard and Load", "Any unsaved changes will be discarded.  Load character?");
+        this.showModal(() => { this.loadFromSlot(); }, 'warn', "Discard and Load", "Any unsaved changes will be discarded.  Load character?");
     }
   }
   
   loadFromSlot(s: SaveSlot | null = null): void {
+    console.log(this, s);
     if (s === null) {
       if (this.selectedSaveSlot === null) {
         console.trace('this.selectedSaveSlot is null');
@@ -457,6 +466,7 @@ export class CharacterEditorComponent {
         s = this.selectedSaveSlot;
       }
     }
+    console.log(s);
     this.rawValue = s.c;
     this.saveSlotKey = s.key;
     this.hideModal();
@@ -1231,7 +1241,7 @@ class SaveSlot {
   c: any;
   
   constructor(ed: CharacterEditorComponent, key: string) {
-  this.ed = ed;
+    this.ed = ed;
     this.key = key;
     const str = localStorage.getItem(key) as string;
     const save = JSON.parse(str);
