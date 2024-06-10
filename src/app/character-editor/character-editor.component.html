@@ -134,13 +134,13 @@
     <div class="name-field">
       <label>
         <div class="label">Name</div>
-        <div class="input">
-          @if (mode == 'edit') {
+        @if (mode == 'edit') {
+          <div class="input">
             <input type="text" formControlName="name" class="large">
-          } @else {
-            <span>{{ formGroup.controls.name.value }}</span>
-          }
-        </div>
+          </div>
+        } @else {
+          <div class="input-value">{{ formGroup.controls.name.value }}</div>
+        }
       </label>
     </div>
     <div class="true-name-known-field">
@@ -172,7 +172,7 @@
         }
         <div class="add" *ngIf="adjectives.length < 5"><button (click)="addAdjective()">+</button></div>
       } @else {
-        <div class="input"><span>{{ adjectives.join(', ') }}</span></div>
+        <div class="input-value">{{ adjectives.join(', ') }}</div>
       }
     </div>
   </div>
@@ -526,7 +526,7 @@
       } @else {
         @for (_ of gear; track _; let i = $index) {
           @if (gear[i].iconic) {
-            <div class="gear">{{ gear[i].value }}</div>
+            <div class="gear">✅ {{ gear[i].value }}</div>
           }
         }
         <div class="gear">{{ nonIconicGear }}</div>

@@ -391,7 +391,7 @@ export class CharacterEditorComponent {
     if (this.saveSlotClean) {
       this.clearCharacter();
     } else {
-        this.showModal(this.clearCharacter.bind(this), 'warn', "Discard and Clear", "Any unsaved changes will be discarded.  Clear character?");
+        this.showModal(() => { this.clearCharacter(); }, 'warn', "Discard and Clear", "Any unsaved changes will be discarded.  Clear character?");
     }
   }
 
@@ -424,7 +424,7 @@ export class CharacterEditorComponent {
       if (this.selectedSaveSlot.key == this.saveSlotKey) {
         this.saveToSlot();
       } else {
-        this.showModal(this.saveToSlot.bind(this), 'warn', "Overwrite", "Overwrite saved character?");
+        this.showModal(() => { this.saveToSlot(); }, 'warn', "Overwrite", "Overwrite saved character?");
       }
     }
   }
@@ -473,7 +473,7 @@ export class CharacterEditorComponent {
   }
   
   maybeDeleteSlot(): void {
-    this.showModal(this.deleteSlot.bind(this), 'warn', "Delete", "Delete saved character?");
+    this.showModal(() => { this.deleteSlot(); }, 'warn', "Delete", "Delete saved character?");
   }
   
   deleteSlot(): void {
