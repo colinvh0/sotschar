@@ -750,11 +750,12 @@ export class CharacterEditorComponent {
   }
   
   get charClass(): string {
-    for (let a of this.allegiances) {
+    // this bit seems to have been a hallucination, or maybe Kevin said it on the Discord
+    /*for (let a of this.allegiances) {
       if (a.name && (a.ally.ranks >= 4 || a.enemy.ranks >= 4)) {
         return a.name;
       }
-    }
+    }*/
     const c = new Set<string>();
     for (let ad of this.invAbilityDefs) {
       if (this.invAbilities[ad.category][ad.name].ranks > 0) {
