@@ -1,8 +1,9 @@
 <!-- begin hidden elements -->
+<datalist id="adjective-list">
+  <option *ngFor="let adjective of tup.adjectives.sort()" [attr.value]="adjective"></option>
+</datalist>
 <datalist id="faction-list">
-  @for (faction of tup.factions; track faction;) {
-    <option [attr.value]="faction"></option>
-  }
+  <option *ngFor="let faction of tup.factions" [attr.value]="faction"></option>
 </datalist>
 <datalist id="health-sphere-list">
   @for (sphere of tup.spheres; track sphere;) {
@@ -79,6 +80,7 @@
         <div><label><input type="number" formControlName="configMinStamina"> Minimum Stamina</label></div>
         <div><label><input type="number" formControlName="configFreeAllies"> Free Allies</label></div>
         <div><label><input type="number" formControlName="configFreeEnemies"> Free Enemies</label></div>
+        <div><label><input type="checkbox" [(ngModel)]="suggestAdjectives" [ngModelOptions]="{standalone: true}"> Suggest Adjectives</label></div>
       </div>
       <div class="wide"><button (click)="showAdvConfig = !showAdvConfig">⚙️</button></div>
       <div><label><input type="checkbox" formControlName="configS2S"> Session 2 started</label></div>
@@ -166,7 +168,12 @@
       @if (mode == 'edit') {
         @for (i of aii(adjectives.length); track i;) {
           <div class="input">
-            <input type="text" [ngModel]="adjectives[i]" (ngModelChange)="setAdjective(i, $event)" [ngModelOptions]="{standalone: true}">
+            <input
+              type="text" [ngModel]="adjectives[i]"
+              (ngModelChange)="setAdjective(i, $event)"
+              [ngModelOptions]="{standalone: true}"
+              [attr.list]="suggestAdjectives ? 'adjective-list' : ''"
+            >
             <button class="del" (click)="delAdjective(i)">−</button>
           </div>
         }
