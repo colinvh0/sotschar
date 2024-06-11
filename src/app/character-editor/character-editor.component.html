@@ -398,23 +398,40 @@
                 <div class="ability-value" *ngIf="allegiances[i].ally.ranks > 0">
                   <div *ngFor="let j of aiToFrom(allegiances[i].ally.ranks)">
                     @if (mode == 'play') {
-                      @if (allegiances[i].ally.pool >= j) {
-                        <div class="circle filled" (click)="adjustAllyPool(i, false)">A</div>
-                      } @else {
-                        <div class="circle" (click)="adjustAllyPool(i)">A</div>
-                      }
+                      <div
+                        class="circle"
+                        [ngClass]="(allegiances[i].ally.pool >= j) ? 'filled' : ''"
+                        (click)="adjustAllyPool(i, allegiances[i].ally.pool < j)"
+                      >
+                        A
+                      </div>
                     } @else if (mode == 'print') {
                       <div class="circle">A</div>
                     }
                   </div>
                 </div>
                 <div class="ability-value" *ngIf="allegiances[i].enemy.ranks > 0">
+                  <div *ngFor="let j of aiToFrom(allegiances[i].enemy.ranks)">
+                    @if (mode == 'play') {
+                      <div
+                        class="circle red"
+                        [ngClass]="(allegiances[i].enemy.pool >= j) ? 'filled' : ''"
+                        (click)="adjustEnemyPool(i, allegiances[i].enemy.pool < j)"
+                      >
+                        E
+                      </div>
+                    } @else if (mode == 'print') {
+                      <div class="circle red">E</div>
+                    }
+                  </div>
+                </div>
+                <!--<div class="ability-value" *ngIf="allegiances[i].enemy.ranks > 0">
                   <div
                     *ngFor="let j of aiToFrom(allegiances[i].enemy.ranks)"
                     class="circle red"
                     [ngClass]="(mode == 'play' && allegiances[i].enemy.pool >= j) ? ' filled' : ''"
                   >E</div>
-                </div>
+                </div>-->
               </div>
             }
           </div>

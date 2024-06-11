@@ -1078,6 +1078,16 @@ export class CharacterEditorComponent {
     this.saveToLocal();
   }
   
+  adjustEnemyPool(i: number, increment = true): void {
+    const a = this.allegiances[i];
+    if (increment) {
+      a.enemy.pool++;
+    } else {
+      a.enemy.pool--;
+    }
+    this.saveToLocal();
+  }
+  
   addGear() {
     if (this.gear.length < 10) {
       this.gear.push(new Gear());
@@ -1184,17 +1194,17 @@ export class CharacterEditorComponent {
     ],
     factions: [
       "Ancient Nobility",
-      "Architects and Canal-Watchers",
       "Church of Denari",
       "City Watch",
       "Commoners",
+      "Guild of Architects and Canal-Watchers",
       "Mercanti",
       "Mercenaries",
       "Monstrosities",
       "Outlanders",
       "Sorcerous Cabals",
-      "The Triskadane",
       "Thieves' Guilds",
+      "Triskadane",
     ],
     spheres: [
       ["Aging", true, true],
