@@ -819,6 +819,10 @@ export class CharacterEditorComponent {
     return this.genAbilities['Sorcery'].ranks > 0 && this.invAbilities['Sorcerer']['Corruption'].ranks == 0;
   }
   
+  get moreSphereThanCorr(): boolean {
+    return this.spheres.length > this.invAbilities['Sorcerer']['Corruption'].ranks;
+  }
+  
   get freeAllies(): number {
     let r = 0;
     for (const a of this.allegiances) {
@@ -991,10 +995,14 @@ export class CharacterEditorComponent {
       a.ranks = i;
     }
     if (cat == 'Sorcerer' && name == 'Corruption') {
-      if (this.spheres.length > a.ranks) {
-        this.spheres.splice(a.ranks);
+      for (let i = this.spheres.length - 1; i >= 0; i--) {
+        if (this.spheres.length > a.ranks && this.spheres[i] == '') {
+          console.log('removing sphere', i);
+          this.spheres.splice(i, 1);
+        }
       }
       for (let i = this.spheres.length; i < a.ranks; i++) {
+        console.log('adding sphere', i);
         this.spheres[i] = '';
       }
     }

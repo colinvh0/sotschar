@@ -44,7 +44,7 @@
     </div>
     <div>
       <div>Save slots:</div>
-      <div class="storage" [ngClass]="(spaceLeft <= 5) ? ' low' : ''">(Approximately {{ spaceLeft }}% of storage remaining) <div class="note">Why is this approximate?</div></div>
+      <div class="storage" [ngClass]="spaceLeft <= 5 ? ' low' : ''">(Approximately {{ spaceLeft }}% of storage remaining) <div class="note">Why is this approximate?</div></div>
       <div></div>
       <div class="save-slots">
         <div *ngFor="let slot of saveSlots" class="subgrid" [ngClass]="(saveSlots.length == 1 || slot.isSlected) ? ' selected' : ''" (click)="selectedSaveSlot = slot">
@@ -180,7 +180,7 @@
   <div class="panel portrait-panel">
     <div class="flex-column">
       <div class="head label">Character Portrait</div>
-      <div class="input flex" [ngClass]="(mode == 'edit') ? '' : 'invisible'"><div>URL:</div><input type="url" formControlName="portraitUrl"></div>
+      <div class="input flex" [ngClass]="mode == 'edit' ? '' : 'invisible'"><div>URL:</div><input type="url" formControlName="portraitUrl"></div>
       <div class="portrait" [ngStyle]="{'background-image': 'url(' + formGroup.controls.portraitUrl.value + ')'}"></div>
     </div>
   </div>
@@ -201,7 +201,7 @@
               <input type="text" [ngModel]="drive.value" (ngModelChange)="setDrive(drive, $event)" [ngModelOptions]="{standalone: true}">
             } @else {
               @if (mode == 'play') {
-                <div class="circle" [ngClass]="(drive.pool >= 1) ? ' filled' : ''" (click)="drive.pool = (drive.pool == 1) ? 0 : 1"></div>
+                <div class="circle" [ngClass]="drive.pool >= 1 ? ' filled' : ''" (click)="drive.pool = (drive.pool == 1) ? 0 : 1"></div>
               } @else if (mode == 'print') {
                 <div class="circle" ></div> 
               }
@@ -252,7 +252,7 @@
                   <div *ngFor="let i of aiToFrom(5)">
                     <div
                       class="circle"
-                      [ngClass]="(invAbilities[category][ability].ranks >= i) ? ' filled' : ''"
+                      [ngClass]="invAbilities[category][ability].ranks >= i ? ' filled' : ''"
                       (click)="setInvAbility(category, ability, i)"
                     ></div>
                   </div>
@@ -302,7 +302,8 @@
     <div class="panel">
       <div>
         @for (ability of genAbilityDefs; track ability;) {
-          <div class="ability" [ngClass]="(ability.combat ? ' combat' : '') + ((mode == 'edit' && ability.name == 'Sorcery' && invAbilities['Sorcerer']['Corruption'].ranks == 0) ? ' disabled' : '')">
+          <!--div class="ability" [ngClass]="(ability.combat ? ' combat' : '') + ((mode == 'edit' && ability.name == 'Sorcery' && invAbilities['Sorcerer']['Corruption'].ranks == 0) ? ' disabled' : '')"-->
+          <div class="ability" [ngClass]="[ability.combat ? 'combat' : '', (mode == 'edit' && ability.name == 'Sorcery' && invAbilities['Sorcerer']['Corruption'].ranks == 0) ? 'disabled' : '']">
             <div class="ability-name">{{ ability.name }}</div>
             <div class="general-ability">
               <div class="ability-value">
@@ -313,7 +314,7 @@
                     } @else {
                       <div
                         class="circle"
-                        [ngClass]="((genAbilities[ability.name].ranks >= i) ? ' filled' : '') + (i == 8 ? ' talent' : '')"
+                        [ngClass]="[genAbilities[ability.name].ranks >= i ? ' filled' : '', i == 8 ? ' talent' : '']"
                         (click)="setGenAbility(ability.name, i)"
                       >{{ curGenRank(ability.name, i) }}</div>
                     }
@@ -322,7 +323,7 @@
                       @if (mode == 'play') {
                         <div
                           class="circle"
-                          [ngClass]="(genAbilities[ability.name].pool >= i) ? ' filled' : ''"
+                          [ngClass]="genAbilities[ability.name].pool >= i ? ' filled' : ''"
                           (click)="adjustGenPool(ability.name, genAbilities[ability.name].pool < i)"
                         >
                           {{ curGenRank(ability.name, i, true) }}
@@ -337,7 +338,7 @@
                   }
                 </div>
               </div>
-              <div *ngIf="mode == 'edit' || genAbilities[ability.name].ranks >= 8" class="talent-name" [ngClass]="(genAbilities[ability.name].ranks < 8) ? ' disabled' : ''">{{ ability.talent }}</div>
+              <div *ngIf="mode == 'edit' || genAbilities[ability.name].ranks >= 8" class="talent-name" [ngClass]="genAbilities[ability.name].ranks < 8 ? ' disabled' : ''">{{ ability.talent }}</div>
             </div>
           </div>
         }
@@ -376,7 +377,7 @@
                   <div *ngFor="let j of aiToFrom(5)">
                     <div
                       class="circle"
-                      [ngClass]="(allegiances[i].ally.ranks >= j) ? ' filled' : ''"
+                      [ngClass]="allegiances[i].ally.ranks >= j ? ' filled' : ''"
                       (click)="setAlly(i, j)"
                     >A</div>
                   </div>
@@ -385,7 +386,7 @@
                   <div *ngFor="let j of aiToFrom(5)">
                     <div
                       class="circle red"
-                      [ngClass]="(allegiances[i].enemy.ranks >= j) ? ' filled' : ''"
+                      [ngClass]="allegiances[i].enemy.ranks >= j ? ' filled' : ''"
                       (click)="setEnemy(i, j)"
                     >E</div>
                   </div>
@@ -400,7 +401,7 @@
                     @if (mode == 'play') {
                       <div
                         class="circle"
-                        [ngClass]="(allegiances[i].ally.pool >= j) ? 'filled' : ''"
+                        [ngClass]="allegiances[i].ally.pool >= j ? 'filled' : ''"
                         (click)="adjustAllyPool(i, allegiances[i].ally.pool < j)"
                       >
                         A
@@ -415,7 +416,7 @@
                     @if (mode == 'play') {
                       <div
                         class="circle red"
-                        [ngClass]="(allegiances[i].enemy.pool >= j) ? 'filled' : ''"
+                        [ngClass]="allegiances[i].enemy.pool >= j ? 'filled' : ''"
                         (click)="adjustEnemyPool(i, allegiances[i].enemy.pool < j)"
                       >
                         E
@@ -425,13 +426,6 @@
                     }
                   </div>
                 </div>
-                <!--<div class="ability-value" *ngIf="allegiances[i].enemy.ranks > 0">
-                  <div
-                    *ngFor="let j of aiToFrom(allegiances[i].enemy.ranks)"
-                    class="circle red"
-                    [ngClass]="(mode == 'play' && allegiances[i].enemy.pool >= j) ? ' filled' : ''"
-                  >E</div>
-                </div>-->
               </div>
             }
           </div>
@@ -450,11 +444,11 @@
       @if (mode == 'edit' || mode == 'play') {
         <div class="value">{{ tup.lifestyle[lifestyle + 2] }}</div>
         <div class="ability-value">
-          <div class="circle" [ngClass]="(lifestyle <= -2) ? ' filled' : ''" (click)="lifestyle = -2">−2</div>
-          <div class="circle" [ngClass]="(lifestyle <= -1) ? ' filled' : ''" (click)="lifestyle = -1">−1</div>
+          <div class="circle" [ngClass]="lifestyle <= -2 ? ' filled' : ''" (click)="lifestyle = -2">−2</div>
+          <div class="circle" [ngClass]="lifestyle <= -1 ? ' filled' : ''" (click)="lifestyle = -1">−1</div>
           <div class="circle filled" (click)="lifestyle = 0">0</div>
-          <div class="circle" [ngClass]="(lifestyle >= 1) ? ' filled' : ''" (click)="lifestyle = 1">+1</div>
-          <div class="circle" [ngClass]="(lifestyle >= 2) ? ' filled' : ''" (click)="lifestyle = 2">+2</div>
+          <div class="circle" [ngClass]="lifestyle >= 1 ? ' filled' : ''" (click)="lifestyle = 1">+1</div>
+          <div class="circle" [ngClass]="lifestyle >= 2 ? ' filled' : ''" (click)="lifestyle = 2">+2</div>
         </div>
       } @else if (mode == 'print') {
         <div>_________________</div>
@@ -489,7 +483,7 @@
               <div *ngFor="let i of aiToFrom(15)">
                 <div
                   class="circle"
-                  [ngClass]="(genAbilities[s].ranks >= i) ? ' filled' : ''"
+                  [ngClass]="genAbilities[s].ranks >= i ? ' filled' : ''"
                   (click)="setGenAbility(s, i)"
                 >
                  {{ curGenRank(s, i) }}
@@ -501,7 +495,7 @@
                   @if (mode == 'play') {
                     <div
                       class="circle"
-                      [ngClass]="((genAbilities[s].pool >= i) ? ' filled' : '') + ' ' + staminaPlayColor(i)"
+                      [ngClass]="[genAbilities[s].pool >= i ? ' filled' : '', staminaPlayColor(i)]"
                       (click)="adjustGenPool(s, genAbilities[s].pool < i)"
                     >
                       {{ curGenPool(s, i, true) }}
@@ -557,6 +551,7 @@
       <div class="message error" *ngIf="dupSpheres.length > 0">
         <div>Duplicate Sorcerous Spheres: {{ dupSpheres.join(', ') }}</div>
       </div>
+      <div class="message error" *ngIf="moreSphereThanCorr">More Sorcerous Spheres selected than ranks in Corruption.</div>
       <div class="message error" *ngIf="spheresUnspent > 0">
         <div [ngPlural]="spheresUnspent">
           <ng-template ngPluralCase="one">1 Sorcerous Sphere not selected</ng-template>
@@ -577,11 +572,18 @@
             }
           </div>
         }
-        @for (i of aii(invAbilities['Sorcerer']['Corruption'].ranks); track i;) {
+        @for (i of aii(spheres.length); track i;) {
           @if (mode == 'edit') {
-            <input type="text" class="sphere" [ngModel]="spheres[i]" (ngModelChange)="setSphere(i, $event)" [ngModelOptions]="{standalone: true}" [attr.list]="formGroup.controls.sorceryAffects.value!.toLowerCase() + '-sphere-list'" />
+            <input
+              type="text" class="sphere" [ngModel]="spheres[i]"
+              *ngIf="spheres[i].length > 0 || i < invAbilities['Sorcerer']['Corruption'].ranks"
+              [ngClass]="(i + 1 > invAbilities['Sorcerer']['Corruption'].ranks) ? 'red' : ''"
+              (ngModelChange)="setSphere(i, $event)"
+              [ngModelOptions]="{standalone: true}"
+              [attr.list]="formGroup.controls.sorceryAffects.value!.toLowerCase() + '-sphere-list'"
+            />
           } @else {
-            <div class="value">{{ spheres[i] }}</div>
+            <div class="value" [ngClass]="(i + 1 > invAbilities['Sorcerer']['Corruption'].ranks) ? 'red' : ''">{{ spheres[i] }}</div>
           }
         }
       </div>
