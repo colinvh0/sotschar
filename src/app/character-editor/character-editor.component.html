@@ -120,7 +120,7 @@
   <h1 class="head">Print Character</h1>
   <div *ngIf="view.showConfig">
     <div class="fields">
-      <div *ngIf="view.showAdvConfig" class="subgrid">
+      <div *ngIf="view.showConfig" class="subgrid">
         <div><label><input type="checkbox" [(ngModel)]="view.printColor" [ngModelOptions]="{standalone: true}"> Color</label></div>
         <div><label><input type="checkbox" [(ngModel)]="view.printBackground" [ngModelOptions]="{standalone: true}"> Background</label></div>
       </div>
