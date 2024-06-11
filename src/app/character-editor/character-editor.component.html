@@ -26,7 +26,10 @@
     <div><button class="confirm"></button></div>
   </div>
 </dialog>
-<div *ngIf="view.mode != 'off' && canSave" class="character-sheet-wrap" [ngClass]="'mode-' + view.mode" [formGroup]="formGroup">
+<div
+  *ngIf="view.mode != 'off' && canSave" [formGroup]="formGroup" class="character-sheet-wrap"
+  [ngClass]="['mode-' + view.mode, (view.printBackground) ? '' : 'print-nobg', (view.printColor) ? '' : 'print-bw']"
+>
 <section class="manage">
   <h1 class="head"><button (click)="view.showManage = !view.showManage">⚙️</button> Manage Character</h1>
   <div *ngIf="view.showManage" class="flex">
@@ -191,7 +194,7 @@
       }
     </div>
   </div>
-  <div class="logo"><img src="assets/logo.png" alt="Swords of the Serpentine"></div>
+  <div class="logo"><!--img src="assets/logo.png" alt="Swords of the Serpentine"--></div>
   <div class="panel portrait-panel">
     <div class="flex-column">
       <div class="head label">Character Portrait</div>
@@ -298,21 +301,21 @@
   <h4 class="title2"><span>General Abilities</span></h4>
   <h4 class="title3"><span>Allegiances</span></h4>
   <div class="general-section flex-panel-wrap">
-    <div class="faux-grid-above" *ngIf="view.mode == 'edit' && genUnspent != 0 || genTooHigh || sorcWithoutCorr">
-      <div class="message incomplete" *ngIf="view.mode == 'edit' && genUnspent > 0">
+    <div class="faux-grid-above" *ngIf="view.mode == 'edit' && (genUnspent != 0 || genTooHigh || sorcWithoutCorr)">
+      <div class="message incomplete" *ngIf="genUnspent > 0">
         <div [ngPlural]="genUnspent">
           <ng-template ngPluralCase="one">1 unspent General Build Point</ng-template>
           <ng-template ngPluralCase="other">{{ genUnspent }} unspent General Build Points</ng-template>
         </div>
       </div>
-      <div class="message error" *ngIf="view.mode == 'edit' && genUnspent < 0">
+      <div class="message error" *ngIf="genUnspent < 0">
         <div [ngPlural]="-genUnspent">
           <ng-template ngPluralCase="one">1 overspent General Build Point</ng-template>
           <ng-template ngPluralCase="other">{{ -genUnspent }} overspent General Build Points</ng-template>
         </div>
       </div>
-      <div class="message error" *ngIf="view.mode == 'edit' && genTooHigh">Highest General Ablility cannot be more than twice the next highest.</div>
-      <div class="message error" *ngIf="view.mode == 'edit' && sorcWithoutCorr">Sorcery has ranks but Corruption does not.</div>
+      <div class="message error" *ngIf="genTooHigh">Highest General Ablility cannot be more than twice the next highest.</div>
+      <div class="message error" *ngIf="sorcWithoutCorr">Sorcery has ranks but Corruption does not.</div>
     </div>
     <div class="panel">
       <div>
@@ -554,7 +557,7 @@
       } @else {
         @for (_ of gear; track _; let i = $index) {
           @if (gear[i].iconic) {
-            <div class="gear">✅ {{ gear[i].value }}</div>
+            <div class="gear"><span class="check">✔</span> {{ gear[i].value }}</div>
           }
         }
         <div class="gear">{{ nonIconicGear }}</div>

@@ -4,16 +4,9 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angul
 import { CookieService } from 'ngx-cookie-service';
 
 // TODO: ditch current character -> save/load concept
-// TODO: fix gear height
-// TODO: add bonus build point for being in one class
-// TODO: refactor modal dialog
-// TODO: optional adjectives datalist
-// TODO: subscribe to localStorage changes
 // TODO: style config
-// TODO: handle/display load/save errors
-// TODO: make validation report and share
-// TODO: implement configS2S
-// TODO: print minimum heights
+// TODO: make validation reports
+// TODO: implement configS2S, also find rules
 // TODO: hide 0-rank Abilities in play/print?
 // TODO: factions list editor
 
@@ -29,14 +22,6 @@ import { CookieService } from 'ngx-cookie-service';
 // TODO: multiplayer
 
 /* THE BIG RESTRUCT
-
-user data
-  saveSlotClean
-  saveSlotKey
-  configSuggestAdjectives
-  view state
-    mode
-    view...
 
 character manager
 

@@ -112,6 +112,13 @@ dialog .content>div:last-child {
   text-align: center;
 }
 
+.check {
+  color: blue;
+}
+.mode-print.print-bw .check {
+  color: black;
+}
+
 .label-tiny {
   font: .6em / 1.25em sans-serif;
   color: black;
@@ -157,8 +164,11 @@ dialog .content>div:last-child {
   width: 100%;
   .combat-bg();
 }
-.ability.combat.disabled .ability-name {
+.ability.combat.disabled .ability-name, .mode-print.print-bw .ability.combat.disabled .ability-name {
   .combat-bg('%23c0c0c0');
+}
+.mode-print.print-bw .ability.combat .ability-name {
+  .combat-bg('%235a5a5a');
 }
 .ability-value {
   display: flex;
@@ -214,6 +224,9 @@ dialog .content>div:last-child {
   .circle-bg();
   color: black;
 }
+.mode-print.print-bw .circle, .mode-print.print-bw .circle.red, .mode-print.print-bw .circle.orange, .mode-print.print-bw .circle.green {
+  .circle-bg(none, black);
+}
 .circle>div {
   height: 100%;
   width: 100%;
@@ -253,7 +266,7 @@ dialog .content>div:last-child {
   .circle-bg(none, olivedrab);
 }
 .circle.spacer {
-  background-image: none;
+  background-image: none !important;
 }
 
 .character-sheet-wrap {
@@ -290,11 +303,23 @@ dialog .content>div:last-child {
   background-position-x: -120px;
   color: @mainFgColor;
 }
+.mode-print.print-bw .character-sheet {
+  background-image: url(assets/page-bg-bw.webp);
+  color: black;
+}
+.mode-print.print-nobg .character-sheet {
+  background-image: none;
+  background-color: white;
+}
+
 
 .character-sheet .panel {
   border: @outsideBorder;
   background-color: white;
   vertical-align: top;
+}
+.mode-print.print-bw .character-sheet .panel {
+  border-color: black;
 }
 .character-sheet .panel>* {
   padding: 0 .5em .25em;
@@ -323,9 +348,12 @@ dialog .content>div:last-child {
   background-color: green;
 }
 
-.character-sheet input[type="text"] {
+.character-sheet input[type="text"], .character-sheet input[type="number"] {
   font-size: 12px;
   color: @mainFgColor;
+}
+.mode-print.print-bw .character-sheet input[type="text"], .mode-print.print-bw .character-sheet input[type="number"] {
+  color: black;
 }
 
 .character-sheet input[type="text"].large {
@@ -343,6 +371,9 @@ dialog .content>div:last-child {
   font-weight: normal;
   text-transform: uppercase;
   background-color: @mainFgColor;
+}
+.mode-print.print-bw .character-sheet h4 {
+  background-color: black;
 }
 /*.character-sheet h4>* {
   border: @insideBorder;
@@ -364,6 +395,13 @@ dialog .content>div:last-child {
   background-position-x: -120px;
   background-clip: text;
   color: transparent;
+}
+.mode-print.print-bw .character-sheet h4>span {
+  background-image: url(assets/page-bg-bw.webp);
+}
+.mode-print.print-nobg .character-sheet h4>span {
+  background-image: none;
+  color: white;
 }
 
 .character-sheet h5 {
@@ -392,11 +430,18 @@ dialog .content>div:last-child {
   padding: 3px 4px;
 }
 
+.character-sheet-wrap>section {
+  font-family: Poppins, sans-serif;
+}
+.character-sheet-wrap>section textarea {
+  font-family: Consolas, monospace;
+}
+
 .character-sheet-wrap section.manage {
   padding: 1.5em 3.3em;
   /*grid-column: left / right;*/
   background-color: dimgray;
-  font-family: sans-serif;
+  /*font-family: sans-serif;*/
 }
 .character-sheet-wrap section.manage .flex {
   align-items: revert;
@@ -446,7 +491,7 @@ label:has([name="save-slot"]:focus) {
   padding: 1.5em 3.3em;
   grid-column: left / right;
   background-color: dimgray;
-  font-family: sans-serif;
+  /*font-family: sans-serif;*/
 }
 .character-sheet-wrap section.config input {
   background-color: dimgray;
@@ -495,10 +540,14 @@ label:has([name="save-slot"]:focus) {
   height: 110px;
 }
 
-.character-sheet .logo img {
+.character-sheet .logo {
   margin: 0 auto;
   width: 200px;
   height: 110px;
+  background: url('assets/logo.png') center center no-repeat;
+}
+.mode-print.print-bw .character-sheet .logo {
+  background-image: url('assets/logo-bw.png');
 }
 
 .character-sheet .portrait-panel {
@@ -661,6 +710,9 @@ label:has([name="save-slot"]:focus) {
   border: solid @mainFgColor;
   background-color: white;
 }
+.mode-print.print-bw .character-sheet .stamina-section .table .value {
+  border-color: black;
+}
 .character-sheet .stamina-section .table input {
   height: 100%;
   width: 80%;
@@ -685,6 +737,9 @@ label:has([name="save-slot"]:focus) {
 .character-sheet .gear-panel {
   grid-column: left / two;
   padding-top: .5em;
+}
+.mode-print .character-sheet .gear-panel {
+  min-height: 10.6em;
 }
 .character-sheet .gear-panel .gear {
   padding: 3px 4px;
