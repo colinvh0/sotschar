@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
+// TODO: ditch current character -> save/load concept
 // TODO: fix gear height
 // TODO: add bonus build point for being in one class
 // TODO: refactor modal dialog
@@ -101,17 +102,12 @@ foreach ($file in 'src\app\character-editor\character-editor.component.html', 's
 export class CharacterEditorComponent {
   /// properties ///
 
-  cookies = inject(CookieService);
+  view = newViewControl(inject(CookieService));
 
   get defCharCount() { return 4; }
   get defInvBuild() { return 10; }
 
-  #mode = 'off';
-  #showConfig = true;
-  #showAdvConfig = false;
-  #showManage = false;
   #selectedSaveSlot: SaveSlot | null = null;
-  #suggestAdjectives = false;
   canSave = false;
   saveSlotClean = false;
   //saveSlotKey = ''; // TODO: persist
@@ -155,7 +151,6 @@ export class CharacterEditorComponent {
   ctl = this.formGroup.controls;
   
   constructor() {
-    this.initView();
     this.initFields();
     afterNextRender(() => {
       this.loadFromLocal();
@@ -369,15 +364,6 @@ export class CharacterEditorComponent {
     return 'char' + i;
   }
   
-  get suggestAdjectives(): boolean {
-    return this.#suggestAdjectives;
-  }
-  
-  set suggestAdjectives(s: boolean) {
-    this.#suggestAdjectives = s;
-    this.saveView();
-  }
-  
   showModal(cb: () => void, ecls: string, verb: string, q: string) {
     try {
     const elem = document.querySelector('dialog#sotschar-modal') as HTMLDialogElement;
@@ -505,81 +491,6 @@ export class CharacterEditorComponent {
         self.saveToLocal();
       });
     }
-  }
-  
-  initView(): void {
-    const vr = this.cookies.get('_v');
-    if (vr) {
-      const v = JSON.parse(vr);
-      if (v) {
-        if ('m' in v && v['m']) {
-          this.#mode = v['m'];
-        }
-        if ('sc' in v) {
-          this.#showConfig = v['sc'];
-        }
-        if ('sca' in v) {
-          this.#showAdvConfig = v['sca'];
-        }
-        if ('sm' in v) {
-          this.#showManage = v['sm'];
-        }
-        if ('suggAdj' in v) {
-          this.#suggestAdjectives = v['suggAdj'];
-        }
-      }
-    }
-    if (this.mode == 'off') {
-      this.mode = 'edit';
-    }
-  }
-  
-  /// view state ///
-  
-  get mode() {
-    return this.#mode;
-  }
-  
-  set mode(m: string) {
-    this.#mode = m;
-    this.saveView();
-  }
-  
-  get showConfig() {
-    return this.#showConfig;
-  }
-  
-  set showConfig(sc: boolean) {
-    this.#showConfig = sc;
-    this.saveView();
-  }
-  
-  get showAdvConfig() {
-    return this.#showAdvConfig;
-  }
-  
-  set showAdvConfig(sc: boolean) {
-    this.#showAdvConfig = sc;
-    this.saveView();
-  }
-  
-  get showManage() {
-    return this.#showManage;
-  }
-  
-  set showManage(sc: boolean) {
-    this.#showManage = sc;
-    this.saveView();
-  }
-  
-  saveView(): void {
-    this.cookies.set('_v', JSON.stringify({
-      m: this.mode,
-      sc: this.showConfig,
-      sca: this.showAdvConfig,
-      sm: this.showManage,
-      suggAdj: this.suggestAdjectives,
-    }));
   }
   
   /// utilities ///
@@ -1870,6 +1781,63 @@ export class CharacterEditorComponent {
 }
 
 /// classes ///
+
+
+function newViewControl(c: CookieService) {
+  const ViewState: any = {
+    mode: 'off',
+    showConfig: true,
+    showAdvConfig: false,
+    showManage: false,
+    suggestAdjectives: false,
+    printColor: true,
+    printBackground: true,
+  };
+  const vr = c.get('_v');
+  if (vr) {
+    const v = JSON.parse(vr);
+    if (v) {
+      if ('mode' in v && v['mode']) {
+        ViewState.mode = v['mode'];
+      }
+      if ('showConfig' in v) {
+        ViewState.showConfig = v['showConfig'];
+      }
+      if ('showAdvConfig' in v) {
+        ViewState.showAdvConfig = v['showAdvConfig'];
+      }
+      if ('showManage' in v) {
+        ViewState.showManage = v['showManage'];
+      }
+      if ('suggestAdjectives' in v) {
+        ViewState.suggestAdjectives = v['suggestAdjectives'];
+      }
+      if ('printColor' in v) {
+        ViewState.printColor = v['printColor'];
+      }
+      if ('printBackground' in v) {
+        ViewState.printBackground = v['printBackground'];
+      }
+    }
+  }
+  if (ViewState.mode == 'off') {
+    ViewState.mode = 'edit';
+  }
+  return new Proxy<typeof ViewState>(ViewState, {
+    get(target, prop, receiver) {
+      return target[prop];
+    },
+    set(obj, prop, value) {
+      try {
+        obj[prop] = value;
+        c.set('_v', JSON.stringify(ViewState));
+        return true;
+      } catch (e: any) {
+        throw e;
+      }
+    },
+  });
+}
 
 class SaveSlot {
   ed: CharacterEditorComponent;
