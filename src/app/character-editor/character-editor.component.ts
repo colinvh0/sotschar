@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
+import { CharacterService } from '../character.service';
+
 // TODO: ditch current character -> save/load concept
 // TODO: style config
 // TODO: make validation reports
@@ -80,7 +82,7 @@ foreach ($file in 'src\app\character-editor\character-editor.component.html', 's
   selector: 'app-character-editor',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  providers: [CookieService],
+  //providers: [CookieService],
   templateUrl: './character-editor.component.html',
   styleUrl: './character-editor.component.less'
 })
@@ -88,6 +90,7 @@ export class CharacterEditorComponent {
   /// properties ///
 
   view = newViewControl(inject(CookieService));
+  chars = inject(CharacterService);
 
   get defCharCount() { return 4; }
   get defInvBuild() { return 10; }
@@ -1766,7 +1769,6 @@ export class CharacterEditorComponent {
 }
 
 /// classes ///
-
 
 function newViewControl(c: CookieService) {
   const ViewState: any = {
