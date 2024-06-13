@@ -13,6 +13,13 @@ body {
   background-color: black;
   color: white;
 }
+@media only print {
+  body {
+    background-color: white;
+    color: black;
+  }
+}
+
 
 dialog {
   position: fixed;
@@ -272,6 +279,11 @@ dialog .content>div:last-child {
 .character-sheet-wrap {
   width: 52.75em;
   margin: 0 auto;
+}
+@media only print {
+  .character-sheet-wrap>section {
+    display: none;
+  }
 }
 
 .subgrid {
