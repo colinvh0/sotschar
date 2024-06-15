@@ -47,7 +47,9 @@ export class CharacterService {
   }
   
   all() {
-    return this.keys.map((k) => new SaveSlot(k)).sort((a, b) => { return parseInt(b.ts, 10) - parseInt(a.ts, 10); });
+    const result = this.keys.map((k) => new SaveSlot(k)).sort((a, b) => { return parseInt(b.ts, 10) - parseInt(a.ts, 10); });
+    // console.log(result);
+    return result;
   }
   
   blank() {
@@ -372,7 +374,7 @@ class Character {
       set: (self: {[n: string]: any}, prop: string, value: any, receiver: any) => {
         if (prop in self || prop.match(re)) {
           self[prop] = value;
-          if (receiver == this.ability.investigative.Sorcerer.Corruption) {
+          if (receiver === this.ability.investigative.Sorcerer.Corruption || receiver === this.trait.Spheres) {
             this.updateSpheresLength();
           }
           this.save();
@@ -464,11 +466,15 @@ class Character {
   }
   
   updateSpheresLength() {
+  const s = this.trait.Spheres;
     const r = this.ability.investigative.Sorcerer.Corruption.ranks;
-    if (this.trait.Spheres.length > r) {
-      this.trait.Spheres.splice(r);
-    } else while (this.trait.Spheres.length < r) {
-      this.trait.Spheres.push('');
+    for (let i = s.length - 1; i >= 0; i--) {
+      if (s.length > r && s[i] == '') {
+        s.splice(i, 1);
+      }
+    }
+    while (s.length < r) {
+      s.push('');
     }
   }
   
