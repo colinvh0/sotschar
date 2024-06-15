@@ -317,7 +317,7 @@ class Character {
     try {
       j = localStorage.getItem(this.slotKey); // TODO: LZString.decompress(...)
     } catch (e) {
-      console.trace(e); // TODO: only in dev
+      console.trace(e); // TODO: handle error
     }
     if (j) {
       const o = JSON.parse(j);
@@ -838,11 +838,26 @@ class Compatibility {
     for (let i = 0; i < 3; i++) {
       o['traits']['Drives'][i] = [o['x']['d'][i].pool, o['x']['d'][i].value];
     }
-    o['x']['d'][0]['value']
     for (let i = 0; i < o['x']['g'].length; i++) {
       o['traits']['Gear'][i] = [o['x']['g'][i].iconic, o['x']['g'][i].value];
     }
-    // TODO: abilities incl allegiances
+    for (const cat in o['ai']) {
+      for (const a in o['ai'][cat]) {
+        o['ai'][cat][a] = [o['ai'][cat][a]['ranks'], o['ai'][cat][a]['pool']];
+      }
+    }
+    for (const a in o['ag']) {
+      o['ag'][a] = [o['ag'][a]['ranks'], o['ag'][a]['pool']];
+    }
+    for (const i in o['x']['all']) {
+      const a = o['x']['all'][i];
+      o['x']['all'][i] = [a.name, [a.ally.ranks, a.ally.pool], a.favor, [a.enemy.ranks, a.enemy.pool], a.grudge];
+    }
+    o['ability'] = {
+      investigative: o['ai'],
+      general: o['ag'],
+      allegiances: o['x']['all'],
+    }
 
     delete o['V'];
     delete o['g'];
