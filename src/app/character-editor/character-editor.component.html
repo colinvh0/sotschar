@@ -68,10 +68,10 @@
               }
             </div>
             <div>
-              <button (click)="newChar()">Add</button>
-              <button (click)="chars.select(char.slotKey)" [disabled]="chars.keys.length == 0 ? 'disabled' : ''">Select current</button>
-              <button (click)="loadFromSlot()" [disabled]="(chars.keys.length == 0 || chars.selected === null || chars.isSelected(char.slotKey)) ? 'disabled' : ''">Edit</button>
-              <button (click)="duplicateSlot()" [disabled]="(chars.keys.length == 0 || chars.selected === null) ? 'disabled' : ''">Clone</button>
+              <button (click)="newChar()">New</button>
+              <button (click)="chars.select(char.slotKey)" [disabled]="(chars.keys.length == 0 || chars.isSelected(char.slotKey)) ? 'disabled' : ''">Select current</button>
+              <button (click)="loadFromSlot()" [disabled]="(chars.keys.length == 0 || chars.selected === null || chars.isSelected(char.slotKey)) ? 'disabled' : ''">Load</button>
+              <button (click)="duplicateSlot()" [disabled]="(chars.keys.length == 0 || chars.selected === null) ? 'disabled' : ''">Duplicate</button>
               <button (click)="util.clipboardWrite(chars.selected!.raw())" [disabled]="(chars.keys.length == 0 || chars.selected === null) ? 'disabled' : ''">📋 Export</button>
               <button (click)="maybeDeleteSlot()" [disabled]="(chars.keys.length == 0 || chars.selected === null || chars.isSelected(char.slotKey)) ? 'disabled' : ''">Delete</button>
             </div>
