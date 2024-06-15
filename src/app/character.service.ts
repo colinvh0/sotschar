@@ -18,7 +18,7 @@ export class CharacterService {
 
   get nextKey() {
     if (typeof localStorage !== 'undefined') {
-      const pre = 'chr';
+      const pre = 'char';
       let i = 0;
       while (localStorage.getItem(pre + ++i) !== null) {
         if (i > localStorage.length) { // if we're here, the pigeonhole principle broke or I made the while loop wrong
@@ -32,15 +32,33 @@ export class CharacterService {
   }
 
   get keys() {
-    const re = /chr(\d+)/;
+    const re = /cha?r(\d*)/;
     let a = new Array<string>();
+    let d = new Array<string>();
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k !== null) {
+      if (k === null) {
+        console.trace('localStorage.key returned null!');
+        continue;
+      }
+      if (this.badSlotKey(k)) {
+        d.push(k);
+      } else {
         if (k.match(re)) {
           a.push(k);
         }
       }
+    }
+    for (const k of d) {
+      const key = this.nextKey;
+      const s = localStorage.getItem(k);
+      if (s === null) {
+        console.trace('localStorage.getItem returned null!');
+        continue;
+      }
+      localStorage.setItem(key, s);
+      a.push(key);
+      localStorage.removeItem(k);
     }
     return a;
   }
@@ -78,17 +96,10 @@ export class CharacterService {
     const key = this.selected.key;
     const s = localStorage.getItem(key);
     if (s === null) {
-      throw 'key not in localStorage: ' + key;
+      console.trace('localStorage.getItem retruned null!');
+      return;
     }
-    let c = this.registry[key];
-    if (!c) {
-      c = Character.new(this, key);
-    }
-    c.slotKey = this.nextKey;
-    this.cookie = c.slotKey;
-    c = c.setProxies();
-    c.save();
-    return c;
+    localStorage.setItem(this.nextKey, s);
   }
   
   load(key: string | null = null) {
@@ -104,19 +115,14 @@ export class CharacterService {
       return mc;
     }
     const c = Character.new(this, key);
-    if (this.badSlotKey(key)) {
-      c.slotKey = this.nextKey;
-      c.save();
-      localStorage.removeItem(key);
-    }
-    this.registry[c.slotKey] = c;
-    this.cookie = c.slotKey;
+    this.registry[key] = c;
+    this.cookie = key;
     return c.setProxies();
   }
   
   import(o: any) {
     const c = Character.new(this, this.nextKey);
-    Compatibility.update(o);
+    o = Compatibility.update(o);
     c.set(o);
     this.registry[c.slotKey] = c;
     this.cookie = c.slotKey;
@@ -161,9 +167,14 @@ export class CharacterService {
   }
   
   badSlotKey(key: string): boolean {
-    // TODO enable
+    const re = /^chr(\d*)$/;
+    if (key == 'char') {
+      return true;
+    }
+    if (key.match(re)) {
+      return true;
+    }
     return false;
-    //return key == 'char';
   }
   
   readonly version = Character.VER;
@@ -283,11 +294,16 @@ class Character {
   }
 
   set(o: any) {
+    const drives = o.trait.Drives;
     const gear = o.trait.Gear;
+    delete o.trait.Drives; // paired with = at end
     delete o.trait.Gear; // paired with = at end
     Object.assign(this.config, o.config);
     Object.assign(this.advancement, o.advancement);
     Object.assign(this.trait, o.trait);
+    for (const i in this.trait.Drives) {
+      this.trait.Drives[i].val = drives[i];
+    }
     this.trait.Gear.val = gear;
     for (const cat in this.ability.investigative) {
       for (const name in this.ability.investigative[cat]) {
@@ -298,6 +314,7 @@ class Character {
       this.ability.general[name].val = o.ability.general[name];
     }
     this.ability.allegiances.val = o.ability.allegiances;
+    o.trait.Drives = drives; // paired with delete at beginning
     o.trait.Gear = gear; // paired with delete at beginning
   }
 
@@ -320,13 +337,13 @@ class Character {
       console.trace(e); // TODO: handle error
     }
     if (j) {
-      const o = JSON.parse(j);
-      Compatibility.update(o);
+      let o = JSON.parse(j);
+      o = Compatibility.update(o);
       this.set(o);
     }
   }
 
-  proxy<T extends object>(o: T): T {
+  private proxy<T extends object>(o: T): T {
     const re = /^\d+$/;
     return new Proxy<T>(o, {
       get: (self: {[n: string]: any}, prop: string) => prop in self ? self[prop] : undefined,
@@ -733,8 +750,9 @@ class SaveSlot {
   constructor(key: string) {
     this.key = key;
     const j = localStorage.getItem(this.key) as string;
-    const s = JSON.parse(j);
-    Compatibility.update(s)
+    let s = JSON.parse(j);
+    s = Compatibility.update(s);
+    //console.log(s);
     this.name = s['trait']['Name'];
     this.#ts = s['ts'];
     this.#ts0 = s['ts0'];
@@ -772,22 +790,51 @@ class SaveSlot {
 
 class Compatibility {
   static update(o: any) {
-    if ('VER' in o && Character.VER != o['VER']) {
-      // using chained ifs (instead of if-elses) here allows the compat functions to make partial upgrades
-      if (!(('c' in o && 'V' in o['c']) || 'VER' in o)) {
-        this.noV(o);
+    return (new this(o)).updated();
+  }
+  
+  o: any;
+
+  constructor(o: any) {
+    this.o = o;
+  }
+
+  get version() {
+    if ('VER' in this.o) {
+      return this.o['VER'];
+    }
+    const c = 'c' in this.o ? this.o['c'] : this.o;
+    if ('V' in c) {
+      return c['V'];
+    }
+    return '';
+  }
+
+  updated() {
+    if (this.version != Character.VER) {
+      if ('V' in this.o) { // "currently loaded" character; stored in `char`
+        this.o = {
+          c: this.o,
+          ts0: 0,
+          ts: 0,
+        }
       }
-      if ('V' in o && o['V'] == 'α1') {
-        this.vA1(o);
+      // using chained ifs (instead of if-elses) here allows the compatibility methods to make incremental upgrades
+      if (this.version == '') {
+        this.noV();
       }
-      if (o['VER'] == 'α2') {
+      if (this.version == 'α1') {
+        this.vA1();
+      }
+      if (this.version == 'α2') {
         // next compatibility changes go here
       }
     }
+    return this.o;
   }
   
-  static noV(o: any) {
-    const g = o['c']['g'];
+  private noV() {
+    const g = this.o['c']['g'];
     delete g['configAutoInvB'];
     const ib = parseInt(g['configInvestigativeBuild'], 10);
     const pc = parseInt(g['configCharacterCount'], 10);
@@ -798,72 +845,71 @@ class Compatibility {
       }
     }
     g['advGenB'] = 0;
-    o['c']['V'] = 'α1';
+    this.o['c']['V'] = 'α1';
   }
 
-  static vA1(o: any) {
-    o['c']['ts'] = o['c']['ts0'] = o['ts'];
-    o = o['c'];
-    o['config'] = {
-      s2s: o['g']['configS2S'],
-      characterCount: o['g']['configCharacterCount'],
-      investigativeBuild: o['g']['configInvestigativeBuild'],
-      generalBuild: o['g']['configGeneralBuild'],
-      staminaBuild: o['g']['configStaminaBuild'],
-      minStamina: o['g']['configMinStamina'],
-      freeAllies: o['g']['configFreeAllies'],
-      freeEnemies: o['g']['configFreeEnemies'],
-    };
-    o['advancement'] = {
-      points: o['g']['advancement'],
-      genB: o['g']['advGenB'],
-      stamB: o['g']['advStamB'],
-      invB: o['g']['advInvB'],
-      enemy: o['g']['advEnemy'],
-    };
-    o['traits'] = {
-      Name: o['g']['name'],
-      TNK: o['g']['tnk'],
-      Profession: o['g']['profession'],
-      Adjectives: o['x']['adj'],
-      Drives: [],
-      Wealth: o['g']['wealth'],
-      Lifestyle: o['x']['ls'],
-      Gear:[],
-      Spheres: o['x']['s'],
-      portraitUrl: o['g']['portraitUrl'],
-      hmSpotFrailty: o['g']['spotFrailty'] == 'Health',
-      hmSorceryAffects: o['g']['sorceryAffects'] == 'Health',
-    };
+  private vA1() {
+    const c = this.o['c'];
+    const n = {
+      ts: this.o['ts'],
+      ts0: this.o['ts'],
+      config: {
+        s2s: c['g']['configS2S'],
+        characterCount: c['g']['configCharacterCount'],
+        investigativeBuild: c['g']['configInvestigativeBuild'],
+        generalBuild: c['g']['configGeneralBuild'],
+        staminaBuild: c['g']['configStaminaBuild'],
+        minStamina: c['g']['configMinStamina'],
+        freeAllies: c['g']['configFreeAllies'],
+        freeEnemies: c['g']['configFreeEnemies'],
+      },
+      advancement: {
+        points: c['g']['advancement'],
+        genB: c['g']['advGenB'],
+        stamB: c['g']['advStamB'],
+        invB: c['g']['advInvB'],
+        enemy: c['g']['advEnemy'],
+      },
+      trait: {
+        Name: c['g']['name'],
+        TNK: c['g']['tnk'],
+        Profession: c['g']['profession'],
+        Adjectives: c['x']['adj'],
+        Drives: [],
+        Wealth: c['g']['wealth'],
+        Lifestyle: c['x']['ls'],
+        Gear:[],
+        Spheres: c['x']['s'],
+        portraitUrl: c['g']['portraitUrl'],
+        hmSpotFrailty: c['g']['spotFrailty'] == 'Health',
+        hmSorceryAffects: c['g']['sorceryAffects'] == 'Health',
+      },
+      ability: {
+        investigative: {} as any,
+        general: {} as any,
+        allegiances: [] as any[],
+      },
+      VER: 'α2'
+    } as any;
     for (let i = 0; i < 3; i++) {
-      o['traits']['Drives'][i] = [o['x']['d'][i].pool, o['x']['d'][i].value];
+      n['trait']['Drives'][i] = [c['x']['d'][i].pool, c['x']['d'][i].value];
     }
-    for (let i = 0; i < o['x']['g'].length; i++) {
-      o['traits']['Gear'][i] = [o['x']['g'][i].iconic, o['x']['g'][i].value];
+    for (let i = 0; i < c['x']['g'].length; i++) {
+      n['trait']['Gear'][i] = [c['x']['g'][i].iconic, c['x']['g'][i].value];
     }
-    for (const cat in o['ai']) {
-      for (const a in o['ai'][cat]) {
-        o['ai'][cat][a] = [o['ai'][cat][a]['ranks'], o['ai'][cat][a]['pool']];
+    for (const cat in c['ai']) {
+      n.ability.investigative[cat] = {} as any;
+      for (const a in c['ai'][cat]) {
+        n.ability.investigative[cat][a] = [c['ai'][cat][a]['ranks'], c['ai'][cat][a]['pool']];
       }
     }
-    for (const a in o['ag']) {
-      o['ag'][a] = [o['ag'][a]['ranks'], o['ag'][a]['pool']];
+    for (const a in c['ag']) {
+      n.ability.general[a] = [c['ag'][a]['ranks'], c['ag'][a]['pool']];
     }
-    for (const i in o['x']['all']) {
-      const a = o['x']['all'][i];
-      o['x']['all'][i] = [a.name, [a.ally.ranks, a.ally.pool], a.favor, [a.enemy.ranks, a.enemy.pool], a.grudge];
+    for (const i in c['x']['all']) {
+      const a = c['x']['all'][i];
+      n.ability.allegiances[i] = [a.name, [a.ally.ranks, a.ally.pool], a.favor, [a.enemy.ranks, a.enemy.pool], a.grudge];
     }
-    o['ability'] = {
-      investigative: o['ai'],
-      general: o['ag'],
-      allegiances: o['x']['all'],
-    }
-
-    delete o['V'];
-    delete o['g'];
-    delete o['ai'];
-    delete o['ag'];
-    delete o['x'];
-    o['VER'] = 'α2';
+    this.o = n;
   }
 }

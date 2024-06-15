@@ -36,9 +36,9 @@ Branches that should be uncreachable have
 // approx 5 - 6.5 chars per "word"
 // NOT UPDATED
 
-type '.\src\app\character-editor\character-editor.component.html', '.\src\app\character-editor\character-editor.component.ts', '.\src\styles.less' | Measure-Object -line -word -char
+type 'src\app\character-editor\character-editor.component.html', 'src\app\character-editor\character-editor.component.ts', 'src\app\character.service.ts', 'src\app\utility.service.ts', 'src\styles.less' | Measure-Object -line -word -char
 echo 'html, ts, styles.less'
-foreach ($file in 'src\app\character-editor\character-editor.component.html', 'src\app\character-editor\character-editor.component.ts', 'src\styles.less', 'src\reset.less', 'src\font.less', 'src\svg.less' ) {
+foreach ($file in 'src\app\character-editor\character-editor.component.html', 'src\app\character-editor\character-editor.component.ts', 'src\app\character.service.ts', 'src\app\tables.service.ts', 'src\app\utility.service.ts', 'src\styles.less', 'src\reset.less', 'src\font.less' ) {
   type $file | Measure-Object -line -word -char
   echo $file
 }
@@ -117,7 +117,7 @@ export class CharacterEditorComponent {
   }
   
   duplicateSlot() {
-    this.char = this.chars.copy();
+    this.chars.copy();
   }
   
   loadFromSlot() {

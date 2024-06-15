@@ -224,18 +224,18 @@
             </div>
           }
           <div class="flex-column">
-            @for (drive of char.trait.Drives; track drive;) {
+            @for (i of util.aii(char.trait.Drives.length); track i;) {
               <div class="input">
                 @if (mode == 'edit') {
                   <div class="circle spacer"></div>
-                  <input type="text" [(ngModel)]="drive.value" [ngModelOptions]="{standalone: true}">
+                  <input type="text" [(ngModel)]="char.trait.Drives[i].value" [ngModelOptions]="{standalone: true}">
                 } @else {
                   @if (mode == 'play') {
-                    <div class="circle" [ngClass]="drive.pool >= 1 ? ' filled' : ''" (click)="drive.pool = (drive.pool == 1) ? 0 : 1"></div>
+                    <div class="circle" [ngClass]="char.trait.Drives[i].pool >= 1 ? ' filled' : ''" (click)="char.trait.Drives[i].pool = (char.trait.Drives[i].pool == 1) ? 0 : 1"></div>
                   } @else if (mode == 'print') {
                     <div class="circle" ></div> 
                   }
-                  <div class="value">{{ drive.value }}</div>
+                  <div class="value">{{ char.trait.Drives[i].value }}</div>
                 }
               </div>
             }
@@ -428,7 +428,7 @@
         }
         <div class="panel">
           <div>
-            @for (_ of char.ability.allegiances; track _; let i = $index) {
+            @for (i of util.aii(char.ability.allegiances.length); track i) {
               <div class="input">
                 @if (mode == 'edit') {
                   <input type="text" class="allegiances" [(ngModel)]="char.ability.allegiances[i].name" [ngModelOptions]="{standalone: true}" list="faction-list" />
