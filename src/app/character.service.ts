@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 
-//import { CompatibilityService } from './compatibility.service';
 import { TablesService } from './tables.service';
 import { UtilityService } from './utility.service';
 
@@ -48,7 +47,6 @@ export class CharacterService {
   
   all() {
     const result = this.keys.map((k) => new SaveSlot(k)).sort((a, b) => { return parseInt(b.ts, 10) - parseInt(a.ts, 10); });
-    // console.log(result);
     return result;
   }
   
@@ -227,7 +225,6 @@ class Character {
   private constructor(cs: CharacterService, slotKey: string, fresh: boolean) {
     this.#cs = cs;
     this.#slotKey = slotKey;
-    //console.trace('fresh', fresh);
     this.ability = this.newAbilities();
     if (fresh) {
       this.ts0 = this.#cs.util.timestamp;
@@ -290,22 +287,10 @@ class Character {
     delete o.trait.Gear; // paired with = at end
     Object.assign(this.config, o.config);
     Object.assign(this.advancement, o.advancement);
-    /*if (this.trait.Gear.length > o.trait.Gear.length) {
-      this.trait.Gear.splice(o.trait.Gear.length);
-    } else while (this.trait.Gear.length < o.trait.Gear.length) {
-      this.trait.Gear.push(new Gear());
-    }*/
     Object.assign(this.trait, o.trait);
     this.trait.Gear.val = gear;
-    //console.log(this.ability.allegiances, o.ability.allegiances);
-    /*if (this.ability.allegiances.length > o.ability.allegiances.length) {
-      this.ability.allegiances.splice(o.ability.allegiances.length);
-    } else while (this.ability.allegiances.length < o.ability.allegiances.length) {
-      this.ability.allegiances.push(new Allegiance());
-    }*/
     for (const cat in this.ability.investigative) {
       for (const name in this.ability.investigative[cat]) {
-        //console.log(this.ability.investigative);
         this.ability.investigative[cat][name].val = o.ability.investigative[cat][name];
       }
     }
@@ -313,28 +298,6 @@ class Character {
       this.ability.general[name].val = o.ability.general[name];
     }
     this.ability.allegiances.val = o.ability.allegiances;
-    //console.log(this.ability.allegiances);
-    //this.trait.Name = o.trait.Name;
-    //this.formGroup.setValue(o.g);
-    /*for (let def of this.invAbilityDefs) {
-      this.invAbilities[def.category][def.name].set(o.ai[def.category][def.name]);
-    }*/
-    /*for (let name in this.genAbilities) {
-      this.genAbilities[name].set(o.ag[name]);
-    }*/
-    /*this.adjectives = o.x.adj;
-    if (this.drives.length > o.x.d.length) {
-      this.drives.splice(o.x.d.length);
-    }*/
-    /*o.x.d.forEach((d: Drive, i: number) => {
-      if (i > this.drives.length - 1) {
-        this.drives[i] = new Drive();
-      }
-      this.drives[i].set(d);
-    });*/
-    /*this.lifestyle = o.x.ls;*/
-    //this.trait.Gear.set(o.trait.Gear);
-    /*this.spheres = o.x.s;*/
     o.trait.Gear = gear; // paired with delete at beginning
   }
 
@@ -345,8 +308,6 @@ class Character {
   save() {
     this.ts = this.timestamp;
     const j = JSON.stringify(this);
-    //console.log(this.slotKey, this);
-    // DONE: enable
     localStorage.setItem(this.slotKey, j); // TODO: LZString.compress(j)
     return true;
   }
@@ -361,10 +322,8 @@ class Character {
     if (j) {
       const o = JSON.parse(j);
       Compatibility.update(o);
-      //console.log(this, o);
       this.set(o);
     }
-    //this.#canSave = true;
   }
 
   proxy<T extends object>(o: T): T {
@@ -396,14 +355,6 @@ class Character {
   get proxied() {
     return this.#proxied;
   }
-
-  /*get canSave() {
-    return this.#canSave;
-  }*/
-  
-  /*set canSave(v) {
-    this.#canSave = v;
-  }*/
 
   get timestamp() {
     return Math.floor((new Date()).getTime() / 1000);
@@ -494,13 +445,6 @@ class Character {
         }
       }
     }
-    /*this.ability.investigative.forEach((r: Record<string, Ability>, cat: string) => {
-      r.forEach((a: Ability, name: string) => {
-        if (a.ranks > 0) {
-          c.add(cat);
-        }
-      });
-    });*/
     if (c.size == 1) {
       return c.keys().next().value as string;
     }

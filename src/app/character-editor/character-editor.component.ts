@@ -58,20 +58,13 @@ export class CharacterEditorComponent {
   tbl = inject(TablesService);
   chars = inject(CharacterService);
   Object = Object; // TODO don't
-  //#init = false;
-  char = this.chars.autoload();//this.chars.blank();
+  char = this.chars.autoload();
 
   importData = '';
   importErr = '';
   
   constructor(@Inject(PLATFORM_ID) platformId: Object) {
     this.#browser = isPlatformBrowser(platformId);
-    /*if (this.#browser) {
-      this.init();
-    }*/
-    /*afterNextRender(() => {
-      //
-    }, {phase: AfterRenderPhase.Write});*/
   }
 
   /*init() {
@@ -83,7 +76,6 @@ export class CharacterEditorComponent {
   
   get mode() {
     return this.view.mode;
-    //return this.#init ? this.view.mode : 'off';
   }
   
   import(): void {
