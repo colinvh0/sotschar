@@ -1,10 +1,9 @@
-import { AfterRenderPhase, Component, HostListener, Input, afterNextRender, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { OnInit, AfterRenderPhase, Component, HostListener, Inject, Input, PLATFORM_ID, afterNextRender, inject } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 
 import { CharacterService } from '../character.service';
-import { SaveSlotService } from '../saveslot.service';
 import { TablesService } from '../tables.service';
 import { UtilityService } from '../utility.service';
 
@@ -53,16 +52,39 @@ foreach ($file in 'src\app\character-editor\character-editor.component.html', 's
   styleUrl: './character-editor.component.less'
 })
 export class CharacterEditorComponent {
-
+  #browser: boolean;
   view = newViewControl(inject(CookieService));
   util = inject(UtilityService);
   tbl = inject(TablesService);
-  slot = inject(SaveSlotService);
   chars = inject(CharacterService);
-  char = this.chars.autoload();
+  Object = Object; // TODO don't
+  //#init = false;
+  char = this.chars.autoload();//this.chars.blank();
 
   importData = '';
   importErr = '';
+  
+  constructor(@Inject(PLATFORM_ID) platformId: Object) {
+    this.#browser = isPlatformBrowser(platformId);
+    /*if (this.#browser) {
+      this.init();
+    }*/
+    /*afterNextRender(() => {
+      //
+    }, {phase: AfterRenderPhase.Write});*/
+  }
+
+  /*init() {
+    if (!this.#init) {
+      this.char = this.chars.autoload();
+      this.#init = true;
+    }
+  }*/
+  
+  get mode() {
+    return this.view.mode;
+    //return this.#init ? this.view.mode : 'off';
+  }
   
   import(): void {
     this.importErr = '';
@@ -94,47 +116,37 @@ export class CharacterEditorComponent {
     }
   }
   
-  hideModal(): void {
+  hideModal() {
     (document.querySelector('dialog#sotschar-modal') as HTMLDialogElement).close();
   }
   
-  newChar(): void {
+  newChar() {
     this.char = this.chars.new();
   }
   
-  duplicateSlot(): void {
-    if (this.slot.selected === null) {
-      console.trace('slot.selected is null!');
-      return;
-    }
-    this.chars.copy(this.slot.selected.key);
+  duplicateSlot() {
+    this.char = this.chars.copy();
   }
   
-  loadFromSlot(): void {
-    if (this.slot.selected === null) {
-      console.trace('slot.selected is null!');
-      this.hideModal();
-      return;
-    }
-    this.chars.load(this.slot.selected.key);
-    this.hideModal();
+  loadFromSlot() {
+    this.char = this.chars.load();
   }
   
-  maybeDeleteSlot(): void {
+  maybeDeleteSlot() {
     this.showModal(() => { this.deleteSlot(); }, 'warn', "Delete", "Delete saved character?");
   }
   
-  deleteSlot(): void {
-    if (this.slot.selected !== null) {
-      const k = this.slot.selected.key;
+  deleteSlot() {
+    if (this.chars.selected !== null) {
+      const k = this.chars.selected.key;
       if (this.char.slotKey == k) {
         // TODO show error
       } else {
         localStorage.removeItem(k);
-        this.slot.selected = null;
+        this.chars.selected = null;
       }
     } else {
-      console.trace('slot.selected is null!');
+      console.trace('chars.selected is null!');
     }
     this.hideModal();
   }
@@ -191,13 +203,11 @@ export class CharacterEditorComponent {
   addAdjective() {
     if(this.char.trait.Adjectives.length < 5) {
       this.char.trait.Adjectives.push('');
-      //this.saveToLocal(); // TODO: confirm unneeded
     }
   }
 
   delAdjective(i: number) {
     this.char.trait.Adjectives.splice(i, 1);
-    //this.saveToLocal(); // TODO: confirm unneeded
   }
   
 
@@ -209,7 +219,7 @@ export class CharacterEditorComponent {
 
   delAllegiance(i: number) {
     this.char.ability.allegiances.splice(i, 1);
-    //this.saveToLocal(); // TODO: confirm unneeded
+    this.char.save();
   }
 
   addGear() {
@@ -220,7 +230,7 @@ export class CharacterEditorComponent {
 
   delGear(i: number) {
     this.char.trait.Gear.splice(i, 1);
-    //this.saveToLocal(); // TODO: confirm unneeded
+    this.char.save();
   }
 }
 
@@ -260,9 +270,9 @@ function newViewControl(c: CookieService) {
         ViewState.printBackground = v['printBackground'];
       }
     }
-  }
-  if (ViewState.mode == 'off') {
-    ViewState.mode = 'edit';
+    if (ViewState.mode == 'off') {
+      ViewState.mode = 'edit';
+    }
   }
   return new Proxy<typeof ViewState>(ViewState, {
     get(target, prop, receiver) {

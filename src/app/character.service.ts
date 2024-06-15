@@ -1,8 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 
-import { CompatibilityService } from './compatibility.service';
-import { SaveSlotService } from './saveslot.service';
+//import { CompatibilityService } from './compatibility.service';
 import { TablesService } from './tables.service';
 import { UtilityService } from './utility.service';
 
@@ -10,126 +9,186 @@ import { UtilityService } from './utility.service';
   providedIn: 'root'
 })
 export class CharacterService {
-  slot = inject(SaveSlotService);
-  
-  store = new CharacterStorage();
+  #cookie = inject(CookieService);
+  util = inject(UtilityService);
+  tbl = inject(TablesService);
 
-  autoload(): Character {
-    const c = CharacterStorage.new();
-    if (c) {
-      return c;
-    } else {
-      return new Character();
+  registry: Record<string, Character> = {};
+
+  #selected: SaveSlot | null = null;
+
+  get nextKey() {
+    if (typeof localStorage !== 'undefined') {
+      const pre = 'chr';
+      let i = 0;
+      while (localStorage.getItem(pre + ++i) !== null) {
+        if (i > localStorage.length) { // if we're here, the pigeonhole principle broke or I made the while loop wrong
+          console.trace('wtf no!');
+          break;
+        }
+      }
+      return pre + i;
     }
+    return '';
+  }
+
+  get keys() {
+    const re = /chr(\d+)/;
+    let a = new Array<string>();
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k !== null) {
+        if (k.match(re)) {
+          a.push(k);
+        }
+      }
+    }
+    return a;
   }
   
-  load(key: string): Character {
-    return CharacterStorage.new(key);
+  all() {
+    return this.keys.map((k) => new SaveSlot(k)).sort((a, b) => { return parseInt(b.ts, 10) - parseInt(a.ts, 10); });
   }
   
-  copy(key: string) {
-    CharacterStorage.copy(key);
+  blank() {
+    return Character.blank(this);
+  }
+
+  autoload() {
+    const key = this.cookie;
+    if (key) {
+      return this.load(key);
+    }
+    const c = this.new();
+    this.cookie = c.slotKey;
+    return c;
   }
   
-  import(j: string): Character {
-    return CharacterStorage.import(j);
+  new() {
+    const key = this.nextKey;
+    const c = Character.new(this, key, true);
+    this.registry[key] = c;
+    return c.setProxies();
   }
   
-  new(): Character {
-    return new Character();
+  copy(){
+    if (this.selected === null) {
+      throw 'slot.selected is null';
+    }
+    const key = this.selected.key;
+    const s = localStorage.getItem(key);
+    if (s === null) {
+      throw 'key not in localStorage: ' + key;
+    }
+    let c = this.registry[key];
+    if (!c) {
+      c = Character.new(this, key);
+    }
+    c.slotKey = this.nextKey;
+    this.cookie = c.slotKey;
+    c = c.setProxies();
+    c.save();
+    return c;
+  }
+  
+  load(key: string | null = null) {
+    if (key === null) {
+      if (this.selected === null) {
+        throw 'slot.selected is null';
+      }
+      key = this.selected.key;
+    }
+    const mc = this.registry[key];
+    if (mc) {
+      this.cookie = key;
+      return mc;
+    }
+    const c = Character.new(this, key);
+    if (this.badSlotKey(key)) {
+      c.slotKey = this.nextKey;
+      c.save();
+      localStorage.removeItem(key);
+    }
+    this.registry[c.slotKey] = c;
+    this.cookie = c.slotKey;
+    return c.setProxies();
+  }
+  
+  import(o: any) {
+    const c = Character.new(this, this.nextKey);
+    Compatibility.update(o);
+    c.set(o);
+    this.registry[c.slotKey] = c;
+    this.cookie = c.slotKey;
+    return c.setProxies();
+  }
+
+  set cookie(key) {
+    this.#cookie.set('_c', key);
+  }
+  
+  get cookie() {
+    return this.#cookie.get('_c');
+  }
+  
+  select(key: string) {
+    this.#selected = new SaveSlot(key);
+  }
+  
+  set selected(s: SaveSlot | null) {
+    this.#selected = s;
+  }
+
+  get selected(): SaveSlot | null {
+    const ss = this.keys;
+    if (ss.length == 0) {
+      return this.#selected = null;
+    }
+    if (ss.length == 1) {
+      return new SaveSlot(ss[0]);
+    }
+    if (this.#selected === null) {
+      return null;
+    }
+    if (ss.indexOf(this.#selected.key) == -1) {
+      return this.#selected = null;
+    }
+    return this.#selected;
+  }
+
+  isSelected(key: string): boolean {
+    return !!this.#selected && this.#selected.key == key
+  }
+  
+  badSlotKey(key: string): boolean {
+    // TODO enable
+    return false;
+    //return key == 'char';
   }
   
   readonly version = Character.VER;
 }
 
-class CharacterStorage {
-  static registry: Record<string, Character> = {};
-
-  static load(key: string) {
-    return this.new(key);
-  }
-  
-  static copy(key: string) {
-    const s = localStorage.getItem(key);
-    if (s === null) {
-      console.trace('key not in localStorage!', key);
-    } else {
-      localStorage.setItem(SaveSlotService.prototype.nextKey, s);
-    }
-  }
-  
-  static new(slotKey: string | null = null) {
-    if (slotKey === null) {
-      slotKey = CookieService.prototype.get('_c');
-      if (!slotKey) {
-        const c = Character.newProxy();
-        this.registry[c.slotKey] = c;
-        c.canSave = true;
-        return c;
-      }
-    }
-    const mc = this.registry[slotKey];
-    if (mc) {
-      return mc;
-    } else {
-      const c = Character.newProxy(slotKey);
-      this.registry[slotKey] = c;
-      c.canSave = true;
-      return c;
-    }
-  }
-  
-  static import(o: any) {
-    const c = Character.newProxy();
-    CompatibilityService.prototype.update(o);
-    c.set(o);
-    this.registry[c.slotKey] = c;
-    c.canSave = true;
-    return c;
-  }
-}
-
 class Character {
-  util = inject(UtilityService);
-  tbl = inject(TablesService);
-  compat = inject(CompatibilityService);
-  static tbl = new TablesService();
-
   static readonly VER = 'α2';
-
-  static newProxy(slotKey: string | null = null) {
-    const c = new Character(slotKey);
-    return c.proxy(c);
+  
+  static new(cs: CharacterService, slotKey: string, fresh = false) {
+    const c = new Character(cs, slotKey, fresh);
+    return c;//.setProxies();
   }
-
-  static newAbilities() {
-    const inv: Record<string, Record<string, Ability>> = {};
-    const gen: Record<string, Ability> = {};
-    for (const category in this.tbl.invDef) {
-      inv[category] = {};
-      for (const ability in this.tbl.invDef[category]) {
-        inv[category][ability] = new Ability();
-      }
-    }
-    for (const ability in this.tbl.genDef) {
-      gen[ability] = new Ability();;
-    }
-    return {
-      investigative: inv,
-      general: gen,
-      allegiances: [new Allegiance(), new Allegiance()],
-    };
+  
+  static blank(cs: CharacterService) {
+    return new Character(cs, '', true);
   }
 
   /// instance properties ///
 
   VER = Character.VER;
-  #cookie = inject(CookieService);
-  #slot = inject(SaveSlotService);
+  #cs: CharacterService;
   #slotKey: string;
   ts0 = 0;
   ts = 0;
-  #canSave = false;
+  #proxied = false;
   config = {
     s2s: false,
     characterCount: '4',
@@ -151,7 +210,7 @@ class Character {
     Name: '',
     TNK: false,
     Profession: '',
-    Adjectives: [''] as string[],
+    Adjectives: ['', ''] as string[],
     Drives: [new Drive(), new Drive(), new Drive()],
     Wealth: '0',
     Lifestyle: 0,
@@ -161,41 +220,99 @@ class Character {
     hmSpotFrailty: true,
     hmSorceryAffects: true,
   };
-  ability = Character.newAbilities();
+  ability: any;
 
-  constructor(slotKey: string | null = null) {
-    if (slotKey === null) {
-      this.#slotKey = this.#slot.nextKey;
-      this.ts0 = this.timestamp;
-      this.#canSave = true;
+  private constructor(cs: CharacterService, slotKey: string, fresh: boolean) {
+    this.#cs = cs;
+    this.#slotKey = slotKey;
+    //console.trace('fresh', fresh);
+    this.ability = this.newAbilities();
+    if (fresh) {
+      this.ts0 = this.#cs.util.timestamp;
     } else {
-      this.#slotKey = slotKey;
-      if (this.#badSlotKey) {
-        const k = this.#slotKey;
-        this.#slotKey = this.#slot.nextKey;
-        const j = localStorage.getItem(k);
-        if (j) {
-          localStorage.setItem(this.#slotKey, j);
-        }
-        localStorage.removeItem(k);
-      }
       this.load();
     }
-    this.#cookie.set('_c', this.#slotKey);
   }
   
-  get #badSlotKey() {
-    return false;
-    // TODO enable
-    return this.#slotKey == 'char';
+  setProxies() {
+    this.config = this.proxy(this.config);
+    this.advancement = this.proxy(this.advancement);
+    this.trait.Adjectives = this.proxy(this.trait.Adjectives);
+    this.trait.Drives = this.proxy(this.trait.Drives);
+    this.trait.Gear = this.proxy(this.trait.Gear);
+    this.trait.Spheres = this.proxy(this.trait.Spheres);
+    this.trait = this.proxy(this.trait);
+    this.ability = this.proxy(this.ability);
+    for (const cat in this.ability.investigative) {
+      const category = this.ability.investigative[cat];
+      for (const name in category) {
+        category[name] = this.proxy(category[name]);
+      }
+    }
+    for (const name in this.ability.general) {
+      this.ability.general[name] = this.proxy(this.ability.general[name]);
+    }
+    for (const i in this.ability.allegiances) {
+      this.ability.allegiances[i].ally = this.proxy(this.ability.allegiances[i].ally);
+      this.ability.allegiances[i].enemy = this.proxy(this.ability.allegiances[i].enemy);
+      this.ability.allegiances[i] = this.proxy(this.ability.allegiances[i]);
+    }
+    this.#proxied = true;
+    return this.proxy(this);
+  }
+  
+  newAbilities() {
+    const inv: Record<string, Record<string, Ability>> = {};
+    const gen: Record<string, Ability> = {
+      Health: new Ability(),
+      Morale: new Ability(),
+    };
+    for (const category in this.#cs.tbl.invDef) {
+      inv[category] = {};
+      for (const ability in this.#cs.tbl.invDef[category]) {
+        inv[category][ability] = new Ability();
+      }
+    }
+    for (const ability in this.#cs.tbl.genDef) {
+      gen[ability] = new Ability();;
+    }
+    return {
+      investigative: inv,
+      general: gen,
+      allegiances: new AllegianceList(),
+    };
   }
 
   set(o: any) {
+    const gear = o.trait.Gear;
+    delete o.trait.Gear; // paired with = at end
     Object.assign(this.config, o.config);
     Object.assign(this.advancement, o.advancement);
+    /*if (this.trait.Gear.length > o.trait.Gear.length) {
+      this.trait.Gear.splice(o.trait.Gear.length);
+    } else while (this.trait.Gear.length < o.trait.Gear.length) {
+      this.trait.Gear.push(new Gear());
+    }*/
     Object.assign(this.trait, o.trait);
-    Object.assign(this.ability, o.ability);
-    this.trait.Name = o.trait.Name;
+    this.trait.Gear.val = gear;
+    //console.log(this.ability.allegiances, o.ability.allegiances);
+    /*if (this.ability.allegiances.length > o.ability.allegiances.length) {
+      this.ability.allegiances.splice(o.ability.allegiances.length);
+    } else while (this.ability.allegiances.length < o.ability.allegiances.length) {
+      this.ability.allegiances.push(new Allegiance());
+    }*/
+    for (const cat in this.ability.investigative) {
+      for (const name in this.ability.investigative[cat]) {
+        //console.log(this.ability.investigative);
+        this.ability.investigative[cat][name].val = o.ability.investigative[cat][name];
+      }
+    }
+    for (const name in this.ability.general) {
+      this.ability.general[name].val = o.ability.general[name];
+    }
+    this.ability.allegiances.val = o.ability.allegiances;
+    //console.log(this.ability.allegiances);
+    //this.trait.Name = o.trait.Name;
     //this.formGroup.setValue(o.g);
     /*for (let def of this.invAbilityDefs) {
       this.invAbilities[def.category][def.name].set(o.ai[def.category][def.name]);
@@ -213,18 +330,10 @@ class Character {
       }
       this.drives[i].set(d);
     });*/
-    /*if (this.allegiances.length > o.x.all.length) {
-      this.allegiances.splice(o.x.all.length);
-    }
-    o.x.all.forEach((a: Allegiance, i: number) => {
-      if (i > this.allegiances.length - 1) {
-        this.allegiances[i] = new Allegiance();
-      }
-      this.allegiances[i].set(a);
-    });*/
     /*this.lifestyle = o.x.ls;*/
-    this.trait.Gear.set(o.trait.Gear);
+    //this.trait.Gear.set(o.trait.Gear);
     /*this.spheres = o.x.s;*/
+    o.trait.Gear = gear; // paired with delete at beginning
   }
 
   export() {
@@ -232,69 +341,89 @@ class Character {
   }
   
   save() {
-    if (this.#canSave) {
-      this.ts = this.timestamp;
-      const j = JSON.stringify(this);
-      console.log(this.#slotKey, this);
-      // TODO: enable
-      //localStorage.setItem(this.#slotKey, j); // TODO: LZString.compress(j)
-    }
+    this.ts = this.timestamp;
+    const j = JSON.stringify(this);
+    //console.log(this.slotKey, this);
+    // DONE: enable
+    localStorage.setItem(this.slotKey, j); // TODO: LZString.compress(j)
+    return true;
   }
 
   load() {
     let j;
     try {
-      j = localStorage.getItem(this.#slotKey); // TODO: LZString.decompress(...)
+      j = localStorage.getItem(this.slotKey); // TODO: LZString.decompress(...)
     } catch (e) {
       console.trace(e); // TODO: only in dev
     }
     if (j) {
       const o = JSON.parse(j);
-      this.compat.update(o);
+      Compatibility.update(o);
+      //console.log(this, o);
       this.set(o);
     }
-    this.#canSave = true;
+    //this.#canSave = true;
   }
 
   proxy<T extends object>(o: T): T {
-    const _this = this;
+    const re = /^\d+$/;
     return new Proxy<T>(o, {
       get: (self: {[n: string]: any}, prop: string) => prop in self ? self[prop] : undefined,
-      set: (self: {[n: string]: any}, prop: string, value: any) => {
-        if (prop in self) {
+      set: (self: {[n: string]: any}, prop: string, value: any, receiver: any) => {
+        if (prop in self || prop.match(re)) {
           self[prop] = value;
-          _this.save();
+          if (receiver == this.ability.investigative.Sorcerer.Corruption) {
+            this.updateSpheresLength();
+          }
+          this.save();
           return true;
         }
         return false;
       },
     });
   }
-
+  
   get slotKey() {
     return this.#slotKey;
   }
   
-  get canSave() {
+  set slotKey(v) {
+    this.#slotKey = v;
+  }
+
+  get proxied() {
+    return this.#proxied;
+  }
+
+  /*get canSave() {
     return this.#canSave;
-  }
+  }*/
   
-  set canSave(v) {
+  /*set canSave(v) {
     this.#canSave = v;
-  }
+  }*/
 
   get timestamp() {
     return Math.floor((new Date()).getTime() / 1000);
   }
 
   addAllegiance() {
-    this.ability.allegiances.push(new Allegiance());
-    //this.saveToLocal(); // TODO: confirm unneeded
+    let a = new Allegiance();
+    if (this.proxied) {
+      a.ally = this.proxy(a.ally);
+      a.enemy = this.proxy(a.enemy);
+      a = this.proxy(a);
+    }
+    this.ability.allegiances.push(a);
+    this.save();
   }
 
   addGear() {
-    this.trait.Gear.push(new Gear());
-    //this.saveToLocal(); // TODO: confirm unneeded
+    let g = new Gear();
+    if (this.proxied) {
+      g = this.proxy(g);
+    }
+    this.trait.Gear.push(g);
   }
 
   get healthThreshold() {
@@ -334,6 +463,15 @@ class Character {
     return result;
   }
   
+  updateSpheresLength() {
+    const r = this.ability.investigative.Sorcerer.Corruption.ranks;
+    if (this.trait.Spheres.length > r) {
+      this.trait.Spheres.splice(r);
+    } else while (this.trait.Spheres.length < r) {
+      this.trait.Spheres.push('');
+    }
+  }
+  
   get invProfession(): string {
     // this bit seems to have been a hallucination, or maybe Kevin said it on the Discord
     /*for (let a of this.allegiances) {
@@ -371,11 +509,11 @@ class Character {
     if (this.advancement.points === null) {
       return 0;
     } else {
-      let u = this.util.int(this.advancement.points);
-      u -= this.util.int(this.advancement.genB);
-      u -= this.util.int(this.advancement.stamB);
-      u -= this.util.int(this.advancement.invB) * 3;
-      u -= this.util.int(this.advancement.enemy) * 3;
+      let u = this.#cs.util.int(this.advancement.points);
+      u -= this.#cs.util.int(this.advancement.genB);
+      u -= this.#cs.util.int(this.advancement.stamB);
+      u -= this.#cs.util.int(this.advancement.invB) * 3;
+      u -= this.#cs.util.int(this.advancement.enemy) * 3;
       return u;
     }
   }
@@ -391,14 +529,14 @@ class Character {
   }
   
   get invUnspent(): number {
-    let r = this.util.int(this.config.investigativeBuild) + this.util.int(this.advancement.invB) + (this.invProfession ? 1 : 0);
+    let r = this.#cs.util.int(this.config.investigativeBuild) + this.#cs.util.int(this.advancement.invB) + (this.invProfession ? 1 : 0);
     for (const cat in this.ability.investigative) {
       for (const name in this.ability.investigative[cat]) {
         r -= this.ability.investigative[cat][name].ranks;
       }
     }
-    let fa = this.util.int(this.config.freeAllies);
-    let fe = this.util.int(this.config.freeEnemies) - this.util.int(this.advancement.enemy);
+    let fa = this.#cs.util.int(this.config.freeAllies);
+    let fe = this.#cs.util.int(this.config.freeEnemies) - this.#cs.util.int(this.advancement.enemy);
     for (const a of this.ability.allegiances) {
       fa -= a.ally.ranks;
       fe -= a.enemy.ranks;
@@ -413,8 +551,8 @@ class Character {
   }
 
   get genUnspent(): number {
-    let r = this.util.int(this.config.generalBuild) + this.util.int(this.advancement.genB);
-    for (const name in this.ability.general) {
+    let r = this.#cs.util.int(this.config.generalBuild) + this.#cs.util.int(this.advancement.genB);
+    for (const name in this.#cs.tbl.genDef) {
       r -= this.ability.general[name].ranks;
     }
     return r;
@@ -448,7 +586,7 @@ class Character {
     for (const a of this.ability.allegiances) {
       r += a.ally.ranks;
     }
-    const fa = this.util.int(this.config.freeAllies);
+    const fa = this.#cs.util.int(this.config.freeAllies);
     if (r < fa) {
       return fa - r;
     }
@@ -460,8 +598,8 @@ class Character {
     for (const a of this.ability.allegiances) {
       r += a.enemy.ranks;
     }
-    const fe = this.util.int(this.config.freeEnemies);
-    if (r < fe - this.util.int(this.advancement.enemy)) {
+    const fe = this.#cs.util.int(this.config.freeEnemies);
+    if (r < fe - this.#cs.util.int(this.advancement.enemy)) {
       return fe - r;
     }
     return 0;
@@ -478,7 +616,7 @@ class Character {
   }
 
   get staminaUnspent(): number {
-    let r = this.util.int(this.config.staminaBuild) + this.util.int(this.advancement.stamB);
+    let r = this.#cs.util.int(this.config.staminaBuild) + this.#cs.util.int(this.advancement.stamB);
     r -= this.ability.general['Health'].ranks;
     r -= this.ability.general['Morale'].ranks;
     return r;
@@ -557,7 +695,7 @@ class Ability {
   }
   
   toJSON() {
-    return [this.#ranks, this.pool];
+    return [this.ranks, this.pool];
   }
 
   set val(a: [number, number]) {
@@ -594,6 +732,21 @@ class Allegiance {
   }
 }
 
+
+class AllegianceList extends Array<Allegiance> {
+  set val(a: [string, [number, number], number, [number, number], number][]) {
+    if (this.length > a.length) {
+      this.splice(a.length);
+    }
+    for (let i = 0; i < a.length; i++) {
+      if (i > this.length - 1) {
+        this[i] = new Allegiance();
+      }
+      this[i].val = a[i];
+    }
+  }
+}
+
 class Gear {
   iconic = false;
   value = '';
@@ -608,7 +761,7 @@ class Gear {
 }
 
 class GearList extends Array<Gear> {
-  set(a: [boolean, string][]) {
+  set val(a: [boolean, string][]) {
     if (this.length > a.length) {
       this.splice(a.length);
     }
@@ -618,5 +771,134 @@ class GearList extends Array<Gear> {
       }
       this[i].val = a[i];
     }
+  }
+}
+
+class SaveSlot {
+  key: string;
+  name: string;
+  #ts: number;
+  #ts0: number;
+  
+  constructor(key: string) {
+    this.key = key;
+    const j = localStorage.getItem(this.key) as string;
+    const s = JSON.parse(j);
+    Compatibility.update(s)
+    this.name = s['trait']['Name'];
+    this.#ts = s['ts'];
+    this.#ts0 = s['ts0'];
+  }
+  
+  raw() {
+    return localStorage.getItem(this.key) as string;
+  }
+  
+  get ts() {
+    if (this.#ts > 0) {
+      return this.dateLocal(this.#ts);
+    } else {
+      console.log('localStorage slot has invalid ts', this.key);
+      return 'invalid date';
+    }
+  }
+
+  get ts0() {
+    if (this.#ts0 > 0) {
+      return this.dateLocal(this.#ts0);
+    } else {
+      return this.ts;
+    }
+  }
+
+  dateLocal(t: number): string {
+    return new Date(t * 1000).toLocaleString();
+  }
+
+  dateUtc(t: number): string {
+    return new Date(t * 1000).toUTCString();
+  }
+}
+
+class Compatibility {
+  static update(o: any) {
+    if ('VER' in o && Character.VER != o['VER']) {
+      // using chained ifs (instead of if-elses) here allows the compat functions to make partial upgrades
+      if (!(('c' in o && 'V' in o['c']) || 'VER' in o)) {
+        this.noV(o);
+      }
+      if ('V' in o && o['V'] == 'α1') {
+        this.vA1(o);
+      }
+      if (o['VER'] == 'α2') {
+        // next compatibility changes go here
+      }
+    }
+  }
+  
+  static noV(o: any) {
+    const g = o['c']['g'];
+    delete g['configAutoInvB'];
+    const ib = parseInt(g['configInvestigativeBuild'], 10);
+    const pc = parseInt(g['configCharacterCount'], 10);
+    g['configInvestigativeBuild'] = ib + '';
+    for (const n of ['advGenB', 'advStamB', 'advInvB', 'advEnemy']) {
+      if (!(n in g)) {
+        g[n] = '0';
+      }
+    }
+    g['advGenB'] = 0;
+    o['c']['V'] = 'α1';
+  }
+
+  static vA1(o: any) {
+    o['c']['ts'] = o['c']['ts0'] = o['ts'];
+    o = o['c'];
+    o['config'] = {
+      s2s: o['g']['configS2S'],
+      characterCount: o['g']['configCharacterCount'],
+      investigativeBuild: o['g']['configInvestigativeBuild'],
+      generalBuild: o['g']['configGeneralBuild'],
+      staminaBuild: o['g']['configStaminaBuild'],
+      minStamina: o['g']['configMinStamina'],
+      freeAllies: o['g']['configFreeAllies'],
+      freeEnemies: o['g']['configFreeEnemies'],
+    };
+    o['advancement'] = {
+      points: o['g']['advancement'],
+      genB: o['g']['advGenB'],
+      stamB: o['g']['advStamB'],
+      invB: o['g']['advInvB'],
+      enemy: o['g']['advEnemy'],
+    };
+    o['traits'] = {
+      Name: o['g']['name'],
+      TNK: o['g']['tnk'],
+      Profession: o['g']['profession'],
+      Adjectives: o['x']['adj'],
+      Drives: [],
+      Wealth: o['g']['wealth'],
+      Lifestyle: o['x']['ls'],
+      Gear:[],
+      Spheres: o['x']['s'],
+      portraitUrl: o['g']['portraitUrl'],
+      hmSpotFrailty: o['g']['spotFrailty'] == 'Health',
+      hmSorceryAffects: o['g']['sorceryAffects'] == 'Health',
+    };
+    for (let i = 0; i < 3; i++) {
+      o['traits']['Drives'][i] = [o['x']['d'][i].pool, o['x']['d'][i].value];
+    }
+    o['x']['d'][0]['value']
+    for (let i = 0; i < o['x']['g'].length; i++) {
+      o['traits']['Gear'][i] = [o['x']['g'][i].iconic, o['x']['g'][i].value];
+    }
+    // TODO: abilities incl allegiances
+
+    delete o['V'];
+    delete o['g'];
+    delete o['ai'];
+    delete o['ag'];
+    delete o['x'];
+    o['VER'] = 'α2';
   }
 }

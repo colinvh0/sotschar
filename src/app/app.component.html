@@ -1,2 +1,5 @@
-<app-character-editor *ngIf="browser" />
+@if (loaded) {
+  <app-character-editor />
+}
+<!--app-character-editor *ngIf="localStorage" /-->
 <router-outlet />

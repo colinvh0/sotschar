@@ -1,23 +1,128 @@
 import { Injectable, inject } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 
+import { CharacterService } from './character.service';
 import { CompatibilityService } from './compatibility.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SaveSlotService {
+  #cookie = inject(CookieService);
+  chars = inject(CharacterService);
+  compat = inject(CompatibilityService);
   #selected: SaveSlot | null = null;
 
-  all() {
-    return SaveSlot.all();
-  }
-  
-  get keys() {
-    return SaveSlot.keys;
-  }
-  
   get nextKey() {
-    return SaveSlot.nextKey;
+    const pre = 'chr';
+    let i = 0;
+    while (localStorage.getItem(pre + ++i) !== null) {
+      if (i > localStorage.length) { // if we're here, the pigeonhole principle broke or I made the while loop wrong
+        console.trace('wtf no!');
+        break;
+      }
+    }
+    return pre + i;
+  }
+
+  get keys() {
+    const re = /chr(\d+)/;
+    let a = new Array<string>();
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k !== null) {
+        if (k.match(re)) {
+          a.push(k);
+        }
+      }
+    }
+    return a;
+  }
+  
+  all() {
+    return this.keys.map((k) => new SaveSlot(k)).sort((a, b) => { return parseInt(b.ts, 10) - parseInt(a.ts, 10); });
+  }
+  
+  blank() {
+    return this.chars.new('');
+  }
+
+  autoload() {
+    const key = this.cookie;
+    if (key) {
+      return this.load(key);
+    }
+    return this.new();
+  }
+  
+  new() {
+    const key = this.nextKey;
+    const c = this.chars.new(key);
+    this.chars.registry[key] = c;
+    c.canSave = true;
+    return c;
+  }
+  
+  copy(){
+    if (this.selected === null) {
+      throw 'slot.selected is null';
+    }
+    const key = this.selected.key;
+    const s = localStorage.getItem(key);
+    if (s === null) {
+      throw 'key not in localStorage: ' + key;
+    }
+    let c = this.chars.registry[key];
+    if (!c) {
+      c = this.chars.new(key);
+    }
+    c.slotKey = this.nextKey;
+    this.cookie = c.slotKey;
+    c.canSave = true;
+    c.save();
+    return c;
+  }
+  
+  load(key: string | null = null) {
+    if (key === null) {
+      if (this.selected === null) {
+        throw 'slot.selected is null';
+      }
+      key = this.selected.key;
+    }
+    const mc = this.chars.registry[key];
+    if (mc) {
+      this.cookie = key;
+      return mc;
+    }
+    const c = this.chars.new(key);
+    if (this.badSlotKey(key)) {
+      c.slotKey = this.nextKey;
+      c.save();
+      localStorage.removeItem(key);
+    }
+    this.chars.registry[c.slotKey] = c;
+    this.cookie = c.slotKey;
+    c.canSave = true;
+    return c;
+  }
+  
+  import(o: any) {
+    const c = this.chars.new(this.nextKey);
+    this.compat.update(o);
+    c.set(o);
+    this.chars.registry[c.slotKey] = c;
+    this.cookie = c.slotKey;
+    c.canSave = true;
+    return c;
+  }
+
+  set cookie(key) {
+    this.#cookie.set('_c', key);
+  }
+  
+  get cookie() {
+    return this.#cookie.get('_c');
   }
   
   select(key: string) {
@@ -29,7 +134,7 @@ export class SaveSlotService {
   }
 
   get selected(): SaveSlot | null {
-    const ss = SaveSlot.keys;
+    const ss = this.keys;
     if (ss.length == 0) {
       return this.#selected = null;
     }
@@ -48,41 +153,15 @@ export class SaveSlotService {
   isSelected(key: string): boolean {
     return !!this.#selected && this.#selected.key == key
   }
-
-  constructor() { }
+  
+  badSlotKey(key: string): boolean {
+    // TODO enable
+    return false;
+    //return key == 'char';
+  }
 }
 
 class SaveSlot {
-  static get nextKey() {
-    const pre = 'chr';
-    let i = 0;
-    while (localStorage.getItem(pre + ++i) !== null) {
-      if (i > localStorage.length) { // if we're here, the pigeonhole principle broke or I made the while loop wrong
-        console.trace('wtf no!');
-        break;
-      }
-    }
-    return pre + i;
-  }
-
-  static get keys() {
-    const re = /chr(\d+)/;
-    let a = new Array<string>();
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k !== null) {
-        if (k.match(re)) {
-          a.push(k);
-        }
-      }
-    }
-    return a;
-  }
-  
-  static all() {
-    return SaveSlot.keys.map((k) => new SaveSlot(k)).sort((a, b) => { return parseInt(b.ts, 10) - parseInt(a.ts, 10); });
-  }
-  
   compat = inject(CompatibilityService);
   
   key: string;
