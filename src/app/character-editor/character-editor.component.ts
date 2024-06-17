@@ -53,12 +53,12 @@ foreach ($file in 'src\app\character-editor\character-editor.component.html', 's
 })
 export class CharacterEditorComponent {
   #browser: boolean;
-  view = newViewControl(inject(CookieService));
   util = inject(UtilityService);
   tbl = inject(TablesService);
   chars = inject(CharacterService);
   Object = Object; // TODO don't
   char = this.chars.autoload();
+  view = newViewControl(inject(CookieService));
 
   importData = '';
   importErr = '';
@@ -95,13 +95,13 @@ export class CharacterEditorComponent {
   
   showModal(cb: () => void, ecls: string, verb: string, q: string) {
     try {
-    const elem = document.querySelector('dialog#sotschar-modal') as HTMLDialogElement;
-    const c = elem.querySelector('button.confirm') as HTMLButtonElement;
-    c.onclick = cb;
-    c.innerText = verb;
-    elem.classList.add(ecls);
-    (elem.querySelector('.query') as HTMLElement).innerText = q;
-    elem.showModal();
+      const elem = document.querySelector('dialog#sotschar-modal') as HTMLDialogElement;
+      const c = elem.querySelector('button.confirm') as HTMLButtonElement;
+      c.onclick = cb;
+      c.innerText = verb;
+      elem.classList.add(ecls);
+      (elem.querySelector('.query') as HTMLElement).innerText = q;
+      elem.showModal();
     } catch (e: any) {
       this.hideModal();
       throw e;
@@ -262,9 +262,9 @@ function newViewControl(c: CookieService) {
         ViewState.printBackground = v['printBackground'];
       }
     }
-    if (ViewState.mode == 'off') {
-      ViewState.mode = 'edit';
-    }
+  }
+  if (ViewState.mode == 'off') {
+    ViewState.mode = 'edit';
   }
   return new Proxy<typeof ViewState>(ViewState, {
     get(target, prop, receiver) {
