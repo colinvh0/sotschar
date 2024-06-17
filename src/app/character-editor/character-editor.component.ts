@@ -81,7 +81,7 @@ export class CharacterEditorComponent {
   import(): void {
     this.importErr = '';
     try {
-      this.chars.import(this.importData);
+      this.chars.import(JSON.parse(this.importData));
     } catch (e: any) {
       this.importErr = e;
       throw e;
