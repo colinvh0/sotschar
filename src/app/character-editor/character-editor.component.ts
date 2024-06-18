@@ -78,6 +78,10 @@ export class CharacterEditorComponent {
     return this.view.mode;
   }
   
+  get browser() {
+    return this.#browser;
+  }
+  
   import(): void {
     this.importErr = '';
     try {
@@ -190,6 +194,16 @@ export class CharacterEditorComponent {
       return 'green';
     }
     return '';
+  }
+
+  sorceryDisabled(a: string) {
+    let result = '';
+    if (a == 'Sorcery') {
+      if (this.view.mode == 'edit' && this.char.ability.investigative.Sorcerer.Corruption.ranks == 0) {
+        result = 'disabled';
+      }
+    }
+    return result;
   }
 
   addAdjective() {

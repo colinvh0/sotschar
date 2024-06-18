@@ -1,3 +1,4 @@
+@if (browser) {
 <!-- begin hidden elements -->
 <datalist id="adjective-list">
   @for (adjective of tbl.adjectives.sort(); track adjective) {
@@ -155,7 +156,7 @@
       <button (click)="view.mode = 'play'">Play</button>
       <button (click)="view.mode = 'print'">Print</button>
     </section>
-    <div class="character-edit-grid character-sheet">
+    <div class="character-sheet">
       <div class="panel name-panel">
         <div class="name-field">
           <label>
@@ -228,7 +229,7 @@
               <div class="input">
                 @if (mode == 'edit') {
                   <div class="circle spacer"></div>
-                  <input type="text" [(ngModel)]="char.trait.Drives[i].value" [ngModelOptions]="{standalone: true}">
+                  <input type="text" [(ngModel)]="char.trait.Drives[i].value" [ngModelOptions]="{standalone: true}" class="large">
                 } @else {
                   @if (mode == 'play') {
                     <div class="circle" [ngClass]="char.trait.Drives[i].pool >= 1 ? ' filled' : ''" (click)="char.trait.Drives[i].pool = (char.trait.Drives[i].pool == 1) ? 0 : 1"></div>
@@ -351,7 +352,7 @@
         <div class="panel">
           <div>
             @for (ability of Object.keys(tbl.genDef); track ability) {
-              <div [ngClass]="['ability', tbl.genDef[ability].combat ? 'combat' : '', (mode == 'edit' && ability == 'Sorcery' && char.ability.investigative.Sorcerer.Corruption.ranks == 0) ? 'disabled' : '']">
+              <div [ngClass]="['ability', tbl.genDef[ability].combat ? 'combat' : '', sorceryDisabled(ability)]">
                 <div class="ability-name">{{ ability }}</div>
                 <div class="general-ability">
                   <div class="ability-value">
@@ -686,4 +687,5 @@
       </div>
     </div>
   </div>
+}
 }

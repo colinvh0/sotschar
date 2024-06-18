@@ -120,7 +120,7 @@ export class CharacterService {
     return c.setProxies();
   }
   
-  import(o: any) {
+  import(o: Record<string, any>) {
     const c = Character.new(this, this.nextKey);
     o = Compatibility.update(o);
     c.set(o);
@@ -130,6 +130,7 @@ export class CharacterService {
   }
 
   set cookie(key) {
+    //console.trace(key);
     this.#cookie.set('_c', key);
   }
   
@@ -752,7 +753,6 @@ class SaveSlot {
     const j = localStorage.getItem(this.key) as string;
     let s = JSON.parse(j);
     s = Compatibility.update(s);
-    //console.log(s);
     this.name = s['trait']['Name'];
     this.#ts = s['ts'];
     this.#ts0 = s['ts0'];
@@ -789,13 +789,13 @@ class SaveSlot {
 }
 
 class Compatibility {
-  static update(o: any) {
+  static update(o: Record<string, any>) {
     return (new this(o)).updated();
   }
   
-  o: any;
+  o: Record<string, any>;
 
-  constructor(o: any) {
+  constructor(o: Record<string, any>) {
     this.o = o;
   }
 
