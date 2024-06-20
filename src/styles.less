@@ -696,6 +696,19 @@ label:has([name="save-slot"]:focus) {
 .character-sheet .allegiances-section .panel {
   padding-top: .5em;
 }
+.character-sheet .allegiances-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 100%) auto auto;
+  grid-auto-rows: 1fr;
+  column-gap: 3px;
+  align-items: center;
+}
+.character-sheet .allegiances-grid .input {
+  display: contents;
+}
+.character-sheet .allegiances-grid .input {
+
+}
 .character-sheet .allegiances-section .input>div:first-child {
   margin-right: auto;
 }
@@ -710,19 +723,35 @@ label:has([name="save-slot"]:focus) {
 .character-sheet .wealth-panel {
   grid-column: two / right;
   border-top-width: 14px;
+  padding-top: 2px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+}
+.character-sheet .wealth-panel .label {
+  font-size: 13px;
 }
 .character-sheet .wealth-panel input[type="number"] {
   display: block;
   margin: 0 auto;
   width: 6em;
 }
+.character-sheet .wealth-panel label.flex .value {
+  width: 100%;
+  height: 34px;
+  flex-shrink: 1;
+  margin-left: 5px;
+  border: 1px solid firebrick;
+  border-radius: 4px;
+  padding-left: 4px;
+  font-size: 13px;
+  line-height: 32px;
+}
 .character-sheet .wealth-panel .lifestyle {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  margin-bottom: 4px;
 }
 .character-sheet .wealth-panel .lifestyle .value {
   font-size: 13px;
@@ -739,6 +768,7 @@ label:has([name="save-slot"]:focus) {
 }
 .character-sheet .stamina-section .panel {
   width: 100%;
+  height: 58px;
   flex-shrink: 1;
   margin-right: .25em;
   border-top-width: 8px;
@@ -749,6 +779,9 @@ label:has([name="save-slot"]:focus) {
   grid-auto-rows: 1fr;
   align-items: center;
   justify-content: space-between;
+}
+.character-sheet .stamina-section .label {
+  font-size: 13px;
 }
 .character-sheet .stamina-section .table {
   display: grid;

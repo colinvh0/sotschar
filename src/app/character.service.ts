@@ -698,6 +698,22 @@ class Allegiance {
   set val(a: [string, [number, number], number, [number, number], number]) {
     [this.name, this.ally.val, this.favor, this.enemy.val, this.grudge] = a;
   }
+
+  clickFG(favor: boolean, i: number) {
+    if (favor) {
+      if (i > this.favor) {
+        this.favor++;
+      } else {
+        this.favor--;
+      }
+    } else {
+      if (i > this.grudge) {
+        this.grudge++;
+      } else {
+        this.grudge--;
+      }
+    }
+  }
 }
 
 

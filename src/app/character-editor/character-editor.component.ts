@@ -16,6 +16,8 @@ Branches that should be uncreachable have
 */
 
 // TODO: convert all em to px
+// TODO: 0-rank allegiances in play mode
+// TODO: move wealth left in print mode
 // TODO: expanding textareas for drives, gear
 // TODO: style config/manage
 // TODO: implement configS2S
@@ -31,7 +33,6 @@ Branches that should be uncreachable have
 // TODO: beveled corners for panels; scalloped corners for h4
 // TODO: multiplayer
 
-// TODO KC: handle favors/grudges
 // TODO KC: adjectives just one text field?
 // TODO KC: editable during play?
 // TODO KC: allegiance pseudoclass real rule?
@@ -175,6 +176,16 @@ export class CharacterEditorComponent {
       return this.util.fmt(i) + '';
     } else {
       return '';
+    }
+  }
+
+  get formatWealth() {
+    const ws = this.char.trait.Wealth;
+    const wi = this.util.int(ws);
+    if (wi + '' == ws && !wi) {
+      return '';
+    } else {
+      return ws;
     }
   }
   

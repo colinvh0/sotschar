@@ -428,7 +428,7 @@
           </div>
         }
         <div class="panel">
-          <div>
+          <div class="allegiances-grid">
             @for (i of util.aii(char.ability.allegiances.length); track i) {
               <div class="input">
                 @if (mode == 'edit') {
@@ -462,6 +462,32 @@
                   <button class="del" (click)="delAllegiance(i)">−</button>
                 } @else {
                   <div class="value">{{ char.ability.allegiances[i].name }}</div>
+                  <div>
+                    @if (mode == 'play') {
+                      <div class="ability-value">
+                        @for (j of util.aiToFrom(util.clamp(char.ability.allegiances[i].favor + 1, 1, 5)); track j) {
+                          <div
+                            class="circle"
+                            [ngClass]="[char.ability.allegiances[i].favor >= j ? 'filled' : '', false ? 'red' : '']"
+                            (click)="char.ability.allegiances[i].clickFG(true, j)"
+                          >
+                            F
+                          </div>
+                        }
+                      </div>
+                      <div class="ability-value">
+                        @for (j of util.aiToFrom(util.clamp(char.ability.allegiances[i].grudge + 1, 1, 5)); track j) {
+                          <div
+                            class="circle"
+                            [ngClass]="[char.ability.allegiances[i].grudge >= j ? 'filled' : '', true ? 'red' : '']"
+                            (click)="char.ability.allegiances[i].clickFG(false, j)"
+                          >
+                            G
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
                   <div>
                     <!--@for (disp of ['ally', 'enemy']; track disp) {-->
                       @if (char.ability.allegiances[i].ally.ranks > 0) {
@@ -516,7 +542,11 @@
       <div class="panel wealth-panel">
         <label class="flex">
           <div class="label">Wealth</div>
-          <input type="number" [(ngModel)]="char.trait.Wealth" [ngModelOptions]="{standalone: true}">
+          @if (mode == 'edit' || mode == 'play') {
+            <input type="number" [(ngModel)]="char.trait.Wealth" [ngModelOptions]="{standalone: true}">
+          } @else if (mode == 'print') {
+            <div class="value">{{ formatWealth }}</div>
+          }
         </label>
         <div class="lifestyle">
           <div class="label">Lifestyle</div>
@@ -530,7 +560,7 @@
               <div class="circle" [ngClass]="char.trait.Lifestyle >= 2 ? ' filled' : ''" (click)="char.trait.Lifestyle = 2">+2</div>
             </div>
           } @else if (mode == 'print') {
-            <div>_________________</div>
+            <div>______________________</div>
             <div class="ability-value">
               <div class="circle"></div>
               <div class="circle"></div>
