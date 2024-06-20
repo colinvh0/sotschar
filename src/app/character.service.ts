@@ -655,7 +655,7 @@ class Ability {
   }
   
   clickPool(i: number): void {
-    if (this.pool > i) {
+    if (i > this.pool) {
       this.pool++;
     } else {
       this.pool--;
