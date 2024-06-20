@@ -229,7 +229,7 @@
               <div class="input">
                 @if (mode == 'edit') {
                   <div class="circle spacer"></div>
-                  <input type="text" [(ngModel)]="char.trait.Drives[i].value" [ngModelOptions]="{standalone: true}" class="large">
+                  <input type="text" [(ngModel)]="char.trait.Drives[i].value" [ngModelOptions]="{standalone: true}">
                 } @else {
                   @if (mode == 'play') {
                     <div class="circle" [ngClass]="char.trait.Drives[i].pool >= 1 ? ' filled' : ''" (click)="char.trait.Drives[i].pool = (char.trait.Drives[i].pool == 1) ? 0 : 1"></div>

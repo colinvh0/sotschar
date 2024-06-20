@@ -15,22 +15,27 @@ Branches that should be uncreachable have
 
 */
 
+// TODO: convert all em to px
+// TODO: expanding textareas for drives, gear
 // TODO: style config/manage
-// TODO: implement configS2S, also find rules
-// TODO: hide 0-rank Abilities in play/print?
+// TODO: implement configS2S
+// TODO: download google fonts
+// TODO: inline svg and woff
+// TODO: hide 0-rank abilities in play/print?
 // TODO: factions list editor
+// TODO: load from template
+// TODO: party analyzer
+// TODO: statblock
+// TODO: image url/upload/crop
+// TODO: mobile input[number] has strong validation, desktop does not
+// TODO: beveled corners for panels; scalloped corners for h4
+// TODO: multiplayer
 
 // TODO KC: handle favors/grudges
-// TODO KC: adjectives just a text field?
+// TODO KC: adjectives just one text field?
 // TODO KC: editable during play?
 // TODO KC: allegiance pseudoclass real rule?
 // TODO KC: s2s real rule?
-
-// TODO: load from template
-// TODO: mobile input[number] has strong validation, desktop does not
-// TODO: image url/upload/crop
-// TODO: fix text knockouts in h4s
-// TODO: multiplayer
 
 /* M$ PowerHELL
 // approx 5 - 6.5 chars per "word"
