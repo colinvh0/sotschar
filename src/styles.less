@@ -3,7 +3,7 @@
 @mainFgColor: #6c1f17;
 @mainBgColor: #e8dbce;
 @pageBgUrl: url(assets/page-bg.webp);
-@pageBgColor: #e0d5c5;
+@pageBgColor: #dccfc0;
 @outsideBorder: 2px solid @mainFgColor;
 @insideBorder: 1px solid @mainFgColor;
 @media (min-resolution: 2dppx) {
@@ -177,7 +177,7 @@ dialog .content>div:last-child {
 }*/
 .ability.combat .ability-name {
   width: 100%;
-  background: url('assets/combat.svg') right no-repeat;
+  background: url('assets/combat.svg') top right no-repeat;
   background-size: 20px;
 }
 .ability.combat.disabled .ability-name {
@@ -316,7 +316,7 @@ dialog .content>div:last-child {
 .character-sheet {
   display: grid;
   grid-template-columns: [left] 227px [three] 163px [two] 62px [three] 227px [right];
-  grid-template-rows: 110px auto auto auto auto auto auto 7em auto auto auto;
+  grid-template-rows: 110px auto auto auto auto auto auto 94px auto auto auto;
   gap: .25em;
   padding: 24px 50px;
   font-size: 16px;
@@ -417,19 +417,21 @@ dialog .content>div:last-child {
   flex-shrink: 0;
 }*/
 .character-sheet h4>span {
-  background-image: @pageBgUrl;
-  /*background-color: @pageBgColor;*/
+  /*background-image: @pageBgUrl;
+  background-color: @pageBgColor;
   background-size: 1224px;
   background-position-x: -120px;
   background-clip: text;
-  color: transparent;
+  color: transparent;*/
+  color: @pageBgColor;
 }
 .mode-print.print-bw .character-sheet h4>span {
-  background-image: url(assets/page-bg-bw.webp);
+  /*background-image: url(assets/page-bg-bw.webp);*/
+  color: white;
 }
 .mode-print.print-nobg .character-sheet h4>span {
-  background-image: none;
-  color: white;
+  /*background-image: none;*/
+  /*color: white;*/
 }
 
 .character-sheet h5 {
@@ -662,6 +664,9 @@ label:has([name="save-slot"]:focus) {
   grid-column: left / two;
   grid-row-end: span 2;
 }
+.character-sheet .general-section .panel>div {
+  padding-bottom: 0;
+}
 .character-sheet .general-ability {
   height: 26.5px;
 }
@@ -688,8 +693,7 @@ label:has([name="save-slot"]:focus) {
 
 .character-sheet .wealth-panel {
   grid-column: two / right;
-  height: 7em;
-  border-top-width: 13px;
+  border-top-width: 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -732,21 +736,21 @@ label:has([name="save-slot"]:focus) {
 }
 .character-sheet .stamina-section .table {
   display: grid;
-  grid-template-columns: 3.5em 3.5em;
-  grid-template-rows: .8em 1.8em 1.8em .8em;
+  grid-template-columns: 54px 54px;
+  grid-template-rows: 13px 23px 23px 13px;
   text-align: center;
 }
 .character-sheet .stamina-section .table .label {
   font-weight: inherit;
   vertical-align: middle;
-  font: .5em / 1.7em sans-serif;
+  font: 8px / 14px sans-serif;
   color: black;
 }
 .character-sheet .stamina-section .table .value {
   border: solid @mainFgColor;
   background-color: white;
   font-size: 13px;
-  line-height: 25px;
+  line-height: 20px;
 }
 .mode-print.print-bw .character-sheet .stamina-section .table .value {
   border-color: black;
@@ -756,19 +760,19 @@ label:has([name="save-slot"]:focus) {
   width: 80%;
 }
 .character-sheet .stamina-section .table>:nth-child(3) {
-  border-top-left-radius: 10px;
+  border-top-left-radius: 12px;
   border-width: 2px 1px 1px 2px;
 }
 .character-sheet .stamina-section .table>:nth-child(4) {
-  border-top-right-radius: 10px;
+  border-top-right-radius: 12px;
   border-width: 2px 2px 1px 1px;
 }
 .character-sheet .stamina-section .table>:nth-child(5) {
-  border-bottom-left-radius: 10px;
+  border-bottom-left-radius: 12px;
   border-width: 1px 1px 2px 2px;
 }
 .character-sheet .stamina-section .table>:nth-child(6) {
-  border-bottom-right-radius: 10px;
+  border-bottom-right-radius: 12px;
   border-width: 1px 2px 2px 1px;
 }
 

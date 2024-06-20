@@ -398,7 +398,7 @@ class Character {
   }
 
   get healthThreshold() {
-    return this.ability.general['Health'].ranks > 8 ? 4 : 3;
+    return this.ability.general['Health'].ranks > 9 ? 4 : 3;
   }
   
   get armor() {
@@ -417,7 +417,7 @@ class Character {
   }
 
   get moraleThreshold() {
-    return this.ability.general['Morale'].ranks > 8 ? 4 : 3;
+    return this.ability.general['Morale'].ranks > 9 ? 4 : 3;
   }
   
   get grit() {

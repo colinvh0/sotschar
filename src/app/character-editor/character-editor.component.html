@@ -661,12 +661,12 @@
           <div>
             @if (char.ability.investigative.Sorcerer.Corruption.ranks > 0) {
               <div class="label-tiny center">
-                Affects:
                 @if (mode == 'edit') {
+                  Affects:
                   <label><input type="radio" [(ngModel)]="char.trait.hmSorceryAffects" [ngModelOptions]="{standalone: true}" [value]="true" /> Health </label>
                   <label><input type="radio" [(ngModel)]="char.trait.hmSorceryAffects" [ngModelOptions]="{standalone: true}" [value]="false" /> Morale </label>
                 } @else {
-                  {{ char.trait.hmSorceryAffects ? 'Health' : 'Morale' }}
+                  Affects {{ char.trait.hmSorceryAffects ? 'Health' : 'Morale' }}
                 }
               </div>
             }
