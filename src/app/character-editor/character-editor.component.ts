@@ -15,6 +15,8 @@ Branches that should be uncreachable have
 
 */
 
+// TODO: fix point cost calculations
+// TODO: fix talent circle
 // TODO: convert all em to px
 // TODO: 0-rank allegiances in play mode
 // TODO: move wealth left in print mode

@@ -10,7 +10,7 @@
   @outsideBorder: 1.3333px solid @mainFgColor;
   @insideBorder: .6667px solid @mainFgColor;
 }
-
+@betweenCircles: 4px;
 
 body {
 	font-family: Acanthus;
@@ -174,8 +174,9 @@ dialog .content>div:last-child {
 .ability {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: bold;
+  letter-spacing: -.4px;
 }
 .general-ability {
   margin-left: .5em;
@@ -201,7 +202,7 @@ dialog .content>div:last-child {
 }
 .ability-value {
   display: flex;
-  column-gap: 3px;
+  column-gap: @betweenCircles;
   position: relative;
   top: 3px;
 }
@@ -464,10 +465,12 @@ dialog .content>div:last-child {
   grid-column: left / two;
   padding-top: .25em;
 }
-
 .character-sheet .title3 {
   grid-column: two / right;
   padding-top: .25em;
+}
+.character-sheet h4.title2, .character-sheet h4.title3 {
+  padding-top: 0;
 }
 
 .character-sheet .input-value {
@@ -655,6 +658,10 @@ label:has([name="save-slot"]:focus) {
   flex-shrink: 1;
 }
 
+.character-sheet section.investigative-abilities .panel>div {
+  padding-left: 5px;
+}
+
 .character-sheet .social-panel {
   grid-column: left / three 1;
   grid-row-end: span 2;
@@ -700,7 +707,7 @@ label:has([name="save-slot"]:focus) {
   display: grid;
   grid-template-columns: minmax(0, 100%) auto auto;
   grid-auto-rows: 1fr;
-  column-gap: 3px;
+  column-gap: @betweenCircles;
   align-items: center;
 }
 .character-sheet .allegiances-grid .input {
