@@ -86,6 +86,8 @@ export class CharacterService {
     const key = this.nextKey;
     const c = Character.new(this, key, true);
     this.registry[key] = c;
+    this.cookie = c.slotKey;
+    c.save();
     return c.setProxies();
   }
   
