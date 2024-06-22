@@ -126,6 +126,7 @@ export class CharacterService {
     c.set(o);
     this.registry[c.slotKey] = c;
     this.cookie = c.slotKey;
+    c.save();
     return c.setProxies();
   }
 
